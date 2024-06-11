@@ -1,10 +1,12 @@
 import { Routes, Route } from 'react-router-dom'
-import App from '../../App';
+import Root from '../../views/root';
 
 const RoutesComponent =() => {
     return (
         <Routes>
-            <Route path='/' element={<App />} />
+            <Route path='/' element={<Root />} />
         </Routes>
     );
 }
+
+export default RoutesComponent;
