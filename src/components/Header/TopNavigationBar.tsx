@@ -114,6 +114,11 @@ function TopNavigationBar({mode, toggleColorMode}: AppBarProps) {
                                         FAQ
                                     </Typography>
                                 </MenuItem>
+                                <MenuItem>
+                                    <Typography variant='body2' color='text.primary'>
+                                        Vote
+                                    </Typography>
+                                </MenuItem>
                             </Box>   
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end', flexGrow: 1 }}>
                             <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
