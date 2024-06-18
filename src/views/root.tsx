@@ -5,6 +5,7 @@ import React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import TopNavigationBar from '../components/Header/TopNavigationBar';
+import Footer from '../components/Footer/Footer';
 
 
 function Root() {
@@ -20,7 +21,8 @@ function Root() {
             <CssBaseline />
             <TopNavigationBar mode={mode} toggleColorMode={toggleColorMode} />
                 <Box sx={{ bgcolor: 'background.default' }}>
-                    
+
+                    <Footer />
                 </Box>
         </ThemeProvider>
       );
