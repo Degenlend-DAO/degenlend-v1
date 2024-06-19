@@ -5,6 +5,7 @@ import React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import TopNavigationBar from '../components/Header/TopNavigationBar';
+import Markets from '../components/Dashboard/markets'
 import Footer from '../components/Footer/Footer';
 
 
@@ -28,6 +29,7 @@ function Root() {
                     {/* Account Balance */}
                     {/* Account Details */}
                     {/* Dashboard */}
+                    <Markets />
                     <Footer />
                 </Box>
         </ThemeProvider>
