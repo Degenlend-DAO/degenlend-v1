@@ -16,12 +16,18 @@ function Root() {
         setMode((prev: string) => (prev === 'dark' ? 'light' : 'dark'));
       };
 
+    const connectWallet = () => {
+      alert('Hello!');
+    }
+
       return (
         <ThemeProvider theme={defaultTheme}>
             <CssBaseline />
-            <TopNavigationBar mode={mode} toggleColorMode={toggleColorMode} />
+            <TopNavigationBar mode={mode} toggleColorMode={toggleColorMode} connectWallet={connectWallet} />
                 <Box sx={{ bgcolor: 'background.default' }}>
-
+                    {/* Account Balance */}
+                    {/* Account Details */}
+                    {/* Dashboard */}
                     <Footer />
                 </Box>
         </ThemeProvider>

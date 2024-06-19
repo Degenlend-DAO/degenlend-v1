@@ -12,6 +12,7 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import ToggleColorMode from '../../utils/ToggleColorMode'
+import ConnectWallet from '../../utils/ConnectWallet'
 import { Link } from 'react-router-dom';
 
 const logoStyle = {
@@ -23,9 +24,10 @@ const logoStyle = {
 interface AppBarProps {
     mode: PaletteMode;
     toggleColorMode: () => void;
+    connectWallet: () => void;
 }
 
-function TopNavigationBar({ mode, toggleColorMode }: AppBarProps) {
+function TopNavigationBar({ mode, toggleColorMode, connectWallet }: AppBarProps) {
 
     const [open, setOpen] = React.useState(false);
 
@@ -121,8 +123,11 @@ function TopNavigationBar({ mode, toggleColorMode }: AppBarProps) {
                                     </Typography>
                                 </MenuItem>
                             </Box>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end', flexGrow: 1 }}>
+                            <Box sx={{alignItems: 'end', flexGrow: 1 }}>
                                 <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end', flexGrow: 1 }}>
+                                <ConnectWallet address={'0x0000000000000000000'} connectWallet={connectWallet}/>
                             </Box>
                         </Box>
                     </Toolbar>
