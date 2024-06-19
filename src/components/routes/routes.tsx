@@ -8,6 +8,7 @@ const RoutesComponent = () => {
         <Routes>
             <Route path='/' element={<Root />} />
             <Route path='/markets' element={<></>} />
+            <Route path='/governance' element={<></>} />
             <Route path='/stake' element={<></>} />
             <Route path='/faq' element={<FrequentlyAskedQuestions />} />
             <Route path='/vote' element={<Vote />} />

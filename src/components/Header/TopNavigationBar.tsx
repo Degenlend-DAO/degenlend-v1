@@ -101,6 +101,11 @@ function TopNavigationBar({ mode, toggleColorMode }: AppBarProps) {
                                         <Link to="/markets">Markets</Link>
                                     </Typography>
                                 </MenuItem>
+                                <MenuItem>
+                                    <Typography variant='body2' color='text.primary'>
+                                        <Link to="/governance">Governance</Link>
+                                    </Typography>
+                                </MenuItem>
 
                                 {/* Turn your WSX into liquistake WSX */}
                                 <MenuItem>
