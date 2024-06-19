@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Root from '../../views/root';
 import FrequentlyAskedQuestions from '../FrequentlyAskedQuestions/FrequentlyAskedQuestions';
+import Vote from '../Vote/Vote';
 
 const RoutesComponent = () => {
     return (
@@ -9,7 +10,7 @@ const RoutesComponent = () => {
             <Route path='/markets' element={<></>} />
             <Route path='/stake' element={<></>} />
             <Route path='/faq' element={<FrequentlyAskedQuestions />} />
-            <Route path='/vote' element={<></>} />
+            <Route path='/vote' element={<Vote />} />
         </Routes>
     );
 }
