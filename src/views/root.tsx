@@ -1,39 +1,35 @@
-import { Box, PaletteMode } from '@mui/material';
+import { Box, IconButton, PaletteMode, Typography } from '@mui/material';
 import React from 'react'
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 // Design Library
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import TopNavigationBar from '../components/Header/TopNavigationBar';
 import Markets from '../components/Dashboard/markets'
 import Footer from '../components/Footer/Footer';
+import { ColorModeContext } from '../utils/useMode';
 
 
 function Root() {
-    const [mode, setMode] = React.useState<PaletteMode>('light');
-    const defaultTheme = createTheme({ palette: { mode } });
-
-    const toggleColorMode = () => {
-        setMode((prev: string) => (prev === 'dark' ? 'light' : 'dark'));
-      };
-
-    const connectWallet = () => {
-      alert('Hello!');
-    }
-
-      return (
-        <ThemeProvider theme={defaultTheme}>
-            <CssBaseline />
-            <TopNavigationBar mode={mode} toggleColorMode={toggleColorMode} connectWallet={connectWallet} />
-                <Box sx={{ bgcolor: 'background.default' }}>
-                    {/* Account Balance */}
-                    {/* Account Details */}
-                    {/* Dashboard */}
-                    <Markets />
-                    <Footer />
-                </Box>
-        </ThemeProvider>
-      );
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default',
+        color: 'text.primary',
+        borderRadius: 1,
+        p: 30,
+      }}
+    >
+      <Typography>Hello World!</Typography>
+    </Box>
+  );
 }
 
 export default Root;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PaletteMode } from '@mui/material';
+import { PaletteMode, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,25 +10,15 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
-
 import ToggleColorMode from '../../utils/ToggleColorMode'
-import ConnectWallet from '../../utils/ConnectWallet'
 import { Link } from 'react-router-dom';
 
-const logoStyle = {
-    width: '140px',
-    height: 'auto',
-    cursor: 'pointer',
-}
+import degenlendLogo from '../../assets/img/degenlend-variation2.png';
+import { ColorModeContext, useMode } from '../../utils/useMode';
 
-interface AppBarProps {
-    mode: PaletteMode;
-    toggleColorMode: () => void;
-    connectWallet: () => void;
-}
-
-function TopNavigationBar({ mode, toggleColorMode, connectWallet }: AppBarProps) {
-
+function TopNavigationBar() {
+    const theme = useTheme();
+    const colorMode = React.useContext(ColorModeContext);
     const [open, setOpen] = React.useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -87,11 +77,19 @@ function TopNavigationBar({ mode, toggleColorMode, connectWallet }: AppBarProps)
                                 flexGrow: 1,
                                 display: 'flex',
                                 alignItems: 'center',
-                                ml: '-18px',
+                                ml: '5px',
                                 px: 0,
                             }}
                         >
-                            <img src='../../assets/img/degenlend-variation2.png' style={logoStyle} alt='Degenlend logo' />
+                            <Box
+                                component="img"
+                                sx={{
+                                    height: 40,
+                                    width: 40,
+                                }}
+                                alt="Degenlend Logo"
+                                src={degenlendLogo}
+                            />
 
                             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                                 {/* Supplying & Borrowing Activities on The market */}
@@ -101,6 +99,11 @@ function TopNavigationBar({ mode, toggleColorMode, connectWallet }: AppBarProps)
                                 >
                                     <Typography variant="body2" color="text.primary">
                                         <Link to="/markets">Markets</Link>
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Typography variant='body2' color='text.primary'>
+                                        <Link to="/governance">Governance</Link>
                                     </Typography>
                                 </MenuItem>
 
@@ -123,11 +126,8 @@ function TopNavigationBar({ mode, toggleColorMode, connectWallet }: AppBarProps)
                                     </Typography>
                                 </MenuItem>
                             </Box>
-                            <Box sx={{alignItems: 'end', flexGrow: 1 }}>
-                                <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
-                            </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end', flexGrow: 1 }}>
-                                <ConnectWallet address={'0x0000000000000000000'} connectWallet={connectWallet}/>
+                                <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
                             </Box>
                         </Box>
                     </Toolbar>
