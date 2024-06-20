@@ -2,27 +2,24 @@ import { Box, PaletteMode } from '@mui/material';
 import React from 'react'
 
 // Design Library
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import TopNavigationBar from '../components/Header/TopNavigationBar';
 import Footer from '../components/Footer/Footer';
+import { ColorModeContext } from '../utils/useMode';
 
 
 function Root() {
-  const [mode, setMode] = React.useState<PaletteMode>('light');
-  const defaultTheme = createTheme({ palette: { mode } });
-
-  const toggleColorMode = () => {
-    setMode((prev: string) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
+  const theme = useTheme();
+  const colorMode = React.useContext(ColorModeContext);
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <CssBaseline />
-      <TopNavigationBar mode={mode} toggleColorMode={toggleColorMode} />
-      <Box sx={{ bgcolor: 'background.default' }}>
-      </Box>
-    </ThemeProvider>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box sx={{ bgcolor: 'background.default' }}>
+        </Box>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 

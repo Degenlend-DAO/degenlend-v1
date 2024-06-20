@@ -4,10 +4,14 @@ import FrequentlyAskedQuestions from '../FrequentlyAskedQuestions/FrequentlyAske
 import Vote from '../Vote/Vote';
 import Governance from '../Governance/Governance';
 import Footer from '../Footer/Footer';
+import React from 'react';
+import { PaletteMode, createTheme } from '@mui/material';
+import TopNavigationBar from '../Header/TopNavigationBar';
 
 const RoutesComponent = () => {
     return (
         <>
+            <TopNavigationBar />
             <Routes>
                 <Route path='/' element={<Root />} />
                 <Route path='/markets' element={<></>} />

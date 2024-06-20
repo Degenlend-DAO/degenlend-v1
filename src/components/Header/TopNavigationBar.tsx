@@ -14,14 +14,10 @@ import ToggleColorMode from '../../utils/ToggleColorMode'
 import { Link } from 'react-router-dom';
 
 import degenlendLogo from '../../assets/img/degenlend-variation2.png';
+import { useMode } from '../../utils/useMode';
 
-interface AppBarProps {
-    mode: PaletteMode;
-    toggleColorMode: () => void;
-}
-
-function TopNavigationBar({ mode, toggleColorMode }: AppBarProps) {
-
+function TopNavigationBar() {
+    const [theme, colorMode] = useMode();
     const [open, setOpen] = React.useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -130,7 +126,7 @@ function TopNavigationBar({ mode, toggleColorMode }: AppBarProps) {
                                 </MenuItem>
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end', flexGrow: 1 }}>
-                                <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+                                <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
                             </Box>
                         </Box>
                     </Toolbar>
