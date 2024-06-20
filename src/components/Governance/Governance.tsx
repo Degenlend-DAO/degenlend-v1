@@ -16,7 +16,13 @@ const Governance = () => {
 
     return (
         <>
-            <Container maxWidth="lg">
+            <Container maxWidth="lg"             sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                pt: { xs: 14, sm: 20 },
+                pb: { xs: 8, sm: 12 },
+            }}>
                 <Box mt={4}>
                     <Grid container spacing={4} direction={'column'}>
                         <Typography align="left">Governance Overview</Typography>

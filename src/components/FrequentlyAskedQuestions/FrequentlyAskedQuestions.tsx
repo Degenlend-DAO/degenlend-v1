@@ -5,9 +5,17 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { Container } from '@mui/material';
 
 const FrequentlyAskedQuestions = () => {
     return (
+        <Container             sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            pt: { xs: 14, sm: 20 },
+            pb: { xs: 8, sm: 12 },
+        }}>
         <div>
             <Typography textAlign={'center'}>Frequently Asked Questions</Typography>
             <Accordion>
@@ -56,6 +64,7 @@ const FrequentlyAskedQuestions = () => {
                 </AccordionDetails>
             </Accordion>
         </div>
+        </Container>
     );
 }
 
