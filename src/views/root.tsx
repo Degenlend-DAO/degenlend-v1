@@ -7,6 +7,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import TopNavigationBar from '../components/Header/TopNavigationBar';
+import Markets from '../components/Dashboard/markets'
 import Footer from '../components/Footer/Footer';
 import { ColorModeContext } from '../utils/useMode';
 
