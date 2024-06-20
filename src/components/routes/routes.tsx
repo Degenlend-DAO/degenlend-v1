@@ -7,6 +7,7 @@ import Footer from '../Footer/Footer';
 import React from 'react';
 import { PaletteMode, createTheme } from '@mui/material';
 import TopNavigationBar from '../Header/TopNavigationBar';
+import Markets from '../Dashboard/markets';
 
 const RoutesComponent = () => {
     return (
@@ -14,7 +15,7 @@ const RoutesComponent = () => {
             <TopNavigationBar />
             <Routes>
                 <Route path='/' element={<Root />} />
-                <Route path='/markets' element={<></>} />
+                <Route path='/markets' element={<Markets />} />
                 <Route path='/governance' element={<Governance />} />
                 <Route path='/stake' element={<></>} />
                 <Route path='/faq' element={<FrequentlyAskedQuestions />} />
