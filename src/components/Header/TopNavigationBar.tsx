@@ -10,15 +10,10 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
-
 import ToggleColorMode from '../../utils/ToggleColorMode'
 import { Link } from 'react-router-dom';
 
-const logoStyle = {
-    width: '140px',
-    height: 'auto',
-    cursor: 'pointer',
-}
+import degenlendLogo from '../../assets/img/degenlend-variation2.png';
 
 interface AppBarProps {
     mode: PaletteMode;
@@ -85,11 +80,19 @@ function TopNavigationBar({ mode, toggleColorMode }: AppBarProps) {
                                 flexGrow: 1,
                                 display: 'flex',
                                 alignItems: 'center',
-                                ml: '-18px',
+                                ml: '5px',
                                 px: 0,
                             }}
                         >
-                            <img src='../../assets/img/degenlend-variation2.png' style={logoStyle} alt='Degenlend logo' />
+                            <Box
+                                component="img"
+                                sx={{
+                                    height: 40,
+                                    width: 40,
+                                }}
+                                alt="Degenlend Logo"
+                                src={degenlendLogo}
+                            />
 
                             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                                 {/* Supplying & Borrowing Activities on The market */}
