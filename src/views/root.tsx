@@ -1,5 +1,7 @@
-import { Box, PaletteMode } from '@mui/material';
+import { Box, IconButton, PaletteMode, Typography } from '@mui/material';
 import React from 'react'
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 // Design Library
 import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
@@ -10,16 +12,22 @@ import { ColorModeContext } from '../utils/useMode';
 
 
 function Root() {
-  const theme = useTheme();
-  const colorMode = React.useContext(ColorModeContext);
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box sx={{ bgcolor: 'background.default' }}>
-        </Box>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+    <Box
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default',
+        color: 'text.primary',
+        borderRadius: 1,
+        p: 30,
+      }}
+    >
+      <Typography>Hello World!</Typography>
+    </Box>
   );
 }
 

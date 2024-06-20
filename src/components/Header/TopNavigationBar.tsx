@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PaletteMode } from '@mui/material';
+import { PaletteMode, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,10 +14,11 @@ import ToggleColorMode from '../../utils/ToggleColorMode'
 import { Link } from 'react-router-dom';
 
 import degenlendLogo from '../../assets/img/degenlend-variation2.png';
-import { useMode } from '../../utils/useMode';
+import { ColorModeContext, useMode } from '../../utils/useMode';
 
 function TopNavigationBar() {
-    const [theme, colorMode] = useMode();
+    const theme = useTheme();
+    const colorMode = React.useContext(ColorModeContext);
     const [open, setOpen] = React.useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {

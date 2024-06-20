@@ -4,12 +4,21 @@ import './App.css';
 
 import { BrowserRouter } from 'react-router-dom';
 import RoutesComponent from './components/routes/routes';
+import { ThemeProvider, useTheme } from '@emotion/react';
+import { ColorModeContext, useMode } from './utils/useMode';
+import { CssBaseline } from '@mui/material';
 
 function App() {
+  const [theme, colorMode] = useMode();
   return (
-    <BrowserRouter>
-      <RoutesComponent />
-    </BrowserRouter>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <RoutesComponent />
+        </BrowserRouter>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
