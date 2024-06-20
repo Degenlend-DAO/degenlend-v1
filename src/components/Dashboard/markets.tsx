@@ -29,6 +29,18 @@ function createData (
     }
 };
 
+const activeMarkets = [
+    createData(
+        0,
+        'SX Token',
+        '0x0000000000000000',
+        0.00,
+        0.00,
+        0.00,
+        false
+    ),
+];
+
 
 function Markets() {
     return (
@@ -37,8 +49,11 @@ function Markets() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                pt: { xs: 14, sm: 20 },
+                pb: { xs: 8, sm: 12 },
             }} >
-                        <Typography
+        <Title>
+        <Typography
           sx={{ flex: '1 1 100%' }}
           variant="h6"
           id="tableTitle"
@@ -46,6 +61,44 @@ function Markets() {
         >
           Nutrition
         </Typography>
+        </Title>
+        <Table size='medium'>
+            <TableHead>
+                <TableRow>
+                    <TableCell> Asset </TableCell>
+                    <TableCell> Supply APY </TableCell>
+                    <TableCell> Borrow APY </TableCell>
+                    <TableCell> Wallet Balance </TableCell>
+                    <TableCell> Collateral </TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                
+                    {activeMarkets.map(market => (
+                        <TableRow key={market.id}>
+                            <TableCell>
+                                {market.name}
+                            </TableCell>
+                            <TableCell>
+                                {market.tokenString}
+                            </TableCell>
+                            <TableCell>
+                                {market.supplyAPY}
+                            </TableCell>
+                            <TableCell>
+                                {market.borrowAPY}
+                            </TableCell>
+                            <TableCell>
+                                {market.walletBalance}
+                            </TableCell>
+                            <TableCell>
+                                {market.collateral}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                
+            </TableBody>
+        </Table>
             </Container>
     )
 }
