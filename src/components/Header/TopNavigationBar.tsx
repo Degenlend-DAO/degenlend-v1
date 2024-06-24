@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 
 import degenlendLogo from '../../assets/img/degenlend-variation2.png'; // interesting that this fixes the rendering issue
 import { ColorModeContext } from '../../utils/useMode';
+import ConnectWallet from '../../utils/ConnectWallet';
 
 function TopNavigationBar() {
     const theme = useTheme();
@@ -77,6 +78,7 @@ function TopNavigationBar() {
                                 flexGrow: 1,
                                 display: 'flex',
                                 alignItems: 'center',
+                                justifyContent: 'space-between',
                                 ml: '5px',
                                 px: 0,
                             }}
@@ -126,8 +128,9 @@ function TopNavigationBar() {
                                     </Typography>
                                 </MenuItem>
                             </Box>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end', flexGrow: 1 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'end', flexGrow: 1 }}>
                                 <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
+                                <ConnectWallet address={'0x0000000000000000000'} connectWallet={ () => alert('Wallet Connected!')} /> 
                             </Box>
                         </Box>
                     </Toolbar>
