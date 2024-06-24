@@ -9,6 +9,7 @@ import { PaletteMode, createTheme } from '@mui/material';
 import TopNavigationBar from '../Header/TopNavigationBar';
 import Markets from '../Dashboard/markets';
 import Proposals from '../Governance/Proposals';
+import ErrorPage from '../Error/ErrorPage';
 
 const RoutesComponent = () => {
     return (
@@ -22,6 +23,7 @@ const RoutesComponent = () => {
                 <Route path='/stake' element={<></>} />
                 <Route path='/faq' element={<FrequentlyAskedQuestions />} />
                 <Route path='/vote' element={<Vote />} />
+                <Route path='*' element={<ErrorPage />} />
             </Routes>
             <Footer />
         </>
