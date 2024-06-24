@@ -8,6 +8,7 @@ import React from 'react';
 import { PaletteMode, createTheme } from '@mui/material';
 import TopNavigationBar from '../Header/TopNavigationBar';
 import Markets from '../Dashboard/markets';
+import Proposals from '../Governance/Proposals';
 
 const RoutesComponent = () => {
     return (
@@ -17,6 +18,7 @@ const RoutesComponent = () => {
                 <Route path='/' element={<Root />} />
                 <Route path='/markets' element={<Markets />} />
                 <Route path='/governance' element={<Governance />} />
+                <Route path='/governance/proposals/:index' element={<Proposals />} />
                 <Route path='/stake' element={<></>} />
                 <Route path='/faq' element={<FrequentlyAskedQuestions />} />
                 <Route path='/vote' element={<Vote />} />

@@ -59,7 +59,7 @@ const Governance = () => {
                             <Paper elevation={3} style={{ padding: '20px' }}>
                                 <Typography variant="h6">Recent Proposals</Typography>
                                 {proposals.map((proposal, index) => (
-                                    <Link to={`/governance/comp/${index}`} style={{ textDecoration: 'none', color: 'inherit' }} key={index}>
+                                    <Link to={`/governance/proposals/${index}`} style={{ textDecoration: 'none', color: 'inherit' }} key={index}>
                                         <Box my={2}>
                                             <Typography variant="subtitle1">{proposal.title}</Typography>
                                             <Typography variant="body2" color="textSecondary">{proposal.status} • {proposal.time}</Typography>
