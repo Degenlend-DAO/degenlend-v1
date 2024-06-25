@@ -110,11 +110,11 @@ function TopNavigationBar() {
                                 </MenuItem>
 
                                 {/* Turn your WSX into liquistake WSX */}
-                                <MenuItem>
+                                {/* <MenuItem>
                                     <Typography variant='body2' color='text.primary'>
                                         <Link to="/stake">Stake WSX</Link>
                                     </Typography>
-                                </MenuItem>
+                                </MenuItem> */}
 
                                 {/* FAQ for how DegenLend works, and what to expect */}
                                 <MenuItem>
