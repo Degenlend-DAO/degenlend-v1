@@ -16,7 +16,7 @@ const RoutesComponent = () => {
         <>
             <TopNavigationBar />
             <Routes>
-                <Route path='/' element={<Root />} />
+                <Route path='/' element={<Markets />} />
                 <Route path='/markets' element={<Markets />} />
                 <Route path='/governance' element={<Governance />} />
                 <Route path='/governance/proposals/:index' element={<Proposals />} />
