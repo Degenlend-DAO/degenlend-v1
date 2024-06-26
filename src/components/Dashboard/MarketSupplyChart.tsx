@@ -1,4 +1,6 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Box, Grid, Typography } from '@mui/material';
+import { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 // todo(anyone): replace with real data
 const data = [
@@ -20,22 +22,74 @@ const data = [
     { name: 'Aug 10', earning: 0, borrowing: 0, amt: 0 }
 ];
 
-const CustomBarChart = () => (
-    <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-            width={500}
-            height={300}
-            data={data}
-            margin={{
-                top: 5, right: 30, left: 20, bottom: 5,
-            }}
-        >
-            <XAxis dataKey="name" />
-            <YAxis hide />
-            <Bar dataKey="borrowing" fill="#8884d8" barSize={10} />
-            <Bar dataKey="earning" fill="#82ca9d" barSize={10} />
-        </BarChart>
-    </ResponsiveContainer>
-);
+const CustomBarChart = () => {
+    const [totalAmount, setTotalAmount] = useState<number>(data[0].earning + data[0].borrowing);
+    const [earning, setEarning] = useState<number>(data[0].earning);
+    const [borrowing, setBorrowing] = useState<number>(data[0].borrowing);
+
+    const handleMouseOver = (data: any) => {
+        setTotalAmount(data.earning + data.borrowing);
+        setEarning(data.earning);
+        setBorrowing(data.borrowing);
+    };
+
+    return (
+        <>
+            <Box sx={{ border: 1, borderRadius: 2, padding: 2, width: 1000 }}>
+                <Grid container spacing={6}>
+                    <Grid item xs={2}>
+                        <Typography variant="h6" gutterBottom>
+                            Total Supply
+                        </Typography>
+                        <Typography variant="body1">
+                            {totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Typography variant="h6" gutterBottom>
+                            Earning
+                        </Typography>
+                        <Typography variant="body2">
+                            {earning.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Typography variant="h6" gutterBottom>
+                            Borrowing
+                        </Typography>
+                        <Typography variant="body2">
+                            {borrowing.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </Box>
+            <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                    width={500}
+                    height={300}
+                    data={data}
+                    margin={{
+                        top: 5, right: 30, left: 20, bottom: 5,
+                    }}
+                >
+                    <XAxis dataKey="name" />
+                    <YAxis hide />
+                    <Bar
+                        dataKey="borrowing"
+                        fill="#8884d8"
+                        barSize={10}
+                        onMouseOver={(data) => handleMouseOver(data)}
+                    />
+                    <Bar
+                        dataKey="earning"
+                        fill="#82ca9d"
+                        barSize={10}
+                        onMouseOver={(data) => handleMouseOver(data)}
+                    />
+                </BarChart>
+            </ResponsiveContainer>
+        </>
+    );
+}
 
 export default CustomBarChart;
