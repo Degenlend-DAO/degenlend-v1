@@ -33,7 +33,7 @@ const TopNavigationBar = () => {
                 bgcolor:
                     theme.palette.mode === 'light'
                         ? 'rgba(66, 165, 245)'
-                        : 'rgba(0, 0, 0, 0.4)',
+                        : 'rgba(0, 0, 0, 1)',
             })}
         >
             <Container maxWidth='lg'>
