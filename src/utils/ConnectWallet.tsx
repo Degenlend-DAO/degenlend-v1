@@ -8,15 +8,13 @@ interface ConnectWalletProps {
 }
 
 
-function ConnectWallet ({ address, connectWallet } : ConnectWalletProps ) {
-
-
+const ConnectWallet = ({ address, connectWallet }: ConnectWalletProps) => {
     return (
         <Box sx={{ maxWidth: '200px' }}>
             <Button
-             variant='outlined'
-              onClick={connectWallet}
-               size="medium">
+                variant='contained'
+                onClick={connectWallet}
+                size="medium">
                 Connect Wallet
             </Button>
         </Box>
