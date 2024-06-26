@@ -35,7 +35,7 @@ const CustomBarChart = () => {
 
     return (
         <>
-            <Box sx={{ border: 1, borderRadius: 2, padding: 2, width: 1000 }}>
+            <Box width={1000} display={'flex'} alignItems={'center'}>
                 <Grid container spacing={6}>
                     <Grid item xs={2}>
                         <Typography variant="h6" gutterBottom>
