@@ -11,9 +11,10 @@ import { Box, Container, Switch, Typography } from '@mui/material';
 // SX Token
 import sxTokenLogo from '../../assets/img/sx_coin_token.png'
 import usdcTokenLogo from '../../assets/img/usdc_coin_token.png'
+import CustomBarChart from './MarketSupplyChart';
 
 // Generate Markets Data
-function createData (
+function createData(
     id: number,
     name: string,
     img: string,
@@ -70,40 +71,30 @@ function Markets() {
                 pt: { xs: 14, sm: 20 },
                 pb: { xs: 8, sm: 12 },
             }} >
-        {/* <Title>
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Markets
-        </Typography>
-        </Title> */}
-        <Table size='medium'>
-            <TableHead>
-                <TableRow>
-                    <TableCell> Asset </TableCell>
-                    <TableCell> Supply APY </TableCell>
-                    <TableCell> Borrow APY </TableCell>
-                    <TableCell> Wallet Balance </TableCell>
-                    <TableCell> Collateral </TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                
+            <CustomBarChart />
+            <Table size='medium'>
+                <TableHead>
+                    <TableRow>
+                        <TableCell> Asset </TableCell>
+                        <TableCell> Supply APY </TableCell>
+                        <TableCell> Borrow APY </TableCell>
+                        <TableCell> Wallet Balance </TableCell>
+                        <TableCell> Collateral </TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
                     {activeMarkets.map(market => (
                         <TableRow key={market.id}>
                             <TableCell>
-                            <Box
-                                component="img"
-                                sx={{
-                                    height: 20,
-                                    width: 25,
-                                }}
-                                alt={`${market.name} Logo`}
-                                src={sxTokenLogo}
-                            /> {market.name}
+                                <Box
+                                    component="img"
+                                    sx={{
+                                        height: 20,
+                                        width: 25,
+                                    }}
+                                    alt={`${market.name} Logo`}
+                                    src={sxTokenLogo}
+                                /> {market.name}
                             </TableCell>
                             <TableCell>
                                 {market.supplyAPY}
@@ -119,10 +110,10 @@ function Markets() {
                             </TableCell>
                         </TableRow>
                     ))}
-                
-            </TableBody>
-        </Table>
-            </Container>
+
+                </TableBody>
+            </Table>
+        </Container>
     )
 }
 
