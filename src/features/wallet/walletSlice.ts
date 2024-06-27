@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { wallets } from '../../utils/web3'
 import { EMPTY_ADDRESS } from "../../utils/constant";
 
 interface WalletState {
