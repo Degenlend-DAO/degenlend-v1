@@ -16,14 +16,17 @@ const initialState: WalletState = {
     isConnected: false,
 }
 
-export const connectWallet = createAsyncThunk('wallet/connect', async () => {
-    const wallets = await onboard.connectWallet()
+export const connectWallet = createAsyncThunk('wallet/connect', async () => {    
+    const wallets = await onboard.connectWallet();
+    console.log(`Connected wallets: ${wallets} & main address: ${wallets[0]}`)
 
-    console.log(wallets)
+    return `${wallets[0]}`;
     });
 
 export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () => {
-
+    const [primaryWallet] = onboard.state.get().wallets
+    await onboard.disconnectWallet({ label: primaryWallet.label })
+    console.log(EMPTY_ADDRESS);
 });
 
 export const walletSlice = createSlice({
@@ -40,6 +43,7 @@ export const walletSlice = createSlice({
             state.error = '';
         })
         builder.addCase(connectWallet.fulfilled, (state, action) => {
+            state.address = action.payload;
             state.loading = false;
             state.error = '';
         })
