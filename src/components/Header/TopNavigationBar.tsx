@@ -17,14 +17,27 @@ import degenlendLogo from '../../assets/img/degenlend-variation2.png'; // intere
 import { ColorModeContext } from '../../utils/useMode';
 import ConnectWallet from '../../utils/ConnectWallet';
 
+
+// Action Items
+import { connectWallet, disconnectWallet } from '../../features/wallet/walletSlice';
+import { AppDispatch, RootState } from "../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+
+ 
+
 const TopNavigationBar = () => {
     const theme = useTheme();
     const colorMode = React.useContext(ColorModeContext);
-    const [open, setOpen] = React.useState(false);
 
-    const toggleDrawer = (newOpen: boolean) => () => {
-        setOpen(newOpen);
-    };
+    const dispatch = useDispatch<AppDispatch>();
+
+    const onConnectWallet = () => {
+        dispatch( connectWallet() );
+    }
+
+    const onDisconnectWallet = () => {
+        dispatch( disconnectWallet() );
+    }
 
     return (
         <AppBar
