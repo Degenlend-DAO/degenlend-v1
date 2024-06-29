@@ -8,14 +8,14 @@ import injectedModule from '@web3-onboard/injected-wallets';
 
 // Wallet utils
 
-const injected = injectedModule()
-const onboard = Onboard({
+const injected = injectedModule();
+export const onboard = Onboard({
     wallets: [injected],
     chains: [
         {
             id: '647',
             token: 'SX',
-            label: 'SX Testnetg',
+            label: 'SX Testnet',
             rpcUrl: 'https://rpc.toronto.sx.technology/'
           },
           {
@@ -32,6 +32,3 @@ const onboard = Onboard({
           },
     ]
 });
-
-
-export const wallets = await onboard.connectWallet();
