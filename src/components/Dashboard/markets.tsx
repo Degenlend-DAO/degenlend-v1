@@ -71,7 +71,7 @@ function Markets() {
                 pt: { xs: 14, sm: 20 },
                 pb: { xs: 8, sm: 12 },
             }} >
-            <CustomBarChart />
+            {/* <CustomBarChart /> */}
             <Table size='medium'>
                 <TableHead>
                     <TableRow>
