@@ -22,6 +22,7 @@ import ConnectWallet from '../../utils/ConnectWallet';
 import { connectWallet, disconnectWallet } from '../../features/wallet/walletSlice';
 import { AppDispatch, RootState } from "../../app/Store";
 import { useDispatch, useSelector } from "react-redux";
+import { EMPTY_ADDRESS } from '../../utils/constant';
 
  
 
@@ -104,7 +105,7 @@ const TopNavigationBar = () => {
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'end', flexGrow: 1 }}>
                             <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
-                            <ConnectWallet address={'0x0000000000000000000'} connectWallet={() => alert('Wallet Connected!')} />
+                            <ConnectWallet address={EMPTY_ADDRESS} connectWallet={onConnectWallet} />
                         </Box>
                     </Box>
                 </Toolbar>
