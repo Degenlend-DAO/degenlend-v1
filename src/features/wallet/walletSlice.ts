@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { wallets } from '../../utils/web3'
+import { onboard } from '../../utils/web3'
 import { EMPTY_ADDRESS } from "../../utils/constant";
 
 interface WalletState {
@@ -16,9 +16,15 @@ const initialState: WalletState = {
     isConnected: false,
 }
 
-export const connectWallet = createAsyncThunk('wallet/connect', async () => {});
+export const connectWallet = createAsyncThunk('wallet/connect', async () => {
+    const wallets = await onboard.connectWallet()
 
-export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () => {});
+    console.log(wallets)
+    });
+
+export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () => {
+
+});
 
 export const walletSlice = createSlice({
     name: 'wallet',
