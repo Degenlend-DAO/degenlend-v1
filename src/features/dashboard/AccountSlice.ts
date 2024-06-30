@@ -21,6 +21,18 @@ const initialState: AccountState = {
     netSupplyBalance: 0
 }
 
+// Views
+
+export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', () => {})
+
+export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update', () => {})
+
+export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', () => {})
+
+export const updateNetAPR = createAsyncThunk('netAPR/update', () => {})
+
+// Activities
+
 
 
 export const AccountSlice = createSlice({
