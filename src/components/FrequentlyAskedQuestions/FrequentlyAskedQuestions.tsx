@@ -28,7 +28,7 @@ const FrequentlyAskedQuestions = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Degenlend is a decentralized lending protocol hosted on SX Network.  You can now deposit your Wrapped SX & USDC tokens & take out loans against them.
+                        Degenlend is a decentralized lending protocol hosted on SX Network.  You deposit your Wrapped SX & USDC tokens to take out loans against them.
                     </Typography>
                 </AccordionDetails>
             </Accordion>
