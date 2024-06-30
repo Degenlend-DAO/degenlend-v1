@@ -13,22 +13,16 @@ export const onboard = Onboard({
     wallets: [injected],
     chains: [
         {
-            id: '647',
+            id: '0x287', // 647 in hex
             token: 'SX',
             label: 'SX Testnet',
             rpcUrl: 'https://rpc.toronto.sx.technology/'
           },
           {
-            id: '416',
+            id: '0x1A0', // 416 in hex
             token: 'SX',
             label: 'SX Network',
             rpcUrl: 'https://rpc.sx.technology/'
-          },
-          {
-            id: '1',
-            token: 'ETH',
-            label: 'Ethereum',
-            rpcUrl: 'https://cloudflare-eth.com'
           },
     ]
 });
