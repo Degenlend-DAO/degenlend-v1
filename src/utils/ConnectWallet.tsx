@@ -1,22 +1,13 @@
-import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { connectWallet, disconnectWallet } from '../features/wallet/walletSlice';
 import { AppDispatch, RootState } from "../app/Store";
-import { EMPTY_ADDRESS } from './constant';
-
-interface ConnectWalletProps {
-    address: string;
-    connectWallet: () => void;
-}
-
 
 const ConnectWallet = () => {
 
     const isWalletConnected = useSelector((state: RootState) => state.wallet.isConnected);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const emptyAddress = EMPTY_ADDRESS;
 
     const filteredWalletAddress = (address: string | undefined) => {
         const size = address!.length;
@@ -45,8 +36,7 @@ const ConnectWallet = () => {
                 onClick={onDisconnectWallet}
                 size='medium'>
                 {filteredWalletAddress(walletAddress)}
-            </Button> 
-
+            </Button>
             :
             <Button
                 variant='contained'
