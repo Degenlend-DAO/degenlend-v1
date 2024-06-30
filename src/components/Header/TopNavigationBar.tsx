@@ -21,8 +21,7 @@ import ConnectWallet from '../../utils/ConnectWallet';
 // Action Items
 import { connectWallet, disconnectWallet } from '../../features/wallet/walletSlice';
 import { AppDispatch, RootState } from "../../app/Store";
-import { useDispatch, useSelector } from "react-redux";
-import { EMPTY_ADDRESS } from '../../utils/constant';
+
 
  
 
@@ -30,15 +29,6 @@ const TopNavigationBar = () => {
     const theme = useTheme();
     const colorMode = React.useContext(ColorModeContext);
 
-    const dispatch = useDispatch<AppDispatch>();
-
-    const onConnectWallet = () => {
-        dispatch( connectWallet() );
-    }
-
-    const onDisconnectWallet = () => {
-        dispatch( disconnectWallet() );
-    }
 
     return (
         <AppBar
@@ -105,7 +95,7 @@ const TopNavigationBar = () => {
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'end', flexGrow: 1 }}>
                             <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
-                            <ConnectWallet address={EMPTY_ADDRESS} connectWallet={onConnectWallet} />
+                            <ConnectWallet />
                         </Box>
                     </Box>
                 </Toolbar>
