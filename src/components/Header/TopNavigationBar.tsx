@@ -17,14 +17,18 @@ import degenlendLogo from '../../assets/img/degenlend-variation2.png'; // intere
 import { ColorModeContext } from '../../utils/useMode';
 import ConnectWallet from '../../utils/ConnectWallet';
 
+
+// Action Items
+import { connectWallet, disconnectWallet } from '../../features/wallet/walletSlice';
+import { AppDispatch, RootState } from "../../app/Store";
+
+
+ 
+
 const TopNavigationBar = () => {
     const theme = useTheme();
     const colorMode = React.useContext(ColorModeContext);
-    const [open, setOpen] = React.useState(false);
 
-    const toggleDrawer = (newOpen: boolean) => () => {
-        setOpen(newOpen);
-    };
 
     return (
         <AppBar
@@ -91,7 +95,7 @@ const TopNavigationBar = () => {
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'end', flexGrow: 1 }}>
                             <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
-                            <ConnectWallet address={'0x0000000000000000000'} connectWallet={() => alert('Wallet Connected!')} />
+                            <ConnectWallet />
                         </Box>
                     </Box>
                 </Toolbar>
