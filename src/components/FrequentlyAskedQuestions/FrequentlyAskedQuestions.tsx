@@ -61,7 +61,20 @@ const FrequentlyAskedQuestions = () => {
                     </Typography>
                 </AccordionDetails>
             </Accordion>
-
+            <Accordion>
+            <AccordionSummary
+                    expandIcon={<ArrowDropDownIcon />}
+                    aria-controls='panel2-content'
+                    id='panel2-header'>
+                        <Typography>How Can I contribute to Degenlend?</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography>
+                    You can suggest new markets, and other improvements to the Degenlend protocol on the Improvements Proposal Repository.
+                    Check it out on our Github <a href="https://github.com/Degenlend-DAO/DIPs">here.</a>
+                </Typography>
+            </AccordionDetails>
+            </Accordion>
         </div>
         </Container>
     );
