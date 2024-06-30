@@ -18,15 +18,17 @@ const initialState: WalletState = {
 
 export const connectWallet = createAsyncThunk('wallet/connect', async () => {    
     const wallets = await onboard.connectWallet();
-    console.log(`Connected wallets: $wallets & main address: $wallets[0]`)
+    console.log(`Connected wallets: $wallets & main address: ${wallets[0].accounts[0].address}`)
 
     return wallets[0].accounts[0].address;
     });
 
 export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () => {
-    const [primaryWallet] = onboard.state.get().wallets
-    await onboard.disconnectWallet({ label: primaryWallet.label })
-    console.log(EMPTY_ADDRESS);
+
+    const [wallet] = onboard.state.get().wallets
+    await onboard.disconnectWallet({ label: wallet.label }) // JSON error occurs, but the wallet still disconnects.
+
+    return EMPTY_ADDRESS;
 });
 
 export const walletSlice = createSlice({
@@ -48,7 +50,19 @@ export const walletSlice = createSlice({
             state.loading = false;
             state.error = '';
         })
+        builder.addCase(disconnectWallet.rejected, (state, action) => {
+            alert(`Wallet disconnected is rejected: ${action.error.message!}`);
+            state.address = EMPTY_ADDRESS;
+            state.isConnected = false;
+            state.loading = false;
+            state.error = action.error.message!;
+        })
+        builder.addCase(disconnectWallet.pending, (state) => {
+            state.loading = true;
+            state.error = '';
+        })
         builder.addCase(disconnectWallet.fulfilled, (state, action) => {
+            alert('disconnecting wallet thunk executed!')
             state.loading = false;
             state.isConnected = false;
             state.address = EMPTY_ADDRESS;
