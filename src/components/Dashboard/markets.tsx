@@ -1,17 +1,17 @@
-import React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Title } from '@mui/icons-material';
-import { Box, Container, Switch, Typography } from '@mui/material';
+import { Box, Button, Container, Switch } from '@mui/material';
 
-// SX Token
+// Token Logos
 import sxTokenLogo from '../../assets/img/sx_coin_token.png'
 import usdcTokenLogo from '../../assets/img/usdc_coin_token.png'
 import CustomBarChart from './MarketSupplyChart';
+
+// Action Items
+import { useDispatch, useSelector } from 'react-redux';
 
 // Generate Markets Data
 function createData(
@@ -23,6 +23,7 @@ function createData(
     borrowAPY: number,
     walletBalance: number,
     collateral: boolean,
+    oraclePrice: number,
 ) {
     return {
         id,
@@ -32,7 +33,8 @@ function createData(
         supplyAPY,
         borrowAPY,
         walletBalance,
-        collateral
+        collateral,
+        oraclePrice,
     }
 };
 
@@ -46,7 +48,8 @@ const activeMarkets = [
         2.00,
         5.00,
         4000,
-        false
+        false,
+        0.10
     ),
     createData(
         0,
@@ -56,12 +59,34 @@ const activeMarkets = [
         2.00,
         5.00,
         100000,
-        true
+        true,
+        1.00
     )
 ];
 
 
 function Markets() {
+
+    const usdcSupplyAPY = 0;
+    const usdcBorrowAPY = 0;
+    const usdcWalletBalance = 0;
+    const usdcCollateral = true;
+    const usdcOraclePrice = 0;
+
+    const wsxSupplyAPY = 0;
+    const wsxBorrowAPY = 0;
+    const wsxWalletBalance = 0;
+    const wsxCollateral = false;
+    const wsxOraclePrice = 0;
+
+    const toggleWSXCollateral = () => {
+        alert(`Toggling WSX from ${wsxCollateral} to ${!wsxCollateral}`)
+    }
+
+    const toggleUSDCCollateral = () => {
+        alert(`Toggling USDC from ${usdcCollateral} to ${!usdcCollateral}`)
+    }
+
     return (
         <Container
             sx={{
@@ -80,36 +105,76 @@ function Markets() {
                         <TableCell> Borrow APY </TableCell>
                         <TableCell> Wallet Balance </TableCell>
                         <TableCell> Collateral </TableCell>
+                        <TableCell> Oracle Price </TableCell>
+                        <TableCell> Supply / Borrow</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {activeMarkets.map(market => (
-                        <TableRow key={market.id}>
-                            <TableCell>
-                                <Box
-                                    component="img"
-                                    sx={{
-                                        height: 20,
-                                        width: 25,
-                                    }}
-                                    alt={`${market.name} Logo`}
-                                    src={sxTokenLogo}
-                                /> {market.name}
-                            </TableCell>
-                            <TableCell>
-                                {market.supplyAPY}
-                            </TableCell>
-                            <TableCell>
-                                {market.borrowAPY}
-                            </TableCell>
-                            <TableCell>
-                                {market.walletBalance}
-                            </TableCell>
-                            <TableCell>
-                                <Switch />
-                            </TableCell>
-                        </TableRow>
-                    ))}
+
+
+                    {/* Wrapped SX Market Details */}
+                    <TableRow>
+                        <TableCell>
+                            <Box 
+                                component="img"
+                                sx={{ height: 30, width: 35}}
+                                alt={`Wrapped SX Logo`}
+                                src={sxTokenLogo}>  
+                            </Box>
+                        </TableCell>
+                        <TableCell>
+                            {wsxSupplyAPY}%
+                        </TableCell>
+                        <TableCell>
+                            {wsxBorrowAPY}%
+                        </TableCell>
+                        <TableCell>
+                            {wsxWalletBalance} WSX
+                        </TableCell>
+                        <TableCell>
+                            <Switch checked={wsxCollateral} onChange={toggleWSXCollateral}/>
+                        </TableCell>
+                        <TableCell>
+                            {wsxOraclePrice}
+                        </TableCell>
+                        <TableCell>
+                            <Button onClick={() => alert(`Supplying and borrowing!`)}>
+                                Supply/Borrow
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+
+                    {/* USDC Market Details */}
+                    <TableRow>
+                    <TableCell>
+                            <Box 
+                                component="img"
+                                sx={{ height: 35, width: 35}}
+                                alt={`USDC Logo`}
+                                src={usdcTokenLogo}>  
+                            </Box>
+                        </TableCell>
+                        <TableCell>
+                            {usdcSupplyAPY}%
+                        </TableCell>
+                        <TableCell>
+                            {usdcBorrowAPY}%
+                        </TableCell>
+                        <TableCell>
+                            {usdcWalletBalance} USDC
+                        </TableCell>
+                        <TableCell>
+                            <Switch checked={usdcCollateral} onChange={toggleUSDCCollateral}/>
+                        </TableCell>
+                        <TableCell>
+                            {usdcOraclePrice}
+                        </TableCell>
+                        <TableCell>
+                            <Button onClick={() => alert(`Supplying and borrowing!`)}>
+                                Supply/Borrow
+                            </Button>
+                        </TableCell>
+                    </TableRow>
 
                 </TableBody>
             </Table>
