@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 
 interface USDCState {
+    loading: boolean;
+    error: string;
     status: string,
     walletBalance: number,
     borrowBalance: number,
@@ -12,6 +14,8 @@ interface USDCState {
 }
 
 const initialState: USDCState = {
+    loading: false,
+    error: "",
     status: 'initial',
     borrowRate: 0.00,
     borrowBalance: 0.00,
@@ -23,6 +27,21 @@ const initialState: USDCState = {
 
 // Views
 
+export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async () => {
+    return 102003.00;
+});
+
+export const updateOraclePrice = createAsyncThunk('usdcOraclePrice/update', async () => {
+    return 1.00;
+})
+
+export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {});
+
+export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {});
+
+export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {});
+
+export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {});
 
 // Activities
 
@@ -39,6 +58,7 @@ export const USDCSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
+        // Views
     }
 });
 
