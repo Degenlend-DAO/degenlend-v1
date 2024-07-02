@@ -28,8 +28,7 @@ const FrequentlyAskedQuestions = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                        malesuada lacus ex, sit amet blandit leo lobortis eget.
+                        Degenlend is a decentralized lending protocol hosted on SX Network.  You deposit your Wrapped SX & USDC tokens to take out loans against them.
                     </Typography>
                 </AccordionDetails>
             </Accordion>
@@ -43,8 +42,8 @@ const FrequentlyAskedQuestions = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                        malesuada lacus ex, sit amet blandit leo lobortis eget.
+                        Degenlend is built using smart contract technology, relying on a system of money makets and price oracles to accurately determine loan prices & liquidation thresholds.
+                        Learn more in our docs <a href="https://docs.degenlend.xyz/">here.</a>
                     </Typography>
                 </AccordionDetails>
             </Accordion>
@@ -58,10 +57,23 @@ const FrequentlyAskedQuestions = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                        malesuada lacus ex, sit amet blandit leo lobortis eget.
+                        All blockchain-based lending protocols face inherent risks associated with their uses.  Use this product at your own risk,  don't put in more than you're willing to lose.
                     </Typography>
                 </AccordionDetails>
+            </Accordion>
+            <Accordion>
+            <AccordionSummary
+                    expandIcon={<ArrowDropDownIcon />}
+                    aria-controls='panel2-content'
+                    id='panel2-header'>
+                        <Typography>How Can I contribute to Degenlend?</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography>
+                    You can suggest new markets, and other improvements to the Degenlend protocol on the Improvements Proposal Repository.
+                    Check it out on our Github <a href="https://github.com/Degenlend-DAO/DIPs">here.</a>
+                </Typography>
+            </AccordionDetails>
             </Accordion>
         </div>
         </Container>
