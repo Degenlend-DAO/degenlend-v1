@@ -10,7 +10,8 @@ interface WSXState {
     borrowRate: number,
     supplyBalance: number,
     supplyRate: number,
-    collateral: boolean,
+    isCollateral: boolean,
+    oraclePrice: number,
 }
 
 const initialState: WSXState = {
@@ -22,7 +23,8 @@ const initialState: WSXState = {
     walletBalance: 0.00,
     supplyBalance: 0.00,
     supplyRate: 0.00,
-    collateral: false
+    isCollateral: false,
+    oraclePrice: 1.0000
 }
 
 // Views
