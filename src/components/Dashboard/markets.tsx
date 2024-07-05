@@ -12,6 +12,7 @@ import CustomBarChart from './MarketSupplyChart';
 
 // Action Items
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../app/Store';
 
 // Generate Markets Data
 function createData(
@@ -67,17 +68,19 @@ const activeMarkets = [
 
 function Markets() {
 
-    const usdcSupplyAPY = 0;
-    const usdcBorrowAPY = 0;
-    const usdcWalletBalance = 0;
-    const usdcCollateral = true;
-    const usdcOraclePrice = 0;
+    const dispatch = useDispatch<AppDispatch>();
 
-    const wsxSupplyAPY = 0;
-    const wsxBorrowAPY = 0;
-    const wsxWalletBalance = 0;
-    const wsxCollateral = false;
-    const wsxOraclePrice = 0;
+    const usdcSupplyAPY = useSelector((state: RootState) => state.usdc.supplyRate);
+    const usdcBorrowAPY = useSelector((state: RootState) => state.usdc.borrowRate);;
+    const usdcWalletBalance = useSelector((state: RootState) => state.usdc.walletBalance);;
+    const usdcCollateral = useSelector((state: RootState) => state.usdc.isCollateral);
+    const usdcOraclePrice = useSelector((state: RootState) => state.usdc.oraclePrice);
+
+    const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
+    const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
+    const wsxWalletBalance = useSelector((state: RootState) => state.wsx.walletBalance);
+    const wsxCollateral = useSelector((state: RootState) => state.wsx.isCollateral);
+    const wsxOraclePrice = useSelector((state: RootState) => state.wsx.oraclePrice);
 
     const toggleWSXCollateral = () => {
         alert(`Toggling WSX from ${wsxCollateral} to ${!wsxCollateral}`)
