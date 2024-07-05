@@ -1,10 +1,19 @@
-import walletReducer from '../features/wallet/walletSlice';
+// Libraries
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 
+// Reducers
+import walletReducer from '../features/wallet/walletSlice'
+import usdcReducer from '../features/dashboard/USDCMarketSlice'
+import wsxReducer from '../features/dashboard/WSXMarketSlice'
+import accountReducer from '../features/dashboard/AccountSlice'
+
 export const store = configureStore({
     reducer: {
+        account: accountReducer,
         wallet: walletReducer,
+        usdc: usdcReducer,
+        wsx: wsxReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
