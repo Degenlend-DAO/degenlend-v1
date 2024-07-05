@@ -42,13 +42,24 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
 export const updateSupplyRate = createAsyncThunk('wsxSupplyRate/update', async () => {});
 
 export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async () => {});
+
+
 // Activities
 
+///////////  Approve WSX Thunks
+export const approveWSX = createAsyncThunk('wsx/approve', async () => {})
 
 ///////////  Supply Market Thunks
+export const supplyWSX = createAsyncThunk('wsx/supply', async () => {})
 
+export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {})
 
 ///////////  Borrow Market Thunks
+export const repayWSX = createAsyncThunk('wsx/repay', async () => {})
+
+export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {})
+
+
 
 
 /// Exporting the Slice

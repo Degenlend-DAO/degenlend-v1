@@ -45,12 +45,20 @@ export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async 
 
 // Activities
 
+///////////  Supply Market Thunks
+export const approveUSDC = createAsyncThunk('usdc/Approve', async () => {})
 
 ///////////  Supply Market Thunks
 
+export const supplyUSDC = createAsyncThunk('usdc/Supply', async () => {})
+
+export const withdrawUSDC = createAsyncThunk('uscd/withdraw', async () => {})
 
 ///////////  Borrow Market Thunks
 
+export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {})
+
+export const repayUSDC = createAsyncThunk('usdc/repay', async () => {})
 
 /// Exporting the Slice
 export const USDCSlice = createSlice({
