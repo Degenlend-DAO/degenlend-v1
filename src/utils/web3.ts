@@ -26,3 +26,18 @@ export const onboard = Onboard({
           },
     ]
 });
+
+
+// USDC, WSX, and Comptroller addresses
+export const testnet_addresses = {
+  "comptroller": '',
+  "degenUSDC": '',
+  "degenWSX": '',
+}
+
+export const mainnet_addresses = {
+  "comptroller": '',
+  "degenUSDC": '',
+  "degenWSX": ''
+}
+
