@@ -30,13 +30,15 @@ export const onboard = Onboard({
 
 // USDC, WSX, and Comptroller addresses
 export const testnet_addresses = {
-  "comptroller": '',
-  "degenUSDC": '',
-  "degenWSX": '',
+  "comptroller": '0x8D1230e6Ae4C1Bc573697D93103349C3FDefC944',
+  "price_oracle": '',
+  "degenUSDC": '0xC863E82CD46296F1F81C63cDEB3708505B5b0d97',
+  "degenWSX": '0x5cB7786A478eEc37Da5F6EA2e946cD860E784743',
 }
 
 export const mainnet_addresses = {
   "comptroller": '',
+  "price_oracle": '',
   "degenUSDC": '',
   "degenWSX": ''
 }
