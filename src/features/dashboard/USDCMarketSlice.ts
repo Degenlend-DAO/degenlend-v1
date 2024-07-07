@@ -37,13 +37,21 @@ export const updateOraclePrice = createAsyncThunk('usdcOraclePrice/update', asyn
     return 1.00;
 })
 
-export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {});
+export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
+    return 1000;
+});
 
-export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {});
+export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
+    return 14002;
+});
 
-export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {});
+export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {
+    return 0o413;
+});
 
-export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {});
+export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {
+    return 0o213;
+});
 
 // Activities
 
