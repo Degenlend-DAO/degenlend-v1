@@ -46,22 +46,22 @@ const TopNavigationBar = () => {
                 <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                     <MenuItem>
                         <Typography variant="body2" color="text.primary">
-                            <Link to="/markets">Markets</Link>
+                            <Link to="/markets" style={{textDecoration: "none"}}>Markets</Link>
                         </Typography>
                     </MenuItem>
                     <MenuItem>
                         <Typography variant='body2' color='text.primary'>
-                            <Link to="/governance">Governance</Link>
+                            <Link to="/governance" style={{textDecoration: "none"}}>Governance</Link>
                         </Typography>
                     </MenuItem>
                     <MenuItem>
                         <Typography variant="body2" color="text.primary">
-                            <Link to="/faq">FAQ</Link>
+                            <Link to="/faq" style={{textDecoration: "none"}}>FAQ</Link>
                         </Typography>
                     </MenuItem>
                     <MenuItem>
                         <Typography variant='body2' color='text.primary'>
-                            <Link to="/vote">Vote</Link>
+                            <Link to="/vote" style={{textDecoration: "none"}}>Vote</Link>
                         </Typography>
                     </MenuItem>
                 </Box>
