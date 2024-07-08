@@ -16,12 +16,12 @@ const initialState: WalletState = {
     isConnected: false,
 }
 
-export const connectWallet = createAsyncThunk('wallet/connect', async () => {    
+export const connectWallet = createAsyncThunk('wallet/connect', async () => {
     const wallets = await onboard.connectWallet();
     console.log(`Connected wallets: $wallets & main address: ${wallets[0].accounts[0].address}`)
 
     return wallets[0].accounts[0].address;
-    });
+});
 
 export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () => {
 
