@@ -51,7 +51,6 @@ export const walletSlice = createSlice({
             state.error = '';
         })
         builder.addCase(disconnectWallet.rejected, (state, action) => {
-            alert(`Wallet disconnected is rejected: ${action.error.message!}`);
             state.address = EMPTY_ADDRESS;
             state.isConnected = false;
             state.loading = false;
@@ -62,7 +61,6 @@ export const walletSlice = createSlice({
             state.error = '';
         })
         builder.addCase(disconnectWallet.fulfilled, (state, action) => {
-            alert('disconnecting wallet thunk executed!')
             state.loading = false;
             state.isConnected = false;
             state.address = EMPTY_ADDRESS;
