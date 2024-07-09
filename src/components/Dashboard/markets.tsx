@@ -3,7 +3,8 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Box, Button, Container, Switch } from '@mui/material';
+import { Box, Button, Container, InputAdornment, Paper, Switch, TableContainer, TextField, Typography } from '@mui/material';
+import { Search } from '@mui/icons-material';
 
 // Token Logos
 import sxTokenLogo from '../../assets/img/sx_coin_token.png'
@@ -100,6 +101,32 @@ function Markets() {
                 pb: { xs: 8, sm: 12 },
             }} >
             {/* <CustomBarChart /> */}
+            <TableContainer component={Paper}>
+                <Table size='medium'>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={2}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant='h5'>Markets</Typography>
+                                    <TextField
+                                        placeholder="Search By Market"
+                                        type="search"
+                                        variant="filled"
+                                        size='small'
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position='start'>
+                                                    <Search />
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                </Box>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
             <Table size='medium'>
                 <TableHead>
                     <TableRow>
@@ -113,16 +140,14 @@ function Markets() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-
-
                     {/* Wrapped SX Market Details */}
                     <TableRow>
                         <TableCell>
-                            <Box 
+                            <Box
                                 component="img"
-                                sx={{ height: 30, width: 35}}
+                                sx={{ height: 30, width: 35 }}
                                 alt={`Wrapped SX Logo`}
-                                src={sxTokenLogo}>  
+                                src={sxTokenLogo}>
                             </Box>
                         </TableCell>
                         <TableCell>
@@ -135,7 +160,7 @@ function Markets() {
                             {wsxWalletBalance} WSX
                         </TableCell>
                         <TableCell>
-                            <Switch checked={wsxCollateral} onChange={toggleWSXCollateral}/>
+                            <Switch checked={wsxCollateral} onChange={toggleWSXCollateral} />
                         </TableCell>
                         <TableCell>
                             {wsxOraclePrice}
@@ -146,15 +171,14 @@ function Markets() {
                             </Button>
                         </TableCell>
                     </TableRow>
-
                     {/* USDC Market Details */}
                     <TableRow>
-                    <TableCell>
-                            <Box 
+                        <TableCell>
+                            <Box
                                 component="img"
-                                sx={{ height: 35, width: 35}}
+                                sx={{ height: 35, width: 35 }}
                                 alt={`USDC Logo`}
-                                src={usdcTokenLogo}>  
+                                src={usdcTokenLogo}>
                             </Box>
                         </TableCell>
                         <TableCell>
@@ -167,7 +191,7 @@ function Markets() {
                             {usdcWalletBalance} USDC
                         </TableCell>
                         <TableCell>
-                            <Switch checked={usdcCollateral} onChange={toggleUSDCCollateral}/>
+                            <Switch checked={usdcCollateral} onChange={toggleUSDCCollateral} />
                         </TableCell>
                         <TableCell>
                             {usdcOraclePrice}
@@ -178,12 +202,10 @@ function Markets() {
                             </Button>
                         </TableCell>
                     </TableRow>
-
                 </TableBody>
             </Table>
         </Container>
     )
 }
-
 
 export default Markets
