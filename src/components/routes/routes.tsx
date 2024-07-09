@@ -18,11 +18,11 @@ const RoutesComponent = () => {
             <Routes>
                 <Route path='/' element={<Markets />} />
                 <Route path='/markets' element={<Markets />} />
-                <Route path='/governance' element={<Governance />} />
-                <Route path='/governance/proposals/:index' element={<Proposals />} />
+                {/* <Route path='/governance' element={<Governance />} />
+                <Route path='/governance/proposals/:index' element={<Proposals />} /> */}
                 <Route path='/stake' element={<></>} />
                 <Route path='/faq' element={<FrequentlyAskedQuestions />} />
-                <Route path='/vote' element={<Vote />} />
+                {/* <Route path='/vote' element={<Vote />} /> */}
                 <Route path='*' element={<ErrorPage />} />
             </Routes>
             <Footer />
