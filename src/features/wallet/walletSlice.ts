@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { onboard } from '../../utils/web3'
 import { EMPTY_ADDRESS } from "../../utils/constant";
+import { ethers } from "ethers";
 
 interface WalletState {
     address: string;
@@ -30,6 +31,20 @@ export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () =
 
     return EMPTY_ADDRESS;
 });
+
+export const signTransaction = createAsyncThunk('wallet/sign', async () => {
+    const [wallet] = onboard.state.get().wallets;
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+    // send a transaction with the ethers provider
+    const txn = await signer.sendTransaction({
+        to: '0x',
+        value: 100000000000000
+    })
+
+    const receipt = await txn.wait()
+    console.log(receipt)
+})
 
 export const walletSlice = createSlice({
     name: 'wallet',
