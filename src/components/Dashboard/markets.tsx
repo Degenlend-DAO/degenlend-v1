@@ -40,32 +40,6 @@ function createData(
     }
 };
 
-// New market details have to be listed here
-const activeMarkets = [
-    createData(
-        0,
-        'SX Token',
-        'sxTokenLogo',
-        '0x0000000000000000',
-        2.00,
-        5.00,
-        4000,
-        false,
-        0.10
-    ),
-    createData(
-        0,
-        'USDC Token',
-        'usdcTokenLogo',
-        '0x000000000000000000',
-        2.00,
-        5.00,
-        100000,
-        true,
-        1.00
-    )
-];
-
 
 function Markets() {
 
@@ -85,10 +59,12 @@ function Markets() {
 
     const toggleWSXCollateral = () => {
         alert(`Toggling WSX from ${wsxCollateral} to ${!wsxCollateral}`)
+        // dispatch();
     }
 
     const toggleUSDCCollateral = () => {
         alert(`Toggling USDC from ${usdcCollateral} to ${!usdcCollateral}`)
+        // dispatch();
     }
 
     return (
