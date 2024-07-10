@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { onboard, testnet_addresses } from '../../utils/web3';
+import { ethers, Contract } from 'ethers'
 
+// ABIs
+import { abi } from '../../abis/Erc20Immutable.json'
 
 interface WSXState {
     loading: boolean;
@@ -30,6 +34,14 @@ const initialState: WSXState = {
 // Views
 
 export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+    const WSX = new Contract(testnet_addresses.comptroller, abi, signer);
+
+
+
     return 20003202;
 });
 
@@ -49,7 +61,12 @@ export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async (
 // Activities
 
 ///////////  Approve WSX Thunks
-export const approveWSX = createAsyncThunk('wsx/approve', async () => {})
+export const approveWSX = createAsyncThunk('wsx/approve', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+})
 
 ///////////  Supply Market Thunks
 export const supplyWSX = createAsyncThunk('wsx/supply', async () => {})
