@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { onboard, testnet_addresses } from '../../utils/web3';
-import { ethers, Contract } from 'ethers'
+import { ethers, Contract, formatUnits } from 'ethers'
 
 // ABIs
-import { abi } from '../../abis/Erc20Immutable.json'
+import ERC20Immutable from '../../abis/Erc20Immutable.json'
 
 interface WSXState {
     loading: boolean;
@@ -32,17 +32,24 @@ const initialState: WSXState = {
 }
 
 // Views
+const [wallet] = onboard.state.get().wallets;
+
 
 export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () => {
-
-    const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const signer = await ethersProvider.getSigner();
-    const WSX = new Contract(testnet_addresses.comptroller, abi, signer);
+    const WSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    const decimals = await WSX.decimals();
+    const walletAddress = wallet.accounts[0].address;
 
+    try {
+        let balance = WSX.balanceOf(walletAddress);
+        formatUnits(await balance, decimals)
+        return balance;
+    } catch (error) {
+        console.log(`[Console] an error occured on thunk 'updateWSXBalance': ${error}`)
+        return 0;
+    }
 
-
-    return 20003202;
 });
 
 export const updateOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
@@ -62,21 +69,33 @@ export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async (
 
 ///////////  Approve WSX Thunks
 export const approveWSX = createAsyncThunk('wsx/approve', async () => {
-
-    const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
 })
 
 ///////////  Supply Market Thunks
-export const supplyWSX = createAsyncThunk('wsx/supply', async () => {})
+export const supplyWSX = createAsyncThunk('wsx/supply', async () => {
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+})
 
-export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {})
+export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+})
 
 ///////////  Borrow Market Thunks
-export const repayWSX = createAsyncThunk('wsx/repay', async () => {})
+export const repayWSX = createAsyncThunk('wsx/repay', async () => {
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+})
 
-export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {})
+export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const signer = await ethersProvider.getSigner();
+
+    
+})
 
 
 

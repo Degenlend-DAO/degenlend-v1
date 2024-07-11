@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { ethers, Contract, formatUnits } from 'ethers';
+import { onboard, testnet_addresses } from '../../utils/web3';
 
+import ERC20Immutable from '../../abis/Erc20Immutable.json'
 
 interface USDCState {
     loading: boolean;
@@ -28,10 +31,22 @@ const initialState: USDCState = {
 }
 
 // Views
+const [wallet] = onboard.state.get().wallets;
 
 export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async () => {
-    return 102003.00;
-});
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const WSX = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+    const decimals = await WSX.decimals();
+    const walletAddress = wallet.accounts[0].address;
+
+    try {
+        let balance = WSX.balanceOf(walletAddress);
+        formatUnits(await balance, decimals)
+        return balance;
+    } catch (error) {
+        console.log(`[Console] an error occured on thunk 'updateWSXBalance': ${error}`)
+        return 0;
+    }});
 
 export const updateOraclePrice = createAsyncThunk('usdcOraclePrice/update', async () => {
     return 1.00;
