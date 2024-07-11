@@ -3,7 +3,7 @@ import { onboard, testnet_addresses } from '../../utils/web3';
 import { ethers, Contract, formatUnits } from 'ethers'
 
 // ABIs
-import {abi} from '../../abis/Comptroller.json'
+import ERC20Immutable from '../../abis/Erc20Immutable.json'
 interface AccountState {
     loading: boolean;
     error: string;
@@ -46,7 +46,7 @@ export const enterMarket = createAsyncThunk('account/enterMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, abi, signer);
+    const comptroller = new Contract(testnet_addresses.comptroller, ERC20Immutable.abi, signer);
 
     let marketsToEnter = [testnet_addresses.degenWSX];
 
@@ -65,7 +65,7 @@ export const exitMarket = createAsyncThunk('account/exitMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, abi, signer);
+    const comptroller = new Contract(testnet_addresses.comptroller, ERC20Immutable.abi, signer);
 
     let marketToExit = testnet_addresses.degenWSX;
 
