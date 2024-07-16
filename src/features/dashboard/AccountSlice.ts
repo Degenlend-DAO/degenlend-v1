@@ -4,10 +4,12 @@ import { ethers, Contract, formatUnits } from 'ethers'
 
 // ABIs
 import ERC20Immutable from '../../abis/Erc20Immutable.json'
+import Comptroller from '../../abis/Comptroller.json'
 interface AccountState {
     loading: boolean;
     error: string;
     status: string,
+    liquidity: number,
     borrowLimit: number,
     netAPR: number,
     netBorrowBalance: number,
@@ -18,6 +20,7 @@ const initialState: AccountState = {
     loading: false,
     error: "",
     status: "initial",
+    liquidity: 0e18,
     borrowLimit: 0,
     netAPR: 0,
     netBorrowBalance: 0,
@@ -25,20 +28,36 @@ const initialState: AccountState = {
 }
 
 // Views
+const [wallet] = onboard.state.get().wallets;
 
-export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', () => {
+export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', async () => {
     
 })
 
-export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update', () => {
+export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update', async () => {
 
 })
 
-export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', () => {
+export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async () => {
+    const walletAddress = wallet.accounts[0].address;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
+    try {
+        const liquidity = await comptroller.getAccountLiquidity(walletAddress);
+        console.log(`[Console] successfully called on thunk 'updateAccountLiquidity'`);
+        const formattedLiquidity = liquidity / 1e18;
+        return formattedLiquidity;
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'updateAccountLiquidity': ${error} `)
+        return 0e18;
+    }
+})
+
+export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async () => {
 
 })
 
-export const updateNetAPR = createAsyncThunk('netAPR/update', () => {})
+export const updateNetAPR = createAsyncThunk('netAPR/update', async () => {})
 
 // Activities
 
@@ -46,7 +65,7 @@ export const enterMarket = createAsyncThunk('account/enterMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, ERC20Immutable.abi, signer);
+    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, signer);
 
     let marketsToEnter = [testnet_addresses.degenWSX];
 
