@@ -178,7 +178,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async ({ amount, addre
     }
 })
 
-export const withdrawUSDC = createAsyncThunk('uscd/withdraw', async ({ amount }: withdrawUSDCParams) => {
+export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async ({ amount }: withdrawUSDCParams) => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
