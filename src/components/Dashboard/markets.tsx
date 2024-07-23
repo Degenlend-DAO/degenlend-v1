@@ -15,35 +15,11 @@ import CustomBarChart from './MarketSupplyChart';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/Store';
 
-// Generate Markets Data
-function createData(
-    id: number,
-    name: string,
-    img: string,
-    tokenString: string,
-    supplyAPY: number,
-    borrowAPY: number,
-    walletBalance: number,
-    collateral: boolean,
-    oraclePrice: number,
-) {
-    return {
-        id,
-        name,
-        img,
-        tokenString,
-        supplyAPY,
-        borrowAPY,
-        walletBalance,
-        collateral,
-        oraclePrice,
-    }
-};
-
 
 function Markets() {
 
     const dispatch = useDispatch<AppDispatch>();
+    // Generate Markets Data
 
     const usdcSupplyAPY = useSelector((state: RootState) => state.usdc.supplyRate);
     const usdcBorrowAPY = useSelector((state: RootState) => state.usdc.borrowRate);;
