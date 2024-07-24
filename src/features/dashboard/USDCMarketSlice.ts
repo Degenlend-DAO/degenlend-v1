@@ -81,8 +81,18 @@ export const updateOraclePrice = createAsyncThunk('usdcOraclePrice/update', asyn
 
 export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
     
-    return 1000;
-});
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+
+    const walletAddress = wallet.accounts[0].address;
+    // This code is currently incomplete
+    try {
+        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`);
+    } catch(error) {
+        console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
+        return 0;
+    }
+    });
 
 export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async ({ borrowAddress }: borrowUSDCParams) => {
 
@@ -165,6 +175,7 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, add
 export const supplyUSDC = createAsyncThunk('usdc/Supply', async ({ amount, addressToApprove } : supplyUSDCParams) => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
+
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
     const supplyAmount = amount * 1e18;
 
