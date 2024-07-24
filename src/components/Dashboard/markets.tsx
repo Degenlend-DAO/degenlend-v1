@@ -3,6 +3,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Modal from '@mui/material/Modal';
 import { Box, Button, Container, InputAdornment, Paper, Switch, TableContainer, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -37,12 +38,12 @@ function Markets() {
 
     const toggleWSXCollateral = () => {
         alert(`Toggling WSX from ${wsxCollateral} to ${!wsxCollateral}`)
-        // dispatch();
+        
     }
 
     const toggleUSDCCollateral = () => {
         alert(`Toggling USDC from ${usdcCollateral} to ${!usdcCollateral}`)
-        // dispatch();
+
     }
 
     return (
