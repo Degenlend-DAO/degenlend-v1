@@ -23,7 +23,7 @@ const Transition = React.forwardRef(function Transition(
 
 
 
-function USDCMarket() {
+function USDCMarketDialog() {
 
     const [open, setOpen] = React.useState(false);
 
@@ -37,8 +37,8 @@ function USDCMarket() {
   
     return (
       <React.Fragment>
-        <Button variant="outlined" onClick={handleClickOpen}>
-          Slide in alert dialog
+                <Button variant="outlined" onClick={handleClickOpen}>
+                Supply/Borrow
         </Button>
         <Dialog
           open={open}
@@ -63,4 +63,4 @@ function USDCMarket() {
     );
 }
 
-export default USDCMarket;
+export default USDCMarketDialog;

@@ -14,6 +14,8 @@ import CustomBarChart from './MarketSupplyChart';
 // Action Items
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/Store';
+import USDCMarketDialog from './usdcMarket';
+import WSXMarketDialog from './wsxMarket';
 
 
 function Markets() {
@@ -88,7 +90,7 @@ function Markets() {
                         <TableCell> Wallet Balance </TableCell>
                         <TableCell> Collateral </TableCell>
                         <TableCell> Oracle Price </TableCell>
-                        <TableCell> Supply / Borrow</TableCell>
+                        <TableCell> Supply / Borrow Assets</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -118,9 +120,7 @@ function Markets() {
                             {wsxOraclePrice}
                         </TableCell>
                         <TableCell>
-                            <Button onClick={() => alert(`Supplying and borrowing!`)}>
-                                Supply/Borrow
-                            </Button>
+                            <WSXMarketDialog />
                         </TableCell>
                     </TableRow>
                     {/* USDC Market Details */}
@@ -149,9 +149,8 @@ function Markets() {
                             {usdcOraclePrice}
                         </TableCell>
                         <TableCell>
-                            <Button onClick={() => alert(`Supplying and borrowing!`)}>
-                                Supply/Borrow
-                            </Button>
+                            {/* Dialog */}
+                            <USDCMarketDialog />
                         </TableCell>
                     </TableRow>
                 </TableBody>
