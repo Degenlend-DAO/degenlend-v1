@@ -3,7 +3,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Modal from '@mui/material/Modal';
 import { Box, Button, Container, InputAdornment, Paper, Switch, TableContainer, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -15,8 +14,10 @@ import CustomBarChart from './MarketSupplyChart';
 // Action Items
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/Store';
-import USDCMarketDialog from './usdcMarket';
-import WSXMarketDialog from './wsxMarket';
+import USDCMarketDialog from './supply_markets/usdcSupplyMarketDialog';
+import WSXMarketDialog from './supply_markets/wsxSupplyMarketDialog';
+import BorrowMarkets from './borrow_markets/borrowMarketsCard';
+import SupplyMarkets from './supply_markets/supplyMarketsCard';
 
 
 function Markets() {
@@ -56,106 +57,8 @@ function Markets() {
                 pb: { xs: 8, sm: 12 },
             }} >
             {/* <CustomBarChart /> */}
-            <TableContainer component={Paper}>
-                <Table size='medium'>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell colSpan={2}>
-                                <Box display="flex" justifyContent="space-between" alignItems="center">
-                                    <Typography variant='h5'>Markets</Typography>
-                                    <TextField
-                                        placeholder="Search By Market"
-                                        type="search"
-                                        variant="filled"
-                                        size='small'
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position='start'>
-                                                    <Search />
-                                                </InputAdornment>
-                                            )
-                                        }}
-                                    />
-                                </Box>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <Table size='medium'>
-                <TableHead>
-                    <TableRow>
-                        <TableCell> Asset </TableCell>
-                        <TableCell> Supply APY </TableCell>
-                        <TableCell> Borrow APY </TableCell>
-                        <TableCell> Wallet Balance </TableCell>
-                        <TableCell> Collateral </TableCell>
-                        <TableCell> Oracle Price </TableCell>
-                        <TableCell> Supply / Borrow Assets</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {/* Wrapped SX Market Details */}
-                    <TableRow>
-                        <TableCell>
-                            <Box
-                                component="img"
-                                sx={{ height: 30, width: 35 }}
-                                alt={`Wrapped SX Logo`}
-                                src={sxTokenLogo}>
-                            </Box>
-                        </TableCell>
-                        <TableCell>
-                            {wsxSupplyAPY}%
-                        </TableCell>
-                        <TableCell>
-                            {wsxBorrowAPY}%
-                        </TableCell>
-                        <TableCell>
-                            {wsxWalletBalance} WSX
-                        </TableCell>
-                        <TableCell>
-                            <Switch checked={wsxCollateral} onChange={toggleWSXCollateral} />
-                        </TableCell>
-                        <TableCell>
-                            {wsxOraclePrice}
-                        </TableCell>
-                        <TableCell>
-                            <WSXMarketDialog />
-                        </TableCell>
-                    </TableRow>
-                    {/* USDC Market Details */}
-                    <TableRow>
-                        <TableCell>
-                            <Box
-                                component="img"
-                                sx={{ height: 35, width: 35 }}
-                                alt={`USDC Logo`}
-                                src={usdcTokenLogo}>
-                            </Box>
-                        </TableCell>
-                        <TableCell>
-                            {usdcSupplyAPY}%
-                        </TableCell>
-                        <TableCell>
-                            {usdcBorrowAPY}%
-                        </TableCell>
-                        <TableCell>
-                            {usdcWalletBalance} USDC
-                        </TableCell>
-                        <TableCell>
-                            <Switch checked={usdcCollateral} onChange={toggleUSDCCollateral} />
-                        </TableCell>
-                        <TableCell>
-                            {usdcOraclePrice}
-                        </TableCell>
-                        <TableCell>
-                            {/* Dialog */}
-                            <USDCMarketDialog />
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <SupplyMarkets />
+            <BorrowMarkets />
         </Container>
     )
 }
