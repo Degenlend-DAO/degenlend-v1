@@ -21,13 +21,13 @@ function Markets() {
                 // pb: { xs: 8, sm: 12 },
             }} >
             {/* <CustomBarChart /> */}
-            <Grid container spacing={6} columns={16}>
-            <Grid xs={8}>
-            <SupplyMarkets />
-  </Grid>
-  <Grid xs={8}>
-  <BorrowMarkets />
-  </Grid>
+            <Grid container spacing={6} columns={16} justifyContent="space-evenly" alignItems="stretch">
+            <Grid xs>
+                <SupplyMarkets />
+            </Grid>
+            <Grid xs>
+                <BorrowMarkets />
+            </Grid>
             </Grid>
         </Container>
     )

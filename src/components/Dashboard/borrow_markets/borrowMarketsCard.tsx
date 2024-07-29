@@ -20,17 +20,17 @@ import { AppDispatch, RootState } from '../../../app/Store';
 
 export default function BorrowMarkets() {
 
-    const usdcSupplyAPY = useSelector((state: RootState) => state.usdc.supplyRate);
     const usdcBorrowAPY = useSelector((state: RootState) => state.usdc.borrowRate);;
     const usdcWalletBalance = useSelector((state: RootState) => state.usdc.walletBalance);;
-    const usdcCollateral = useSelector((state: RootState) => state.usdc.isCollateral);
     const usdcOraclePrice = useSelector((state: RootState) => state.usdc.oraclePrice);
 
-    const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
     const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
     const wsxWalletBalance = useSelector((state: RootState) => state.wsx.walletBalance);
-    const wsxCollateral = useSelector((state: RootState) => state.wsx.isCollateral);
     const wsxOraclePrice = useSelector((state: RootState) => state.wsx.oraclePrice);
+
+    function handleRowClick(event:React.MouseEvent) {
+        alert('Clicked on the row!')
+    }
 
     return(
         <>
@@ -40,19 +40,8 @@ export default function BorrowMarkets() {
                     <TableRow>
                         <TableCell colSpan={2}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant='h5'>Borrow Markets</Typography>
-                                <TextField
-                                    placeholder="Search By Market"
-                                    type="search"
-                                    variant="filled"
-                                    size='small'
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position='start'>
-                                                <Search />
-                                            </InputAdornment>
-                                        )
-                                    }} />
+                                <Typography variant='h6'>Borrow Markets</Typography>
+
                             </Box>
                         </TableCell>
                     </TableRow>
@@ -64,13 +53,12 @@ export default function BorrowMarkets() {
                         <TableCell> Asset </TableCell>
                         <TableCell> Borrow APY </TableCell>
                         <TableCell> Wallet Balance </TableCell>
-                        <TableCell> Oracle Price </TableCell>
-                        <TableCell> Borrow / Repay Assets</TableCell>
+                        <TableCell> Market Liquidity </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {/* Wrapped SX Market Details */}
-                    <TableRow>
+                    <TableRow hover onClick={(event) => {handleRowClick(event)}}>
                         <TableCell>
                             <Box
                                 component="img"
@@ -88,12 +76,10 @@ export default function BorrowMarkets() {
                         <TableCell>
                             {wsxOraclePrice}
                         </TableCell>
-                        <TableCell>
-                            <WSXMarketDialog />
-                        </TableCell>
+
                     </TableRow>
                     {/* USDC Market Details */}
-                    <TableRow>
+                    <TableRow hover onClick={(event) => {handleRowClick(event)}}>
                         <TableCell>
                             <Box
                                 component="img"
@@ -110,10 +96,6 @@ export default function BorrowMarkets() {
                         </TableCell>
                         <TableCell>
                             {usdcOraclePrice}
-                        </TableCell>
-                        <TableCell>
-                            {/* Dialog */}
-                            <USDCMarketDialog />
                         </TableCell>
                     </TableRow>
                 </TableBody>

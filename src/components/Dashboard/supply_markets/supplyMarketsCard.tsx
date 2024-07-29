@@ -19,31 +19,29 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../app/Store';
 
 import EnableMarketDialog from './enableCollateralDialog'
+import { MouseEvent } from 'react';
 
 export default function SupplyMarkets() {
 
-    const toggleWSXCollateral = () => {
-        alert(`Toggling WSX from ${wsxCollateral} to ${!wsxCollateral}`)
-        // This function will trigger a modal window for toggle 
-        
-    }
 
-    const toggleUSDCCollateral = () => {
-        alert(`Toggling USDC from ${usdcCollateral} to ${!usdcCollateral}`)
-        // THis function will trigger a modal window for toggling collateral 
-    }
-
+    // These values are grabbed directly from the blockchain
     const usdcSupplyAPY = useSelector((state: RootState) => state.usdc.supplyRate);
-    const usdcBorrowAPY = useSelector((state: RootState) => state.usdc.borrowRate);;
     const usdcWalletBalance = useSelector((state: RootState) => state.usdc.walletBalance);;
-    const usdcCollateral = useSelector((state: RootState) => state.usdc.isCollateral);
     const usdcOraclePrice = useSelector((state: RootState) => state.usdc.oraclePrice);
 
     const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
-    const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
     const wsxWalletBalance = useSelector((state: RootState) => state.wsx.walletBalance);
-    const wsxCollateral = useSelector((state: RootState) => state.wsx.isCollateral);
     const wsxOraclePrice = useSelector((state: RootState) => state.wsx.oraclePrice);
+
+    function handleRowClick(event:React.MouseEvent) {
+        alert('Clicked on the row!')
+    }
+    const handleSwitchClick= (event: React.MouseEvent) => {
+        event.stopPropagation();
+        alert('Clicked on the switch!')
+
+      };
+    
 
     return(
         <>
@@ -53,19 +51,7 @@ export default function SupplyMarkets() {
                     <TableRow>
                         <TableCell colSpan={2}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant='h5'>Supply Markets</Typography>
-                                <TextField
-                                    placeholder="Search By Market"
-                                    type="search"
-                                    variant="filled"
-                                    size='small'
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position='start'>
-                                                <Search />
-                                            </InputAdornment>
-                                        )
-                                    }} />
+                                <Typography variant='h6'>Supply Markets</Typography>
                             </Box>
                         </TableCell>
                     </TableRow>
@@ -79,13 +65,11 @@ export default function SupplyMarkets() {
                         <TableCell> Wallet Balance </TableCell>
                         <TableCell> Collateral </TableCell>
                         <TableCell> Oracle Price </TableCell>
-                        <TableCell> Supply / Withdraw </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {/* Wrapped SX Market Details */}
-<Button>
-<TableRow>
+                    <TableRow  hover onClick={(event) => {handleRowClick(event)}}>
                         <TableCell>
                             <Box
                                 component="img"
@@ -93,7 +77,6 @@ export default function SupplyMarkets() {
                                 alt={`Wrapped SX Logo`}
                                 src={sxTokenLogo}>
                             </Box>
-                            SX Token
                         </TableCell>
                         <TableCell>
                             {wsxSupplyAPY}%
@@ -102,19 +85,14 @@ export default function SupplyMarkets() {
                             {wsxWalletBalance} WSX
                         </TableCell>
                         <TableCell>
-                                    <EnableMarketDialog /> 
+                            <Switch color='primary' onClick={(event) => {handleSwitchClick(event)}} /> 
                         </TableCell>
                         <TableCell>
                             {wsxOraclePrice}
                         </TableCell>
-                        <TableCell>
-                            <WSXMarketDialog />
-                        </TableCell>
                     </TableRow>
-</Button>
                     {/* USDC Market Details */}
-                    <TableRow>
-                        <Button>
+                    <TableRow hover onClick={(event) => {handleRowClick(event)}}>
                         <TableCell>
                             <Box
                                 component="img"
@@ -129,17 +107,12 @@ export default function SupplyMarkets() {
                         <TableCell>
                             {usdcWalletBalance} USDC
                         </TableCell>
-                        <TableCell>
-                            <Switch checked={usdcCollateral} onChange={toggleUSDCCollateral} />
+                        <TableCell >
+                        <Switch color='primary' onClick={(event) => {handleSwitchClick(event)}} /> 
                         </TableCell>
                         <TableCell>
                             {usdcOraclePrice}
                         </TableCell>
-                        <TableCell>
-                            {/* Dialog */}
-                            <USDCMarketDialog />
-                        </TableCell>
-                        </Button>
                     </TableRow>
                 </TableBody>
             </Table></>

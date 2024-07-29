@@ -1,12 +1,11 @@
 
 import * as React from 'react';
-import { Box, Switch, Tab, Tabs } from '@mui/material';
+import { Box, Button, Checkbox, Switch, Tab, Tabs } from '@mui/material';
 
 
 // Dialogs
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import Slide from '@mui/material/Slide';
@@ -22,14 +21,15 @@ const Transition = React.forwardRef(function Transition(
   });
 
   interface EnableMarketsProps {
-    
+    type: String,
   }
 
 function EnableMarketDialog(props: EnableMarketsProps) {
 
+
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(false);
-    const handleClickOpen = () => {
+    const handleClickOpen = (event: React.ChangeEvent) => {
       setOpen(true);
     };
   
@@ -37,15 +37,27 @@ function EnableMarketDialog(props: EnableMarketsProps) {
       setOpen(false);
     };
 
-    const handleChange = (event: React.SyntheticEvent, newValue: boolean) => {
+    const handleChange = (newValue: boolean) => {
       setValue(newValue);
     };
+
+    // Activites to update based on the market type
+
+    switch(props.type) {
+      case "sx": 
+        //  update the 
+        break;
+      case "usdc":
+        
+      break;
+    }
 
     
   
     return (
       <React.Fragment>
-                            <Switch checked={open} onChange={handleChange} />
+
+        <Switch color='primary' checked={value} onChange={(event) => {handleClickOpen(event)}} /> 
 
         <Dialog
           open={open}
@@ -61,8 +73,13 @@ function EnableMarketDialog(props: EnableMarketsProps) {
           </DialogTitle>
           <DialogContent>
 
-      
-
+            <p>
+                Enable your {props.type} market here
+            </p>
+            
+            <Button>
+              Enable Markets
+            </Button>
           </DialogContent>
         </Dialog>
       </React.Fragment>
