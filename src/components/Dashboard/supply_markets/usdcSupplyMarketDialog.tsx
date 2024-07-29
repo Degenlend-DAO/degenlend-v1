@@ -1,6 +1,8 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
 // Dialogs
 import Dialog from '@mui/material/Dialog';
@@ -12,8 +14,8 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 
 // Token Information
-import usdcTokenLogo from '../../assets/img/usdc_coin_token.png'
-import { Box } from '@mui/material';
+import usdcTokenLogo from '../../../assets/img/usdc_coin_token.png'
+import { Box, Tab } from '@mui/material';
 
 
 const Transition = React.forwardRef(function Transition(
@@ -30,6 +32,7 @@ const Transition = React.forwardRef(function Transition(
 function USDCSupplyMarketDialog() {
 
     const [open, setOpen] = React.useState(false);
+    const [value, setValue] = React.useState(0);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -39,34 +42,10 @@ function USDCSupplyMarketDialog() {
       setOpen(false);
     };
 
-    interface TabPanelProps {
-      children?: React.ReactNode;
-      index: number;
-      value: number;
-    }
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+      setValue(newValue);
+    };
     
-    function CustomTabPanel(props: TabPanelProps) {
-      const { children, value, index, ...other } = props;
-    
-      return (
-        <div
-          role="tabpanel"
-          hidden={value !== index}
-          id={`simple-tabpanel-${index}`}
-          aria-labelledby={`simple-tab-${index}`}
-          {...other}
-        >
-          {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-        </div>
-      );
-    }
-
-    function a11yProps(index: number) {
-      return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-      };
-    }
     
   
     return (
@@ -88,10 +67,18 @@ function USDCSupplyMarketDialog() {
 </div>
             </DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-              Let Google help apps determine location. This means sending anonymous
-              location data to Google, even when no apps are running.
-            </DialogContentText>
+          <Box sx={{ width: '100%', typography: 'body1' }}>
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <TabList onChange={handleChange} aria-label="lab API tabs">
+            <Tab label="Supply" value="1" />
+            <Tab label="Withdraw" value="2" />
+          </TabList>
+        </Box>
+        <TabPanel value="1">Supply</TabPanel>
+        <TabPanel value="2">Withdraw</TabPanel>
+      </TabContext>
+    </Box>
           </DialogContent>
         </Dialog>
       </React.Fragment>
