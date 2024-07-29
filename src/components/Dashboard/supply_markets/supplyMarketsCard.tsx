@@ -16,12 +16,17 @@ import { RootState } from "../../../app/Store";
 import EnableMarketDialog from "./enableCollateralDialog";
 import React from "react";
 import USDCSupplyMarketDialog from "./usdcSupplyMarketDialog";
+import WSXSupplyMarketDialog from "./wsxSupplyMarketDialog";
 
 export default function SupplyMarkets() {
   // These values are grabbed directly from the blockchain
 
-  const [open, setOpen] = React.useState(false);
+  const [enableSXDialogOpen, setEnableSXDialogOpen] = React.useState(false);
+  const [enableUSDCDialogOpen, setEnableUSDCDialogOpen] = React.useState(false);
+  const [supplySXDialogOpen, setSupplySXDialogOpen] = React.useState(false);
+  const [supplyUSDCDialogOpen, setSupplyUSDCDialogOpen] = React.useState(false);
 
+  
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
   );
@@ -41,21 +46,21 @@ export default function SupplyMarkets() {
   );
 
   function handleSXRowClick(event: React.MouseEvent) {
-    alert("Clicked on the row!");
+    setSupplySXDialogOpen(true);
   }
 
   function handleUSDCRowClick(event: React.MouseEvent) {
-    alert("Clicked on the row!");
+    setSupplyUSDCDialogOpen(true);
   }
 
   const handleSXSwitchClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    <EnableMarketDialog title={"SX"} type='sx'/>
+    setEnableSXDialogOpen(true);
   };
 
   const handleUSDCSwitchClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    <EnableMarketDialog title="USDC" type='usdc' />
+    setEnableUSDCDialogOpen(true);
   };
 
   return (
@@ -111,7 +116,7 @@ export default function SupplyMarkets() {
             <TableCell>{wsxSupplyAPY}%</TableCell>
             <TableCell>{wsxWalletBalance} WSX</TableCell>
             <TableCell>
-                <EnableMarketDialog type='sx' title='Wrapped SX' />
+              <Switch onClick={(event) => { handleSXSwitchClick(event)}} />
             </TableCell>
             <TableCell>{wsxOraclePrice}</TableCell>
           </TableRow>
@@ -136,8 +141,9 @@ export default function SupplyMarkets() {
             <TableCell>{usdcSupplyAPY}%</TableCell>
             <TableCell>{usdcWalletBalance} USDC</TableCell>
             <TableCell>
-            <Box display="flex" alignItems="center">
-            </Box>
+
+              <Switch onClick={(event) => { handleUSDCSwitchClick(event) }} />
+
             </TableCell>
             <TableCell>{usdcOraclePrice}</TableCell>
           </TableRow>
@@ -146,9 +152,11 @@ export default function SupplyMarkets() {
       </TableContainer>
 
       {/* Market Dialogs */}
-      <EnableMarketDialog type='sx' title='Wrapped SX' />
-      <WSXSupplyMarketDialog type='sx'/>
-      <USDCSupplyMarketDialog />
+      <EnableMarketDialog type='sx' title='Wrapped SX' open={enableSXDialogOpen} onClose={() => {setEnableSXDialogOpen(false)}} />
+      <EnableMarketDialog type='usdc' title='USDC' open={enableUSDCDialogOpen} onClose={() => {setEnableUSDCDialogOpen(false)}} />
+      <WSXSupplyMarketDialog open={supplySXDialogOpen} onClose={() => {setSupplySXDialogOpen(false)}} title={"Wrapped SX"} />
+      <USDCSupplyMarketDialog open={supplyUSDCDialogOpen} onClose={() => {setSupplyUSDCDialogOpen(false)}} title={"USDC"}/>
     </>
   );
 }
+// LETS FUCKI NGGOOOO I FUCKING DID ITTTTTT -- Steady progress

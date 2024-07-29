@@ -27,43 +27,34 @@ const Transition = React.forwardRef(function Transition(
   });
 
   interface SupplyMarketDialogProps {
-    onClickOpen: Function,
+    open: boolean;
+    onClose: () => void;
+    title: string;
   }
 
 function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
 
-    const [open, setOpen] = React.useState(false);
-    const [value, setValue] = React.useState(0);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleClose = () => {
-      setOpen(false);
-    };
+  const [value, setValue] = React.useState(0);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-      setValue(newValue);
-    };
-    
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
     
   
     return (
       <React.Fragment>
-        <Button variant="outlined" onClick={handleClickOpen}>
-        Supply/Borrow
-        </Button>
         <Dialog
-          open={open}
+          open={props.open}
           TransitionComponent={Transition}
           keepMounted
-          onClose={handleClose}
+          onClose={props.onClose}
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>
     <div style={{ textAlign: 'center'}}>
     <Box component="img" src={sxTokenLogo} alt={"Wrapped SX Logo"} sx={{ height: 25, width: 30}}></Box>
-          <a> WSX Token</a></div>
+          <a>{props.title}</a></div>
           </DialogTitle>
           <DialogContent>
           <Box sx={{ width: '100%', typography: 'body1' }}>
