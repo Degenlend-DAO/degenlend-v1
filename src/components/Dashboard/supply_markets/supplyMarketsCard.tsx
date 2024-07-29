@@ -13,9 +13,15 @@ import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 // Action Items
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
+import EnableMarketDialog from "./enableCollateralDialog";
+import React from "react";
+import USDCSupplyMarketDialog from "./usdcSupplyMarketDialog";
 
 export default function SupplyMarkets() {
   // These values are grabbed directly from the blockchain
+
+  const [open, setOpen] = React.useState(false);
+
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
   );
@@ -34,18 +40,27 @@ export default function SupplyMarkets() {
     (state: RootState) => state.wsx.oraclePrice
   );
 
-  function handleRowClick(event: React.MouseEvent) {
+  function handleSXRowClick(event: React.MouseEvent) {
     alert("Clicked on the row!");
   }
-  const handleSwitchClick = (event: React.MouseEvent) => {
+
+  function handleUSDCRowClick(event: React.MouseEvent) {
+    alert("Clicked on the row!");
+  }
+
+  const handleSXSwitchClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    alert("Clicked on the switch!");
+    <EnableMarketDialog title={"SX"} type='sx'/>
+  };
+
+  const handleUSDCSwitchClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    <EnableMarketDialog title="USDC" type='usdc' />
   };
 
   return (
     <>
-      <TableContainer component={Paper}>
-
+      <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
         {/* Table Header */}
         <Table size="medium">
           <TableBody>
@@ -63,6 +78,7 @@ export default function SupplyMarkets() {
           </TableBody>
         </Table>
 
+        {/* Table Body */}
         <Table size="medium">
         <TableHead>
           <TableRow>
@@ -78,14 +94,14 @@ export default function SupplyMarkets() {
           <TableRow
             hover
             onClick={(event) => {
-              handleRowClick(event);
+                handleSXRowClick(event);
             }}
           >
             <TableCell>
             <Box display="flex" alignItems="center">
                   <Box
                     component="img"
-                    sx={{ height: 35, width: 35, marginRight: 1 }}
+                    sx={{ height: 25, width: 25, marginRight: 1 }}
                     alt="Wrapped SX Logo"
                     src={sxTokenLogo}
                   />
@@ -95,12 +111,7 @@ export default function SupplyMarkets() {
             <TableCell>{wsxSupplyAPY}%</TableCell>
             <TableCell>{wsxWalletBalance} WSX</TableCell>
             <TableCell>
-              <Switch
-                color="primary"
-                onClick={(event) => {
-                  handleSwitchClick(event);
-                }}
-              />
+                <EnableMarketDialog type='sx' title='Wrapped SX' />
             </TableCell>
             <TableCell>{wsxOraclePrice}</TableCell>
           </TableRow>
@@ -108,14 +119,14 @@ export default function SupplyMarkets() {
           <TableRow
             hover
             onClick={(event) => {
-              handleRowClick(event);
+                handleUSDCRowClick(event);
             }}
           >
             <TableCell>
             <Box display="flex" alignItems="center">
                   <Box
                     component="img"
-                    sx={{ height: 35, width: 35, marginRight: 1 }}
+                    sx={{ height: 25, width: 25, marginRight: 1 }}
                     alt="USDC Logo"
                     src={usdcTokenLogo}
                   />
@@ -125,12 +136,8 @@ export default function SupplyMarkets() {
             <TableCell>{usdcSupplyAPY}%</TableCell>
             <TableCell>{usdcWalletBalance} USDC</TableCell>
             <TableCell>
-              <Switch
-                color="primary"
-                onClick={(event) => {
-                  handleSwitchClick(event);
-                }}
-              />
+            <Box display="flex" alignItems="center">
+            </Box>
             </TableCell>
             <TableCell>{usdcOraclePrice}</TableCell>
           </TableRow>
@@ -138,6 +145,10 @@ export default function SupplyMarkets() {
       </Table>
       </TableContainer>
 
+      {/* Market Dialogs */}
+      <EnableMarketDialog type='sx' title='Wrapped SX' />
+      <WSXSupplyMarketDialog type='sx'/>
+      <USDCSupplyMarketDialog />
     </>
   );
 }
