@@ -28,8 +28,12 @@ const Transition = React.forwardRef(function Transition(
   });
 
 
+  interface BorrowMarketDialogProps {
+    handleClickOpen: Function,
+  }
 
-function WSXBorrowMarketDialog() {
+
+function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(0);
