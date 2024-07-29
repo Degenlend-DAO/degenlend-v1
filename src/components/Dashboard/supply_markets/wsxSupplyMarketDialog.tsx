@@ -26,9 +26,11 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+  interface SupplyMarketDialogProps {
+    onClickOpen: Function,
+  }
 
-
-function WSXSupplyMarketDialog() {
+function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
 
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(0);
