@@ -1,11 +1,12 @@
 
 import * as React from 'react';
-import { Box, Button, Checkbox, Switch, Tab, Tabs } from '@mui/material';
+import { Box, Switch, Tab, Tabs } from '@mui/material';
 
 
 // Dialogs
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import Slide from '@mui/material/Slide';
@@ -21,15 +22,17 @@ const Transition = React.forwardRef(function Transition(
   });
 
   interface EnableMarketsProps {
-    type: String,
+    open: boolean;
+    onClose: () => void;
+    title: string;
+    type: 'sx' | 'usdc';
   }
 
 function EnableMarketDialog(props: EnableMarketsProps) {
 
-
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(false);
-    const handleClickOpen = (event: React.ChangeEvent) => {
+    const handleClickOpen = () => {
       setOpen(true);
     };
   
@@ -37,49 +40,30 @@ function EnableMarketDialog(props: EnableMarketsProps) {
       setOpen(false);
     };
 
-    const handleChange = (newValue: boolean) => {
+    const handleChange = (event: React.SyntheticEvent, newValue: boolean) => {
       setValue(newValue);
     };
-
-    // Activites to update based on the market type
-
-    switch(props.type) {
-      case "sx": 
-        //  update the 
-        break;
-      case "usdc":
-        
-      break;
-    }
 
     
   
     return (
       <React.Fragment>
-
-        <Switch color='primary' checked={value} onChange={(event) => {handleClickOpen(event)}} /> 
-
         <Dialog
-          open={open}
+          open={props.open}
           TransitionComponent={Transition}
           keepMounted
-          onClose={handleClose}
+          onClose={props.onClose}
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>
     <div style={{ textAlign: 'center'}}>
-    <Box component="a" sx={{ height: 25, width: 30}}> Enable Collateral</Box>
+    <Box component="a" sx={{ height: 25, width: 30}}> Enable {props.title} Collateral</Box>
           </div>
           </DialogTitle>
           <DialogContent>
 
-            <p>
-                Enable your {props.type} market here
-            </p>
-            
-            <Button>
-              Enable Markets
-            </Button>
+          {props.type === 'sx' ? 'SX Market Details' : 'USDC Market Details'}
+
           </DialogContent>
         </Dialog>
       </React.Fragment>
