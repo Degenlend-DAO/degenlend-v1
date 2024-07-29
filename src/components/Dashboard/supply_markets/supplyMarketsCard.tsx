@@ -11,23 +11,26 @@ import { Box, Button, Container, InputAdornment, Paper, Switch, TableContainer, 
 import { Search } from '@mui/icons-material';
 
 // Token Logos
-import sxTokenLogo from '../../assets/img/sx_coin_token.png'
-import usdcTokenLogo from '../../assets/img/usdc_coin_token.png'
+import sxTokenLogo from '../../../assets/img/sx_coin_token.png'
+import usdcTokenLogo from '../../../assets/img/usdc_coin_token.png'
 
 // Action Items
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../app/Store';
 
+import EnableMarketDialog from './enableCollateralDialog'
+
 export default function SupplyMarkets() {
 
     const toggleWSXCollateral = () => {
         alert(`Toggling WSX from ${wsxCollateral} to ${!wsxCollateral}`)
+        // This function will trigger a modal window for toggle 
         
     }
 
     const toggleUSDCCollateral = () => {
         alert(`Toggling USDC from ${usdcCollateral} to ${!usdcCollateral}`)
-
+        // THis function will trigger a modal window for toggling collateral 
     }
 
     const usdcSupplyAPY = useSelector((state: RootState) => state.usdc.supplyRate);
@@ -73,16 +76,16 @@ export default function SupplyMarkets() {
                     <TableRow>
                         <TableCell> Asset </TableCell>
                         <TableCell> Supply APY </TableCell>
-                        <TableCell> Borrow APY </TableCell>
                         <TableCell> Wallet Balance </TableCell>
                         <TableCell> Collateral </TableCell>
                         <TableCell> Oracle Price </TableCell>
-                        <TableCell> Supply / Withdraw Assets</TableCell>
+                        <TableCell> Supply / Withdraw </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {/* Wrapped SX Market Details */}
-                    <TableRow>
+<Button>
+<TableRow>
                         <TableCell>
                             <Box
                                 component="img"
@@ -90,18 +93,16 @@ export default function SupplyMarkets() {
                                 alt={`Wrapped SX Logo`}
                                 src={sxTokenLogo}>
                             </Box>
+                            SX Token
                         </TableCell>
                         <TableCell>
                             {wsxSupplyAPY}%
                         </TableCell>
                         <TableCell>
-                            {wsxBorrowAPY}%
-                        </TableCell>
-                        <TableCell>
                             {wsxWalletBalance} WSX
                         </TableCell>
                         <TableCell>
-                            <Switch checked={wsxCollateral} onChange={toggleWSXCollateral} />
+                                    <EnableMarketDialog /> 
                         </TableCell>
                         <TableCell>
                             {wsxOraclePrice}
@@ -110,8 +111,10 @@ export default function SupplyMarkets() {
                             <WSXMarketDialog />
                         </TableCell>
                     </TableRow>
+</Button>
                     {/* USDC Market Details */}
                     <TableRow>
+                        <Button>
                         <TableCell>
                             <Box
                                 component="img"
@@ -122,9 +125,6 @@ export default function SupplyMarkets() {
                         </TableCell>
                         <TableCell>
                             {usdcSupplyAPY}%
-                        </TableCell>
-                        <TableCell>
-                            {usdcBorrowAPY}%
                         </TableCell>
                         <TableCell>
                             {usdcWalletBalance} USDC
@@ -139,6 +139,7 @@ export default function SupplyMarkets() {
                             {/* Dialog */}
                             <USDCMarketDialog />
                         </TableCell>
+                        </Button>
                     </TableRow>
                 </TableBody>
             </Table></>
