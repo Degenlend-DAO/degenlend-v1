@@ -29,22 +29,16 @@ const Transition = React.forwardRef(function Transition(
 
 
   interface BorrowMarketDialogProps {
-    handleClickOpen: Function,
+    open: boolean;
+    onClose: () => void;
+    title: string;
   }
+
 
 
 function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
-    const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(0);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleClose = () => {
-      setOpen(false);
-    };
-
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
@@ -52,14 +46,11 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   
     return (
       <React.Fragment>
-        <Button variant="outlined" onClick={handleClickOpen}>
-        Borrow / Repay
-        </Button>
         <Dialog
-          open={open}
+          open={props.open}
           TransitionComponent={Transition}
           keepMounted
-          onClose={handleClose}
+          onClose={props.onClose}
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>

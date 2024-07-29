@@ -26,42 +26,33 @@ const Transition = React.forwardRef(function Transition(
   ) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
+  interface BorrowMarketDialogProps {
+    open: boolean;
+    onClose: () => void;
+    title: string;
+  }
 
 
+function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
-function USDCBorrowMarketDialog() {
-
-    const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState(0);
-
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleClose = () => {
-      setOpen(false);
-    };
-
   
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
     return (
       <React.Fragment>
-                <Button variant="outlined" onClick={handleClickOpen}>
-                  Borrow / Repay
-                          </Button>
         <Dialog
-          open={open}
+          open={props.open}
           TransitionComponent={Transition}
           keepMounted
-          onClose={handleClose}
+          onClose={props.onClose}
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>
 <div style={{ textAlign: 'center'}}>
 <Box component="img" src={usdcTokenLogo} alt={"USDC Logo"} sx={{ height: 25, width: 30}}></Box>
-<a> USDC Token</a>
+<a> {props.title} </a>
 </div>
             </DialogTitle>
           <DialogContent>

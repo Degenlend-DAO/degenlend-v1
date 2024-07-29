@@ -15,9 +15,12 @@ import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
 import WSXBorrowMarketDialog from "./wsxBorrowMarketDialog";
+import USDCBorrowMarketDialog from "./usdcBorrowMarketDialog";
 
 export default function BorrowMarkets() {
-    
+  const [borrowSXDialogOpen, setBorrowSXDialogOpen] = React.useState(false);
+  const [borrowUSDCDialogOpen, setBorrowUSDCDialogOpen] = React.useState(false);
+
   const usdcBorrowAPY = useSelector(
     (state: RootState) => state.usdc.borrowRate
   );
@@ -37,11 +40,11 @@ export default function BorrowMarkets() {
   );
 
   function handleSXRowClick(event: React.MouseEvent) {
-    <WSXBorrowMarketDialog handleClickOpen={() => {alert('Stuff!')}}/>
+    setBorrowSXDialogOpen(true);
   }
 
   function handleUSDCRowClick(event: React.MouseEvent) {
-    alert("Clicked on the row!");
+    setBorrowUSDCDialogOpen(true);
   }
 
   return (
@@ -122,7 +125,9 @@ export default function BorrowMarkets() {
         </TableBody>
       </Table>
       </TableContainer>
-
+    
+    <WSXBorrowMarketDialog open={borrowSXDialogOpen} onClose={() => {setBorrowSXDialogOpen(false)}} title={"Wrapped SX"}/>
+    <USDCBorrowMarketDialog open={borrowUSDCDialogOpen} onClose={() => {setBorrowUSDCDialogOpen(false)}} title={"USDC"}/>
     </>
   );
 }
