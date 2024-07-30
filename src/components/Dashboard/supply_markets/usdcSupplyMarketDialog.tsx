@@ -15,7 +15,7 @@ import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
-import { Box, Divider, IconButton, Tab } from "@mui/material";
+import { Box, Divider, IconButton, Stack, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 const Transition = React.forwardRef(function Transition(
@@ -51,32 +51,51 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         onClose={props.onClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>
+
+{/* Top half of the modal */}
+        <DialogTitle style={{ padding: '5%'}}>
           <div style={{ textAlign: "center" }}>
             <Box
               component="img"
               src={usdcTokenLogo}
               alt={"USDC Logo"}
-              sx={{ height: 25, width: 30 }}
+              sx={{ height: 25, width: 25, marginRight: 1 }}
             ></Box>
-            <a> USDC Token</a>
+            <Typography> {props.title} Token</Typography>
           </div>
-          <IconButton
-            aria-label="close"
-            onClick={props.onClose}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
+            <IconButton
+              aria-label="close"
+              onClick={props.onClose}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Divider></Divider>
         </DialogTitle>
+
+
+{/* Bottom Half of the Modal */}
         <DialogContent>
-          <Box sx={{ width: "100%", typography: "body1" }}>
-            
+          <Box sx={{ width: "100%", height: "40%", alignItems: "center" , textAlign: 'center', padding: '3%', paddingBottom: '5%'}}>
+            <Stack direction="column" alignItems={"center"} justifyContent={"space-between"}>
+              <Box display="flex" alignItems="center">
+                    <Box
+                      component="img"
+                      sx={{ height: 50, width: 50, marginRight: 1 }}
+                      alt="Wrapped SX Logo"
+                      src={usdcTokenLogo}
+                    />
+                    {/* <Typography variant="body1">USDC Token</Typography> */}
+              </Box>
+              <Typography color="text.secondary" variant="body2">
+                 To Supply or Repay USDC to the Degenlend Protocol, you need to enable it first.
+              </Typography>
+            </Stack>
           </Box>
           <Box sx={{ width: "100%", typography: "body1" }}>
             <TabContext value={value}>
@@ -89,8 +108,25 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   <Tab label="Withdraw" value="2" />
                 </TabList>
               </Box>
-              <TabPanel value="1">Supply</TabPanel>
-              <TabPanel value="2">Withdraw</TabPanel>
+              <TabPanel value="1">
+
+                <Box width={"100%"}>
+                {/* Suply APY */}
+
+                {/* Enable Button */}
+                <Button>
+
+                </Button>
+                {/* Wallet Balance */}
+                <Typography>
+                  
+                </Typography>
+                </Box>
+              </TabPanel>
+              <TabPanel value="2">
+                
+
+              </TabPanel>
             </TabContext>
           </Box>
         </DialogContent>

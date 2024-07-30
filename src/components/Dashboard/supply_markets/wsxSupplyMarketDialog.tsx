@@ -13,7 +13,7 @@ import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
-import { Box, IconButton, Tab } from "@mui/material";
+import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 const Transition = React.forwardRef(function Transition(
@@ -49,7 +49,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
         onClose={props.onClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>
+        <DialogTitle style={{ padding: '5%'}}>
           <div style={{ textAlign: "center" }}>
             <Box
               component="img"
@@ -57,7 +57,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
               alt={"Wrapped SX Logo"}
               sx={{ height: 25, width: 30 }}
             ></Box>
-            <a>{props.title}</a>
+            <Typography>{props.title}</Typography>
           </div>
           <IconButton
             aria-label="close"
@@ -71,7 +71,13 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
           >
             <CloseIcon />
           </IconButton>
+          <Divider></Divider>
+
         </DialogTitle>
+
+
+
+
         <DialogContent>
 
 
