@@ -16,6 +16,7 @@ import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SXDetails from "./widgets/wsxDetails";
+import SXBorrowDetails from "./widgets/wsxBorrow";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -81,7 +82,9 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
               <SXDetails />
             </TabPanel>
 
-            <TabPanel value="2"></TabPanel>
+            <TabPanel value="2">
+              <SXBorrowDetails type={"SX"} />
+            </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

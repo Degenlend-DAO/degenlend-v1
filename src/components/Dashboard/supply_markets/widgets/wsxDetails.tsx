@@ -1,5 +1,3 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
 import { Box, Stack, Typography } from "@mui/material";
 import sxTokenLogo from "../../../../assets/img/sx_coin_token.png";
 

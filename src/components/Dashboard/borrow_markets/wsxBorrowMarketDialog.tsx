@@ -17,6 +17,7 @@ import { TransitionProps } from "@mui/material/transitions";
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import SXDetails from "../supply_markets/widgets/wsxDetails";
+import SXBorrowDetails from "../supply_markets/widgets/wsxBorrow";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -66,7 +67,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
             {/* Details above the tab list */}
             
             <TabPanel value="1">
-
+              <SXBorrowDetails type={"sx"} />
             </TabPanel>
             
             <TabPanel value="2">

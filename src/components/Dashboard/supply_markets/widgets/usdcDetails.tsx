@@ -1,5 +1,3 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
 import { Box, Stack, Typography } from "@mui/material";
 import usdcTokenLogo from "../../../../assets/img/usdc_coin_token.png";
 

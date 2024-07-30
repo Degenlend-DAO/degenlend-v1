@@ -17,6 +17,7 @@ import { TransitionProps } from "@mui/material/transitions";
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 import { Box, Tab, Typography } from "@mui/material";
 import USDCDetails from "../supply_markets/widgets/usdcDetails";
+import USDCBorrowDetails from "../supply_markets/widgets/usdcBorrow";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -64,8 +65,9 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
           <TabContext value={value}>
             {/* Details above the tab list */}
 
-            <TabPanel value="1"></TabPanel>
-
+            <TabPanel value="1">
+              <USDCBorrowDetails type={"USDC"} />
+            </TabPanel>
             <TabPanel value="2">
               <USDCDetails />
             </TabPanel>

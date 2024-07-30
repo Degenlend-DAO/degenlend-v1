@@ -24,6 +24,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import USDCDetails from "./widgets/usdcDetails";
+import USDCBorrowDetails from "./widgets/usdcBorrow";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -91,7 +92,9 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
               <USDCDetails />
             </TabPanel>
 
-            <TabPanel value="2"></TabPanel>
+            <TabPanel value="2">
+              <USDCBorrowDetails type={"USDC"} />
+            </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
