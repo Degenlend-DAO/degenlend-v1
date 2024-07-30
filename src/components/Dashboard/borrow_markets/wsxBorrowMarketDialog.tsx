@@ -47,6 +47,8 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
     return (
       <React.Fragment>
         <Dialog
+          fullWidth={true}
+          maxWidth={"sm"}
           open={props.open}
           TransitionComponent={Transition}
           keepMounted
@@ -63,7 +65,10 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
           <Box sx={{ width: '100%', typography: 'body1' }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
+          <TabList
+            centered
+            variant="fullWidth"
+            onChange={handleChange} aria-label="lab API tabs example">
             <Tab label="Borrow" value="1" />
             <Tab label="Repay" value="2" />
           </TabList>
