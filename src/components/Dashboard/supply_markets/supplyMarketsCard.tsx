@@ -111,7 +111,7 @@ export default function SupplyMarkets() {
                     src={sxTokenLogo}
                   />
                   <Typography variant="body1">Wrapped SX</Typography>
-                </Box>
+            </Box>
             </TableCell>
             <TableCell>{wsxSupplyAPY}%</TableCell>
             <TableCell>{wsxWalletBalance} WSX</TableCell>
@@ -159,4 +159,3 @@ export default function SupplyMarkets() {
     </>
   );
 }
-// LETS FUCKI NGGOOOO I FUCKING DID ITTTTTT -- Steady progress

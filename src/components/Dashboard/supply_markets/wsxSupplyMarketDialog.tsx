@@ -15,6 +15,7 @@ import { TransitionProps } from "@mui/material/transitions";
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import SXDetails from "./widgets/wsxDetails";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -49,7 +50,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
         onClose={props.onClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle style={{ padding: '5%'}}>
+        <DialogTitle style={{ padding: "5%" }}>
           <div style={{ textAlign: "center" }}>
             <Box
               component="img"
@@ -72,17 +73,17 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
             <CloseIcon />
           </IconButton>
           <Divider></Divider>
-
         </DialogTitle>
 
-
-
-
         <DialogContent>
+          <TabContext value={value}>
+            <TabPanel value="1">
+              <SXDetails />
+            </TabPanel>
 
+            <TabPanel value="2"></TabPanel>
 
-          <Box sx={{ width: "100%", typography: "body1" }}>
-            <TabContext value={value}>
+            <Box sx={{ width: "100%", typography: "body1" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
                   centered
@@ -96,8 +97,8 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
               </Box>
               <TabPanel value="1">Supply</TabPanel>
               <TabPanel value="2">Withdraw</TabPanel>
-            </TabContext>
-          </Box>
+            </Box>
+          </TabContext>
         </DialogContent>
       </Dialog>
     </React.Fragment>

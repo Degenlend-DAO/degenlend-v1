@@ -6,17 +6,24 @@ import TabPanel from "@mui/lab/TabPanel";
 
 // Dialogs
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
-import { Box, Divider, IconButton, Stack, Tab, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Typography,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+
+import USDCDetails from "./widgets/usdcDetails";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -51,9 +58,8 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         onClose={props.onClose}
         aria-describedby="alert-dialog-slide-description"
       >
-
-{/* Top half of the modal */}
-        <DialogTitle style={{ padding: '5%'}}>
+        {/* Top half of the modal */}
+        <DialogTitle style={{ padding: "5%" }}>
           <div style={{ textAlign: "center" }}>
             <Box
               component="img"
@@ -63,72 +69,57 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
             ></Box>
             <Typography> {props.title} Token</Typography>
           </div>
-            <IconButton
-              aria-label="close"
-              onClick={props.onClose}
-              sx={{
-                position: "absolute",
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-            <Divider></Divider>
+          <IconButton
+            aria-label="close"
+            onClick={props.onClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Divider></Divider>
         </DialogTitle>
 
-
-{/* Bottom Half of the Modal */}
+        {/* Bottom Half of the Modal */}
         <DialogContent>
-          <Box sx={{ width: "100%", height: "40%", alignItems: "center" , textAlign: 'center', padding: '3%', paddingBottom: '5%'}}>
-            <Stack direction="column" alignItems={"center"} justifyContent={"space-between"}>
-              <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      sx={{ height: 50, width: 50, marginRight: 1 }}
-                      alt="Wrapped SX Logo"
-                      src={usdcTokenLogo}
-                    />
-                    {/* <Typography variant="body1">USDC Token</Typography> */}
-              </Box>
-              <Typography color="text.secondary" variant="body2">
-                 To Supply or Repay USDC to the Degenlend Protocol, you need to enable it first.
-              </Typography>
-            </Stack>
-          </Box>
-          <Box sx={{ width: "100%", typography: "body1" }}>
-            <TabContext value={value}>
+          <TabContext value={value}>
+            <TabPanel value="1">
+              <USDCDetails />
+            </TabPanel>
+
+            <TabPanel value="2"></TabPanel>
+
+            <Box sx={{ width: "100%", typography: "body1" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <TabList 
+                <TabList
                   centered
                   variant="fullWidth"
-                  onChange={handleChange} aria-label="lab API tabs">
+                  onChange={handleChange}
+                  aria-label="lab API tabs"
+                >
                   <Tab label="Supply" value="1" />
                   <Tab label="Withdraw" value="2" />
                 </TabList>
               </Box>
               <TabPanel value="1">
-
                 <Box width={"100%"}>
-                {/* Suply APY */}
+                  {/* Suply APY */}
 
-                {/* Enable Button */}
-                <Button>
-
-                </Button>
-                {/* Wallet Balance */}
-                <Typography>
-                  
-                </Typography>
+                  {/* Enable Button */}
+                  <Button></Button>
+                  {/* Wallet Balance */}
+                  <Typography></Typography>
                 </Box>
               </TabPanel>
               <TabPanel value="2">
-                
-
+                {/* Market Details / Activities  */}
               </TabPanel>
-            </TabContext>
-          </Box>
+            </Box>
+          </TabContext>
         </DialogContent>
       </Dialog>
     </React.Fragment>
