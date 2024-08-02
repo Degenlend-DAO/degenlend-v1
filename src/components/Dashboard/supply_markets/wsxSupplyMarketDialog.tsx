@@ -17,6 +17,12 @@ import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SXDetails from "./widgets/wsxDetails";
 import SXBorrowDetails from "./widgets/wsxBorrow";
+import WithdrawDetails from "./widgets/withdrawDetails";
+import SupplyDetails from "./widgets/supply/supplyDetails";
+
+// Action Items
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/Store";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,6 +45,11 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
+  const wsxWalletBalance = useSelector(
+    (state: RootState) => state.wsx.walletBalance
+  );
 
   return (
     <React.Fragment>
@@ -98,8 +109,16 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   <Tab label="Withdraw" value="2" />
                 </TabList>
               </Box>
-              <TabPanel value="1">Supply</TabPanel>
-              <TabPanel value="2">Withdraw</TabPanel>
+              <TabPanel value="1">
+                
+                <SupplyDetails type={"sx"} supplyAPY={wsxSupplyAPY} supplyBalance={wsxWalletBalance} />
+
+              </TabPanel>
+              <TabPanel value="2">
+                
+                <WithdrawDetails type={"sx"} />
+
+              </TabPanel>
             </Box>
           </TabContext>
         </DialogContent>

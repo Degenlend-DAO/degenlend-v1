@@ -18,6 +18,11 @@ import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 import { Box, Tab, Typography } from "@mui/material";
 import USDCDetails from "../supply_markets/widgets/usdcDetails";
 import USDCBorrowDetails from "../supply_markets/widgets/usdcBorrow";
+import BorrowDetails from "../supply_markets/widgets/borrow/borrowDetails";
+
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/Store";
+import RepayDetails from "../supply_markets/widgets/repayDetails";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,6 +44,14 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const usdcBorrowAPY = useSelector(
+    (state: RootState) => state.usdc.borrowRate
+  );
+  const usdcWalletBalance = useSelector(
+    (state: RootState) => state.usdc.walletBalance
+  );
+
   return (
     <React.Fragment>
       <Dialog
@@ -85,8 +98,16 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   <Tab label="Repay" value="2" />
                 </TabList>
               </Box>
-              <TabPanel value="1">Borrow</TabPanel>
-              <TabPanel value="2">Repay</TabPanel>
+              <TabPanel value="1">
+                
+                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance}/>
+
+              </TabPanel>
+              <TabPanel value="2">
+                
+                <RepayDetails type={"usdc"} />
+
+              </TabPanel>
             </Box>
           </TabContext>
         </DialogContent>

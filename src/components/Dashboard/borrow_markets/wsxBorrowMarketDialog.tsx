@@ -18,6 +18,12 @@ import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import SXDetails from "../supply_markets/widgets/wsxDetails";
 import SXBorrowDetails from "../supply_markets/widgets/wsxBorrow";
+import BorrowDetails from "../supply_markets/widgets/borrow/borrowDetails";
+
+// Action Items
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/Store";
+import RepayDetails from "../supply_markets/widgets/repayDetails";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,6 +45,11 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
+  const wsxWalletBalance = useSelector(
+    (state: RootState) => state.wsx.walletBalance
+  );
 
   return (
     <React.Fragment>
@@ -75,7 +86,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Box sx={{ borderBottom: 1, bBorroworderColor: "divider" }}>
                 <TabList
                   centered
                   variant="fullWidth"
@@ -86,8 +97,16 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   <Tab label="Repay" value="2" />
                 </TabList>
               </Box>
-              <TabPanel value="1">Borrow</TabPanel>
-              <TabPanel value="2">Repay</TabPanel>
+              <TabPanel value="1">
+                
+                <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} />
+
+              </TabPanel>
+              <TabPanel value="2">
+                
+                <RepayDetails type={"SX"} />
+
+              </TabPanel>
             </Box>
           </TabContext>
         </DialogContent>

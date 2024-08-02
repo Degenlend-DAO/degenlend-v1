@@ -25,6 +25,12 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import USDCDetails from "./widgets/usdcDetails";
 import USDCBorrowDetails from "./widgets/usdcBorrow";
+import SupplyDetails from "./widgets/supply/supplyDetails";
+import WithdrawDetails from "./widgets/withdrawDetails";
+
+// Action Items
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/Store";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -47,6 +53,13 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const usdcSupplyAPY = useSelector(
+    (state: RootState) => state.usdc.supplyRate
+  );
+  const usdcWalletBalance = useSelector(
+    (state: RootState) => state.usdc.walletBalance
+  );
 
   return (
     <React.Fragment>
@@ -109,17 +122,15 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                 </TabList>
               </Box>
               <TabPanel value="1">
-                <Box width={"100%"}>
-                  {/* Suply APY */}
 
-                  {/* Enable Button */}
-                  <Button></Button>
-                  {/* Wallet Balance */}
-                  <Typography></Typography>
-                </Box>
+              <SupplyDetails type={"usdc"} supplyAPY={usdcSupplyAPY} supplyBalance={usdcWalletBalance} />
+
               </TabPanel>
               <TabPanel value="2">
-                {/* Market Details / Activities  */}
+
+              <WithdrawDetails type={"usdc"} />
+
+
               </TabPanel>
             </Box>
           </TabContext>
