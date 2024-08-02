@@ -11,9 +11,9 @@ interface BorrowRatesProps {
 
 function BorrowRates(props:BorrowRatesProps) {
     let tokenImg;
-    if (props.type === "sx")
+    if (props.type === "sx" || props.type === "SX")
         tokenImg = sxTokenLogo
-    if (props.type === "usdc")
+    if (props.type === "usdc" || props.type === "USDC")
         tokenImg = usdcTokenLogo
 
     return (
