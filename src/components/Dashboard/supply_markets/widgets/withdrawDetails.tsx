@@ -10,7 +10,7 @@ interface DetailProps {
 function WithdrawDetails(props: DetailProps) {
 
     return (
-        <Box>
+        <Box sx={{width: "100%", alignContent: "center",}}>
             
         </Box>
     );
