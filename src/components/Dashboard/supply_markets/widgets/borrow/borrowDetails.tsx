@@ -3,7 +3,8 @@ import BorrowRates from "./borrowRates";
 
 interface DetailsProps {
     type: String,
-    borrowAPY: number
+    borrowAPY: number,
+    borrowBalance: number
 }
 
 function BorrowDetails(props:DetailsProps) {

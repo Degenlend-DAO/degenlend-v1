@@ -3,7 +3,8 @@ import SupplyRates from "./supplyRates";
 
 interface DetailsProps {
     type: String,
-    supplyAPY: number
+    supplyAPY: number,
+    supplyBalance: number,
 }
 
 function SupplyDetails(props: DetailsProps) {
