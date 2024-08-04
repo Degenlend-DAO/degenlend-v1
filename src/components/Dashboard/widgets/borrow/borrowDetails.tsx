@@ -1,13 +1,19 @@
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import BorrowRates from "./borrowRates";
+import BorrowLimit from "./borrowLimit";
+import BorrowButton from "./borrowButton";
 
 interface DetailsProps {
     type: String,
     borrowAPY: number,
-    borrowBalance: number
+    borrowBalance: number,
+    borrowLimit: number,
+    borrowLimitUsed: number
 }
 
 function BorrowDetails(props:DetailsProps) {
+
+    const { type, borrowAPY, borrowBalance, borrowLimit, borrowLimitUsed } = props;
 
     return (
         <Box sx={{ width: "100%", height: "40%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
@@ -15,16 +21,16 @@ function BorrowDetails(props:DetailsProps) {
 
         {/* Borrow Rates */}
 
-        <BorrowRates type={props.type} borrowAPY={props.borrowAPY} />
+        <BorrowRates type={type} borrowAPY={borrowAPY} />
 
         {/* Borrow Limit */}
 
-        <Typography> Borrow Balance </Typography>
-        <Divider></Divider>
-        <Typography> Borrow Limit Used </Typography>
+        <BorrowLimit type={type} borrowLimit={borrowLimit} borrowLimitUsed={borrowLimitUsed} />
 
-        <Button variant="contained" disabled>Borrow Limit Reached</Button>
-        <Typography>Currently Borrowing: </Typography>
+        {/* Borrow Button */}
+
+        <BorrowButton type={type} BorrowBalance={borrowBalance} />
+
         </Stack>
       </Box>
     );

@@ -1,45 +1,45 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 
 
-interface SupplyButtonProps {
+interface BorrowButtonProps {
     type: String,
-    supplyBalance: number,
+    BorrowBalance: number,
 }
 
-function SupplyButton(props: SupplyButtonProps) {
+function BorrowButton(props: BorrowButtonProps) {
 
-    const { type, supplyBalance } = props
+    const { type, BorrowBalance } = props
 
 
     let buttonText = ""
 
-    if (supplyBalance === 0 || supplyBalance === undefined )
+    if (BorrowBalance === 0 || BorrowBalance === undefined )
     {
-        buttonText = "No Balance to Supply!"
+        buttonText = "No Balance to Borrow!"
     }
 
-    if (supplyBalance > 0)
+    if (BorrowBalance > 0)
     {
-        buttonText = `Supply ${supplyBalance} ${type.toUpperCase()} tokens`
+        buttonText = `Borrow ${BorrowBalance} ${type.toUpperCase()} tokens`
     }
 
     function handleChange() {
-        alert('You pressed the Supply button!');
+        alert('You pressed the Borrow button!');
     }
 
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
 
-        <Stack direction={"row"} alignContent={"flex-start"}>
-            <Typography> Currently Supplying </Typography>
-            {/* Supply Balance in that unit of currency */}
-            <Typography>{supplyBalance} {type.toUpperCase()}</Typography>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography> Currently Borrowing </Typography>
+            {/* Borrow Balance in that unit of currency */}
+            <Typography>{BorrowBalance} {type.toUpperCase()}</Typography>
         </Stack>
         
         </Box>
     );
 }
 
-export default SupplyButton;
+export default BorrowButton;

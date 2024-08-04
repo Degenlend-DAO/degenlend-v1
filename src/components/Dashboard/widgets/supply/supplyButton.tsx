@@ -30,12 +30,12 @@ function SupplyButton(props: SupplyButtonProps) {
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
 
-        <Stack direction={"row"} alignContent={"flex-start"}>
-            <Typography> Currently Supplying </Typography>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography> Wallet Balance </Typography>
             {/* Supply Balance in that unit of currency */}
-            <Typography>{supplyBalance} {type.toUpperCase()}</Typography>
+            <Typography variant="body2">{supplyBalance} {type.toUpperCase()}</Typography>
         </Stack>
         
         </Box>

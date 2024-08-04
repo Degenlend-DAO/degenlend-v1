@@ -30,9 +30,9 @@ function WithdrawButton(props: WithdrawButtonProps) {
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
 
-        <Stack direction={"row"} alignContent={"flex-start"}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Supplying </Typography>
             {/* Supply Balance in that unit of currency */}
             <Typography>{supplyBalance} {type.toUpperCase()}</Typography>

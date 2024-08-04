@@ -1,6 +1,6 @@
 import { Box, Divider, Stack, Typography } from "@mui/material";
-import sxTokenLogo from "../../../../../assets/img/sx_coin_token.png";
-import usdcTokenLogo from "../../../../../assets/img/usdc_coin_token.png";
+import sxTokenLogo from "../../../../assets/img/sx_coin_token.png";
+import usdcTokenLogo from "../../../../assets/img/usdc_coin_token.png";
 
 
 interface SupplyRatesProps {

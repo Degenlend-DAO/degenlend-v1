@@ -3,8 +3,8 @@ import {Box, Divider, Stack, Typography} from "@mui/material"
 
 interface BorrowLimitProps {
     type: String,
-    borrowLimit: String,
-    borrowLimitUsed: String,
+    borrowLimit: number,
+    borrowLimitUsed: number,
 }
 
 function BorrowLimit(props: BorrowLimitProps) {
@@ -16,10 +16,15 @@ function BorrowLimit(props: BorrowLimitProps) {
             </Stack>
             <Divider sx={{ my: 1 }} />
             <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="body2" color="textSecondary">Borrow Limit</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>${props.borrowLimit.toFixed(2)}</Typography>
 
-                <Stack direction="row" alignItems="center" spacing={1}>
-                    
-                </Stack>
+            </Stack>
+            <Divider sx={{}} />
+
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="body2" color="textSecondary">Borrow Limit Used</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{props.borrowLimitUsed.toFixed(2)}%</Typography>
 
             </Stack>
 

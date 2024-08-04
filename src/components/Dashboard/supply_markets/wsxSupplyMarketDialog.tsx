@@ -89,11 +89,11 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
 
         <DialogContent>
           <TabContext value={value}>
-            <TabPanel value="1">
+            <TabPanel value="0">
               <EnableWarning type={"sx"} />
             </TabPanel>
 
-            <TabPanel value="2">
+            <TabPanel value="1">
               <SXBorrowDetails type={"SX"} />
             </TabPanel>
 
@@ -105,16 +105,16 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   onChange={handleChange}
                   aria-label="lab API tabs example"
                 >
-                  <Tab label="Supply" value="1" />
-                  <Tab label="Withdraw" value="2" />
+                  <Tab label="Supply" value="0" />
+                  <Tab label="Withdraw" value="1" />
                 </TabList>
               </Box>
-              <TabPanel value="1">
+              <TabPanel value="0">
                 
                 <SupplyDetails type={"sx"} supplyAPY={wsxSupplyAPY} supplyBalance={wsxWalletBalance} />
 
               </TabPanel>
-              <TabPanel value="2">
+              <TabPanel value="1">
                 
                 <WithdrawDetails type={"sx"} supplyAPY={wsxSupplyAPY} borrowAPY={0} supplyBalance={0} />
 

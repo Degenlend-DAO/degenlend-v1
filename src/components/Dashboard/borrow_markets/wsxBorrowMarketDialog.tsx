@@ -77,11 +77,11 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
           <TabContext value={value}>
             {/* Details above the tab list */}
             
-            <TabPanel value="1">
+            <TabPanel value="0">
               <SXBorrowDetails type={"sx"} />
             </TabPanel>
             
-            <TabPanel value="2">
+            <TabPanel value="1">
               <EnableWarning type={"sx"} />
             </TabPanel>
 

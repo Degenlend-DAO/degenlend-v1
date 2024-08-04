@@ -1,6 +1,6 @@
 import { Box, Divider, Stack, Typography } from "@mui/material";
-import sxTokenLogo from "../../../../../assets/img/sx_coin_token.png";
-import usdcTokenLogo from "../../../../../assets/img/usdc_coin_token.png";
+import sxTokenLogo from "../../../../assets/img/sx_coin_token.png";
+import usdcTokenLogo from "../../../../assets/img/usdc_coin_token.png";
 
 
 interface BorrowRatesProps {
@@ -10,11 +10,11 @@ interface BorrowRatesProps {
 }
 
 function BorrowRates(props:BorrowRatesProps) {
-    let tokenImg;
+    let tokenLogo;
     if (props.type === "sx" || props.type === "SX")
-        { tokenImg = sxTokenLogo } else
+        { tokenLogo = sxTokenLogo } else
     if (props.type === "usdc" || props.type === "USDC")
-        { tokenImg = usdcTokenLogo }
+        { tokenLogo = usdcTokenLogo }
 
     return (
         <Box sx={{ width: "100%", height: "40%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
@@ -26,7 +26,7 @@ function BorrowRates(props:BorrowRatesProps) {
                 <Stack direction="row" alignItems="center" spacing={1}>
                     <Box
               component="img"
-              src={tokenImg}
+              src={tokenLogo}
               alt={`${props.type} Logo`}
               sx={{ height: 24, width: 24 }}
             ></Box>

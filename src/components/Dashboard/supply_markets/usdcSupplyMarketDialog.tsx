@@ -101,11 +101,11 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         {/* Bottom Half of the Modal */}
         <DialogContent>
           <TabContext value={value}>
-            <TabPanel value="1">
+            <TabPanel value="0">
             <EnableWarning type={"usdc"} />
             </TabPanel>
 
-            <TabPanel value="2">
+            <TabPanel value="1">
               <USDCBorrowDetails type={"USDC"} />
             </TabPanel>
 
@@ -121,12 +121,12 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   <Tab label="Withdraw" value="2" />
                 </TabList>
               </Box>
-              <TabPanel value="1">
+              <TabPanel value="0">
 
               <SupplyDetails type={"usdc"} supplyAPY={usdcSupplyAPY} supplyBalance={usdcWalletBalance} />
 
               </TabPanel>
-              <TabPanel value="2">
+              <TabPanel value="1">
 
               <WithdrawDetails type={"usdc"} supplyAPY={usdcSupplyAPY} borrowAPY={0} supplyBalance={0} />
 
