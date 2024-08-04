@@ -93,16 +93,16 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   onChange={handleChange}
                   aria-label="lab API tabs example"
                 >
-                  <Tab label="Borrow" value="1" />
-                  <Tab label="Repay" value="2" />
+                  <Tab label="Borrow" value="0" />
+                  <Tab label="Repay" value="1" />
                 </TabList>
               </Box>
-              <TabPanel value="1">
+              <TabPanel value="0">
                 
                 <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} borrowLimit={0} borrowLimitUsed={0} />
 
               </TabPanel>
-              <TabPanel value="2">
+              <TabPanel value="1">
                 
                 <RepayDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={0} />
 

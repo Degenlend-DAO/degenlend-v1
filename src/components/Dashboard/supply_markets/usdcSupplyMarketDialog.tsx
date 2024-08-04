@@ -117,8 +117,8 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   onChange={handleChange}
                   aria-label="lab API tabs"
                 >
-                  <Tab label="Supply" value="1" />
-                  <Tab label="Withdraw" value="2" />
+                  <Tab label="Supply" value="0" />
+                  <Tab label="Withdraw" value="1" />
                 </TabList>
               </Box>
               <TabPanel value="0">
