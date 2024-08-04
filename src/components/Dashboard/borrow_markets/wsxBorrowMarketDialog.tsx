@@ -16,14 +16,14 @@ import { TransitionProps } from "@mui/material/transitions";
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import SXDetails from "../supply_markets/widgets/wsxDetails";
-import SXBorrowDetails from "../supply_markets/widgets/wsxBorrow";
-import BorrowDetails from "../supply_markets/widgets/borrow/borrowDetails";
+import SXDetails from "../widgets/wsxDetails";
+import SXBorrowDetails from "../widgets/wsxBorrow";
+import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 // Action Items
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
-import RepayDetails from "../supply_markets/widgets/repayDetails";
+import RepayDetails from "../widgets/repay/repayDetails";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -104,7 +104,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </TabPanel>
               <TabPanel value="2">
                 
-                <RepayDetails type={"SX"} />
+                <RepayDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={0} />
 
               </TabPanel>
             </Box>

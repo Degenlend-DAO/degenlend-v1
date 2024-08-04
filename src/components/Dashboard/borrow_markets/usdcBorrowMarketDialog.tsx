@@ -16,13 +16,13 @@ import { TransitionProps } from "@mui/material/transitions";
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 import { Box, Tab, Typography } from "@mui/material";
-import USDCDetails from "../supply_markets/widgets/usdcDetails";
-import USDCBorrowDetails from "../supply_markets/widgets/usdcBorrow";
-import BorrowDetails from "../supply_markets/widgets/borrow/borrowDetails";
+import USDCDetails from "../widgets/usdcDetails";
+import USDCBorrowDetails from "../widgets/usdcBorrow";
+import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
-import RepayDetails from "../supply_markets/widgets/repayDetails";
+import RepayDetails from "../widgets/repay/repayDetails";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -105,7 +105,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </TabPanel>
               <TabPanel value="2">
                 
-                <RepayDetails type={"usdc"} />
+                <RepayDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance} />
 
               </TabPanel>
             </Box>

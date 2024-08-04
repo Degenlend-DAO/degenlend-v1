@@ -23,10 +23,10 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import USDCDetails from "./widgets/usdcDetails";
-import USDCBorrowDetails from "./widgets/usdcBorrow";
-import SupplyDetails from "./widgets/supply/supplyDetails";
-import WithdrawDetails from "./widgets/withdrawDetails";
+import USDCDetails from "../widgets/usdcDetails";
+import USDCBorrowDetails from "../widgets/usdcBorrow";
+import SupplyDetails from "../widgets/supply/supplyDetails";
+import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 
 // Action Items
 import { useSelector } from "react-redux";
@@ -128,7 +128,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
               </TabPanel>
               <TabPanel value="2">
 
-              <WithdrawDetails type={"usdc"} />
+              <WithdrawDetails type={"usdc"} supplyAPY={usdcSupplyAPY} borrowAPY={0} supplyBalance={0} />
 
 
               </TabPanel>

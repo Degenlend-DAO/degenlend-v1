@@ -15,10 +15,10 @@ import { TransitionProps } from "@mui/material/transitions";
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import SXDetails from "./widgets/wsxDetails";
-import SXBorrowDetails from "./widgets/wsxBorrow";
-import WithdrawDetails from "./widgets/withdrawDetails";
-import SupplyDetails from "./widgets/supply/supplyDetails";
+import SXDetails from "../widgets/wsxDetails";
+import SXBorrowDetails from "../widgets/wsxBorrow";
+import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
+import SupplyDetails from "../widgets/supply/supplyDetails";
 
 // Action Items
 import { useSelector } from "react-redux";
@@ -116,7 +116,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
               </TabPanel>
               <TabPanel value="2">
                 
-                <WithdrawDetails type={"sx"} />
+                <WithdrawDetails type={"sx"} supplyAPY={wsxSupplyAPY} borrowAPY={0} supplyBalance={0} />
 
               </TabPanel>
             </Box>
