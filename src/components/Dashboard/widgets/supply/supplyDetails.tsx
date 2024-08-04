@@ -1,5 +1,6 @@
-import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import SupplyRates from "./supplyRates";
+import SupplyButton from "./supplyButton";
 
 interface DetailsProps {
     type: String,
@@ -8,13 +9,17 @@ interface DetailsProps {
 }
 
 function SupplyDetails(props: DetailsProps) {
-       const {type, supplyAPY } = props;
+       const {type, supplyAPY, supplyBalance } = props;
     return (
         <Box sx={{ width: "100%", padding: "3%"}}>
 
         {/* Supply Rates */}
-
-        {/* Enable Button */}
+        
+        <SupplyRates type={type} supplyAPY={supplyAPY} />
+        
+        {/* Supply Button */}
+        
+        <SupplyButton type={type} supplyBalance={supplyBalance} />
 
         </Box>
     );
