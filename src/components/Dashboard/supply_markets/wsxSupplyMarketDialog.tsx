@@ -15,7 +15,6 @@ import { TransitionProps } from "@mui/material/transitions";
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import SXDetails from "../widgets/wsxDetails";
 import SXBorrowDetails from "../widgets/wsxBorrow";
 import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 import SupplyDetails from "../widgets/supply/supplyDetails";
@@ -23,6 +22,7 @@ import SupplyDetails from "../widgets/supply/supplyDetails";
 // Action Items
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
+import EnableWarning from "../widgets/enableWarning";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -90,7 +90,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="1">
-              <SXDetails />
+              <EnableWarning type={"sx"} />
             </TabPanel>
 
             <TabPanel value="2">

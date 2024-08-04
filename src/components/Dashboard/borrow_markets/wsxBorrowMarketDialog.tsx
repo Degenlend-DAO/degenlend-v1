@@ -16,7 +16,6 @@ import { TransitionProps } from "@mui/material/transitions";
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import SXDetails from "../widgets/wsxDetails";
 import SXBorrowDetails from "../widgets/wsxBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
@@ -24,6 +23,7 @@ import BorrowDetails from "../widgets/borrow/borrowDetails";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
 import RepayDetails from "../widgets/repay/repayDetails";
+import EnableWarning from "../widgets/enableWarning";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -82,7 +82,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
             </TabPanel>
             
             <TabPanel value="2">
-              <SXDetails />
+              <EnableWarning type={"sx"} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
@@ -99,7 +99,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </Box>
               <TabPanel value="1">
                 
-                <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} />
+                <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} borrowLimit={0} borrowLimitUsed={0} />
 
               </TabPanel>
               <TabPanel value="2">

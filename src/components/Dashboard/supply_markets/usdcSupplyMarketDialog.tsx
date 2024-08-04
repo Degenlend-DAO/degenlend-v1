@@ -23,7 +23,6 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import USDCDetails from "../widgets/usdcDetails";
 import USDCBorrowDetails from "../widgets/usdcBorrow";
 import SupplyDetails from "../widgets/supply/supplyDetails";
 import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
@@ -31,6 +30,7 @@ import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 // Action Items
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
+import EnableWarning from "../widgets/enableWarning";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -102,7 +102,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="1">
-              <USDCDetails />
+            <EnableWarning type={"usdc"} />
             </TabPanel>
 
             <TabPanel value="2">
