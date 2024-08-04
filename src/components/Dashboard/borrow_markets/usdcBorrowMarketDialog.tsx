@@ -39,9 +39,9 @@ interface BorrowMarketDialogProps {
 }
 
 function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState("0");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
