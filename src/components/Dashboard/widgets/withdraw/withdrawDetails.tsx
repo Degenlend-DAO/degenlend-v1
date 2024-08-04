@@ -24,7 +24,7 @@ function WithdrawDetails(props: DetailProps) {
 
         {/* Borrow APY */}
 
-        <BorrowLimit type={type} borrowLimit={"0"} borrowLimitUsed={"0"}  />
+        <BorrowLimit type={type} borrowLimit={0} borrowLimitUsed={0}  />
 
         {/* Enable Button */}
 
