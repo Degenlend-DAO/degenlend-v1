@@ -5,8 +5,8 @@ import {
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 
 // Market Items
-import BorrowMarkets from "./borrow_markets/borrowMarketsCard";
-import SupplyMarkets from "./supply_markets/supplyMarketsCard";
+import BorrowMarkets from "./borrow_markets/borrowMarketsTable";
+import SupplyMarkets from "./supply_markets/supplyMarketsTable";
 
 function Markets() {
   //  This fragment holds the supply & borrow markets tables in one container
