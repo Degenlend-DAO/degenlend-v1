@@ -7,6 +7,7 @@ import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 // Market Items
 import BorrowMarkets from "./borrow_markets/borrowMarketsTable";
 import SupplyMarkets from "./supply_markets/supplyMarketsTable";
+import MarketHeader from "./marketHeader";
 
 function Markets() {
   //  This fragment holds the supply & borrow markets tables in one container
@@ -21,7 +22,9 @@ function Markets() {
         pb: { xs: 8, sm: 12 },
       }}
     >
-      {/* <CustomBarChart /> */}
+
+    <MarketHeader />
+
       <Grid
         container
         spacing={6}
