@@ -94,7 +94,7 @@ export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', 
     }
     });
 
-export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async ({ borrowAddress }: borrowUSDCParams) => {
+export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
