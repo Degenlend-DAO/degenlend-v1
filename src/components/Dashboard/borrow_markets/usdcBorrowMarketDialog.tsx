@@ -1,28 +1,31 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 
 // Dialogs
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
+import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
-import { Box, Tab, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import USDCBorrowDetails from "../widgets/usdcBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/Store";
 import RepayDetails from "../widgets/repay/repayDetails";
 import EnableWarning from "../widgets/enableWarning";
+
+// Action Items
+import { updateUSDCBalance, updateBorrowBalance, borrowUSDC, repayUSDC } from "../../../features/dashboard/USDCMarketSlice";
+import { useEffect } from "react";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -40,10 +43,14 @@ interface BorrowMarketDialogProps {
 
 function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
+  const dispatch = useDispatch();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
+  useEffect(()=> {
+    if (props.open) {
+      dispatch(updateUSDCBalance() as unknown as UnknownAction);
+      dispatch(updateBorrowBalance() as unknown as UnknownAction);
+    }
+  }, [props.open, dispatch]);
 
   const usdcBorrowAPY = useSelector(
     (state: RootState) => state.usdc.borrowRate
@@ -51,6 +58,19 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const usdcWalletBalance = useSelector(
     (state: RootState) => state.usdc.walletBalance
   );
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
+
+  const handleBorrow = () => {
+    dispatch(borrowUSDC() as unknown as UnknownAction);
+  }
+
+  const handleRepay = () => {
+    dispatch(repayUSDC() as unknown as UnknownAction);
+  }
+
 
   return (
     <React.Fragment>
@@ -73,6 +93,19 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
             ></Box>
             <Typography>{props.title}</Typography>
           </div>
+          <IconButton
+            aria-label="close"
+            onClick={props.onClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Divider></Divider>
         </DialogTitle>
         <DialogContent>
           <TabContext value={value} >
