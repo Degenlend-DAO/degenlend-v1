@@ -1,12 +1,14 @@
 
 import * as React from 'react';
-import { Box, Switch, Tab, Tabs } from '@mui/material';
+import { Box, Button, Divider, IconButton, Switch, Tab, Tabs, Typography } from '@mui/material';
 
 
 // Dialogs
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
+import CloseIcon from "@mui/icons-material/Close";
+
 import DialogTitle from '@mui/material/DialogTitle';
 
 import Slide from '@mui/material/Slide';
@@ -29,40 +31,75 @@ const Transition = React.forwardRef(function Transition(
   }
 
 function EnableMarketDialog(props: EnableMarketsProps) {
+    const [value, setValue] = React.useState(0);
 
-    const [open, setOpen] = React.useState(false);
-    const [value, setValue] = React.useState(false);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
+    // const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    //   setValue(newValue);
+    // };
   
-    const handleClose = () => {
-      setOpen(false);
-    };
-
-    const handleChange = (event: React.SyntheticEvent, newValue: boolean) => {
-      setValue(newValue);
-    };
-
     
   
     return (
       <React.Fragment>
         <Dialog
-          open={props.open}
-          TransitionComponent={Transition}
-          keepMounted
-          onClose={props.onClose}
-          aria-describedby="alert-dialog-slide-description"
+        fullWidth={true}
+        maxWidth={"sm"}
+        open={props.open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={props.onClose}
+        aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>
     <div style={{ textAlign: 'center'}}>
-    <Box component="a" sx={{ height: 25, width: 30}}> Enable {props.title} Collateral</Box>
+    <Box component="span" sx={{ fontSize: 20, fontWeight: 'bold' }}> Enable {props.title} as Collateral</Box>
           </div>
+          <IconButton
+            aria-label="close"
+            onClick={props.onClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Divider></Divider>
           </DialogTitle>
           <DialogContent>
 
-          {props.type === 'sx' ? 'SX Market Details' : 'USDC Market Details'}
+            {/* Warning Label */}
+            <Box sx={{ textAlign: 'center', marginBottom: 2 }}>
+          <DialogContentText sx={{ color: 'text.secondary' }}>
+            Each asset used as collateral increases your borrowing limit. Be careful, this can subject the asset to being seized in liquidation.{' '}
+            <a href="#learn-more" style={{ color: 'inherit', textDecoration: 'underline' }}>
+              Learn more
+            </a>.
+          </DialogContentText>
+        </Box>
+
+          {/* Borrow Limit Content */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2, marginBottom: 2 }}>
+          <Typography variant="body2">Borrow Limit</Typography>
+          <Typography variant="body2">$0.00 → $0</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+          <Typography variant="body2">Borrow Limit Used</Typography>
+          <Typography variant="body2">0% → 0%</Typography>
+        </Box>
+          {/* Enable Button */}
+
+          <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ marginTop: 2, fontWeight: 'bold', paddingY: 1.5 }}
+          onClick={props.onClose} // Assuming this button will close the dialog for now
+        >
+          Use {props.title} as Collateral
+        </Button>
 
           </DialogContent>
         </Dialog>
