@@ -6,16 +6,15 @@ import TabPanel from "@mui/lab/TabPanel";
 
 // Dialogs
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
+import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Tab, Tabs, Typography } from "@mui/material";
 import SXBorrowDetails from "../widgets/wsxBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
@@ -72,6 +71,19 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
             ></Box>
             <Typography>{props.title}</Typography>
           </div>
+          <IconButton
+            aria-label="close"
+            onClick={props.onClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Divider></Divider>
         </DialogTitle>
         <DialogContent>
           <TabContext value={value}>
