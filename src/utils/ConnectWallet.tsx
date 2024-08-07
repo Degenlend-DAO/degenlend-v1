@@ -44,6 +44,7 @@ const ConnectWallet = () => {
                             variant='contained'
                             onClick={handleClick}
                             size='medium'
+                            aria-label="button to open dropdown"
                         >
                             {filteredWalletAddress(walletAddress)}
                         </Button>
@@ -62,6 +63,7 @@ const ConnectWallet = () => {
                         variant='contained'
                         onClick={onConnectWallet}
                         size='medium'
+                        aria-label="button to connect wallet"
                     >
                         Conntect Wallet
                     </Button>

@@ -97,6 +97,7 @@ function EnableMarketDialog(props: EnableMarketsProps) {
           fullWidth
           sx={{ marginTop: 2, fontWeight: 'bold', paddingY: 1.5 }}
           onClick={props.onClose} // Assuming this button will close the dialog for now
+          aria-label="button to toggle collateral"
         >
           Use {props.title} as Collateral
         </Button>

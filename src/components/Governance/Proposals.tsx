@@ -15,7 +15,7 @@ const Proposals = () => {
                 pb: { xs: 8, sm: 12 },
             }}>
                 <Box display="flex" alignItems="center" gap={1}>
-                    <Button variant="outlined" size="small" disabled>Review</Button>
+                    <Button variant="outlined" size="small" disabled aria-label="button to review proposals">Review</Button>
                     <Typography variant="body2" color="textPrimary">
                         {index}
                     </Typography>

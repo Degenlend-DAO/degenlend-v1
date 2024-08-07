@@ -41,7 +41,7 @@ const Vote = () => {
                                         <Typography variant="body2" style={{ margin: '20px 0' }}>
                                             You can either vote on each proposal yourself or delegate your votes to a third party. Compound Governance puts you in charge of the future of Compound. Learn more.
                                         </Typography>
-                                        <Button variant="contained" color="primary">Connect Wallet to Get Started</Button>
+                                        <Button variant="contained" color="primary" aria-label="button to connect wallet">Connect Wallet to Get Started</Button>
                                     </Paper>
                                 </Grid>
                             </Grid>
