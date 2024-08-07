@@ -68,10 +68,10 @@ const TopNavigationBar = () => {
                                     onKeyDown={handleDrawerToggle}
                                 >
                                     <List>
-                                        <ListItem button component={Link} to="/markets">
+                                        <ListItem component={Link} to="/markets">
                                             <ListItemText primary="Markets" />
                                         </ListItem>
-                                        <ListItem button component={Link} to="/faq">
+                                        <ListItem component={Link} to="/faq">
                                             <ListItemText primary="FAQ" />
                                         </ListItem>
                                         <ListItem>
