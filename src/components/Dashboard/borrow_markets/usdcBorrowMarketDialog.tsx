@@ -25,7 +25,7 @@ import EnableWarning from "../widgets/enableWarning";
 // Action Items
 import { updateUSDCBalance, updateBorrowBalance, borrowUSDC, repayUSDC } from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
-import { UnknownAction } from "@reduxjs/toolkit";
+import { AppDispatch } from "../../../app/Store";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -43,12 +43,12 @@ interface BorrowMarketDialogProps {
 
 function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(()=> {
+  useEffect(() => {
     if (props.open) {
-      dispatch(updateUSDCBalance() as unknown as UnknownAction);
-      dispatch(updateBorrowBalance() as unknown as UnknownAction);
+      dispatch(updateUSDCBalance());
+      dispatch(updateBorrowBalance());
     }
   }, [props.open, dispatch]);
 
@@ -64,11 +64,11 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   };
 
   const handleBorrow = () => {
-    dispatch(borrowUSDC() as unknown as UnknownAction);
+    dispatch(borrowUSDC());
   }
 
   const handleRepay = () => {
-    dispatch(repayUSDC() as unknown as UnknownAction);
+    dispatch(repayUSDC());
   }
 
 
@@ -132,12 +132,12 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                 </TabList>
               </Box>
               <TabPanel value="0">
-                
-                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance} borrowLimit={0} borrowLimitUsed={0}/>
+
+                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance} borrowLimit={0} borrowLimitUsed={0} />
 
               </TabPanel>
               <TabPanel value="1">
-                
+
                 <RepayDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance} />
 
               </TabPanel>
