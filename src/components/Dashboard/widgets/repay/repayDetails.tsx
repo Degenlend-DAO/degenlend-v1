@@ -4,7 +4,7 @@ import RepayButton from "./repayButton";
 
 
 interface DetailProps {
-    type: String,
+    type: string,
     borrowAPY: number,
     borrowBalance: number,
 }

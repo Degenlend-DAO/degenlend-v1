@@ -4,7 +4,7 @@ import BorrowLimit from "./borrowLimit";
 import BorrowButton from "./borrowButton";
 
 interface DetailsProps {
-    type: String,
+    type: string,
     borrowAPY: number,
     borrowBalance: number,
     borrowLimit: number,
