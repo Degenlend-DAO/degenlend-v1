@@ -17,33 +17,41 @@ const initialState: WalletState = {
     isConnected: false,
 }
 
-export const connectWallet = createAsyncThunk('wallet/connect', async () => {
-    const wallets = await onboard.connectWallet();
-    console.log(`Connected wallets: $wallets & main address: ${wallets[0].accounts[0].address}`)
-
-    return wallets[0].accounts[0].address;
+export const connectWallet = createAsyncThunk('wallet/connect', async (_, { rejectWithValue }) => {
+    try {
+        const wallets = await onboard.connectWallet()
+        return wallets[0].accounts[0].address
+    } catch (error) {
+        return rejectWithValue(error)
+    }
 });
 
-export const disconnectWallet = createAsyncThunk('wallet/disconnect', async () => {
-
-    const [wallet] = onboard.state.get().wallets
-    await onboard.disconnectWallet({ label: wallet.label }) // JSON error occurs, but the wallet still disconnects.
-
-    return EMPTY_ADDRESS;
+export const disconnectWallet = createAsyncThunk('wallet/disconnect', async (_, { rejectWithValue }) => {
+    try {
+        const [wallet] = onboard.state.get().wallets
+        await onboard.disconnectWallet({ label: wallet.label })
+        return EMPTY_ADDRESS
+    } catch (error) {
+        return rejectWithValue(error)
+    }
 });
 
-export const signTransaction = createAsyncThunk('wallet/sign', async () => {
-    const [wallet] = onboard.state.get().wallets;
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const signer = await ethersProvider.getSigner();
-    // send a transaction with the ethers provider
-    const txn = await signer.sendTransaction({
-        to: '0x',
-        value: 100000000000000
-    })
+export const signTransaction = createAsyncThunk('wallet/sign', async (_, { rejectWithValue }) => {
+    try {
+        const [wallet] = onboard.state.get().wallets;
+        const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+        const signer = await ethersProvider.getSigner();
+        // send a transaction with the ethers provider
+        const txn = await signer.sendTransaction({
+            to: '0x',
+            value: 100000000000000
+        })
 
-    const receipt = await txn.wait()
-    console.log(receipt)
+        const receipt = await txn.wait()
+        console.log(receipt)
+    } catch (error) {
+        return rejectWithValue(error)
+    }
 })
 
 export const walletSlice = createSlice({
