@@ -26,7 +26,7 @@ export default function SupplyMarkets() {
   const [supplySXDialogOpen, setSupplySXDialogOpen] = React.useState(false);
   const [supplyUSDCDialogOpen, setSupplyUSDCDialogOpen] = React.useState(false);
 
-  
+
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
   );
@@ -85,25 +85,26 @@ export default function SupplyMarkets() {
 
         {/* Table Body */}
         <Table size="medium">
-        <TableHead>
-          <TableRow>
-            <TableCell> Asset </TableCell>
-            <TableCell>  APY </TableCell>
-            <TableCell>  Balance </TableCell>
-            <TableCell> Collateral </TableCell>
-            <TableCell>  Price </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {/* Wrapped SX Market Details */}
-          <TableRow
-            hover
-            onClick={(event) => {
+          <TableHead>
+            <TableRow>
+              <TableCell> Asset </TableCell>
+              <TableCell>  APY </TableCell>
+              <TableCell>  Balance </TableCell>
+              <TableCell> Collateral </TableCell>
+              <TableCell>  Price </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {/* Wrapped SX Market Details */}
+            <TableRow
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={(event) => {
                 handleSXRowClick(event);
-            }}
-          >
-            <TableCell>
-            <Box display="flex" alignItems="center">
+              }}
+            >
+              <TableCell>
+                <Box display="flex" alignItems="center">
                   <Box
                     component="img"
                     sx={{ height: 25, width: 25, marginRight: 1 }}
@@ -111,24 +112,25 @@ export default function SupplyMarkets() {
                     src={sxTokenLogo}
                   />
                   <Typography variant="body1">Wrapped SX</Typography>
-            </Box>
-            </TableCell>
-            <TableCell>{wsxSupplyAPY}%</TableCell>
-            <TableCell>{wsxWalletBalance} WSX</TableCell>
-            <TableCell>
-              <Switch onClick={(event) => { handleSXSwitchClick(event)}} />
-            </TableCell>
-            <TableCell>{wsxOraclePrice}</TableCell>
-          </TableRow>
-          {/* USDC Market Details */}
-          <TableRow
-            hover
-            onClick={(event) => {
+                </Box>
+              </TableCell>
+              <TableCell>{wsxSupplyAPY}%</TableCell>
+              <TableCell>{wsxWalletBalance} WSX</TableCell>
+              <TableCell>
+                <Switch onClick={(event) => { handleSXSwitchClick(event) }} />
+              </TableCell>
+              <TableCell>{wsxOraclePrice}</TableCell>
+            </TableRow>
+            {/* USDC Market Details */}
+            <TableRow
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={(event) => {
                 handleUSDCRowClick(event);
-            }}
-          >
-            <TableCell>
-            <Box display="flex" alignItems="center">
+              }}
+            >
+              <TableCell>
+                <Box display="flex" alignItems="center">
                   <Box
                     component="img"
                     sx={{ height: 25, width: 25, marginRight: 1 }}
@@ -137,25 +139,25 @@ export default function SupplyMarkets() {
                   />
                   <Typography variant="body1">USD Coin</Typography>
                 </Box>
-            </TableCell>
-            <TableCell>{usdcSupplyAPY}%</TableCell>
-            <TableCell>{usdcWalletBalance} USDC</TableCell>
-            <TableCell>
+              </TableCell>
+              <TableCell>{usdcSupplyAPY}%</TableCell>
+              <TableCell>{usdcWalletBalance} USDC</TableCell>
+              <TableCell>
 
-              <Switch onClick={(event) => { handleUSDCSwitchClick(event) }} />
+                <Switch onClick={(event) => { handleUSDCSwitchClick(event) }} />
 
-            </TableCell>
-            <TableCell>{usdcOraclePrice}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+              </TableCell>
+              <TableCell>{usdcOraclePrice}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </TableContainer>
 
       {/* Market Dialogs */}
-      <EnableMarketDialog type='sx' title='Wrapped SX' open={enableSXDialogOpen} onClose={() => {setEnableSXDialogOpen(false)}} />
-      <EnableMarketDialog type='usdc' title='USDC' open={enableUSDCDialogOpen} onClose={() => {setEnableUSDCDialogOpen(false)}} />
-      <WSXSupplyMarketDialog open={supplySXDialogOpen} onClose={() => {setSupplySXDialogOpen(false)}} title={"Wrapped SX"} />
-      <USDCSupplyMarketDialog open={supplyUSDCDialogOpen} onClose={() => {setSupplyUSDCDialogOpen(false)}} title={"USDC"}/>
+      <EnableMarketDialog type='sx' title='Wrapped SX' open={enableSXDialogOpen} onClose={() => { setEnableSXDialogOpen(false) }} />
+      <EnableMarketDialog type='usdc' title='USDC' open={enableUSDCDialogOpen} onClose={() => { setEnableUSDCDialogOpen(false) }} />
+      <WSXSupplyMarketDialog open={supplySXDialogOpen} onClose={() => { setSupplySXDialogOpen(false) }} title={"Wrapped SX"} />
+      <USDCSupplyMarketDialog open={supplyUSDCDialogOpen} onClose={() => { setSupplyUSDCDialogOpen(false) }} title={"USDC"} />
     </>
   );
 }

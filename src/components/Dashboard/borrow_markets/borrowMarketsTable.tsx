@@ -68,25 +68,26 @@ export default function BorrowMarkets() {
         </Table>
 
         {/* Table Body */}
-      <Table size="medium">
-        <TableHead>
-          <TableRow>
-            <TableCell> Asset </TableCell>
-            <TableCell> APY </TableCell>
-            <TableCell> Balance </TableCell>
-            <TableCell> Liquidity </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {/* Wrapped SX Market Details */}
-          <TableRow
-            hover
-            onClick={(event) => {
+        <Table size="medium">
+          <TableHead>
+            <TableRow>
+              <TableCell> Asset </TableCell>
+              <TableCell> APY </TableCell>
+              <TableCell> Balance </TableCell>
+              <TableCell> Liquidity </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {/* Wrapped SX Market Details */}
+            <TableRow
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={(event) => {
                 handleSXRowClick(event);
-            }}
-          >
-            <TableCell>
-            <Box display="flex" alignItems="center">
+              }}
+            >
+              <TableCell>
+                <Box display="flex" alignItems="center">
                   <Box
                     component="img"
                     sx={{ height: 25, width: 25, marginRight: 1 }}
@@ -95,20 +96,21 @@ export default function BorrowMarkets() {
                   />
                   <Typography variant="body1">Wrapped SX</Typography>
                 </Box>
-            </TableCell>
-            <TableCell>{wsxBorrowAPY}%</TableCell>
-            <TableCell>{wsxWalletBalance} WSX</TableCell>
-            <TableCell>{wsxOraclePrice}</TableCell>
-          </TableRow>
-          {/* USDC Market Details */}
-          <TableRow
-            hover
-            onClick={(event) => {
+              </TableCell>
+              <TableCell>{wsxBorrowAPY}%</TableCell>
+              <TableCell>{wsxWalletBalance} WSX</TableCell>
+              <TableCell>{wsxOraclePrice}</TableCell>
+            </TableRow>
+            {/* USDC Market Details */}
+            <TableRow
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={(event) => {
                 handleUSDCRowClick(event);
-            }}
-          >
-            <TableCell>
-            <Box display="flex" alignItems="center">
+              }}
+            >
+              <TableCell>
+                <Box display="flex" alignItems="center">
                   <Box
                     component="img"
                     sx={{ height: 25, width: 25, marginRight: 1 }}
@@ -117,17 +119,17 @@ export default function BorrowMarkets() {
                   />
                   <Typography variant="body1">USD Coin</Typography>
                 </Box>
-            </TableCell>
-            <TableCell>{usdcBorrowAPY}%</TableCell>
-            <TableCell>{usdcWalletBalance} USDC</TableCell>
-            <TableCell>{usdcOraclePrice}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+              </TableCell>
+              <TableCell>{usdcBorrowAPY}%</TableCell>
+              <TableCell>{usdcWalletBalance} USDC</TableCell>
+              <TableCell>{usdcOraclePrice}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </TableContainer>
-    
-    <WSXBorrowMarketDialog open={borrowSXDialogOpen} onClose={() => {setBorrowSXDialogOpen(false)}} title={"Wrapped SX"}/>
-    <USDCBorrowMarketDialog open={borrowUSDCDialogOpen} onClose={() => {setBorrowUSDCDialogOpen(false)}} title={"USDC"}/>
+
+      <WSXBorrowMarketDialog open={borrowSXDialogOpen} onClose={() => { setBorrowSXDialogOpen(false) }} title={"Wrapped SX"} />
+      <USDCBorrowMarketDialog open={borrowUSDCDialogOpen} onClose={() => { setBorrowUSDCDialogOpen(false) }} title={"USDC"} />
     </>
   );
 }
