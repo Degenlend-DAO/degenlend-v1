@@ -49,21 +49,11 @@ const TopNavigationBar = () => {
                             <Link to="/markets" style={{ textDecoration: "none" }}>Markets</Link>
                         </Typography>
                     </MenuItem>
-                    {/* <MenuItem>
-                        <Typography variant='body2' color='text.primary'>
-                            <Link to="/governance" style={{textDecoration: "none"}}>Governance</Link>
-                        </Typography>
-                    </MenuItem> */}
                     <MenuItem>
                         <Typography variant="body2" color="text.primary">
                             <Link to="/faq" style={{ textDecoration: "none" }}>FAQ</Link>
                         </Typography>
                     </MenuItem>
-                    {/* <MenuItem>
-                        <Typography variant='body2' color='text.primary'>
-                            <Link to="/vote" style={{textDecoration: "none"}}>Vote</Link>
-                        </Typography>
-                    </MenuItem> */}
                 </Box>
                 <Box sx={{ flexGrow: 1 }} />
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'end' }}>
