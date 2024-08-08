@@ -31,7 +31,7 @@ export default function SupplyMarkets() {
     (state: RootState) => state.usdc.supplyRate
   );
   const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.walletBalance
+    (state: RootState) => state.usdc.balance
   );
   const usdcOraclePrice = useSelector(
     (state: RootState) => state.usdc.oraclePrice
@@ -39,7 +39,7 @@ export default function SupplyMarkets() {
 
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
   const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.walletBalance
+    (state: RootState) => state.wsx.balance
   );
   const wsxOraclePrice = useSelector(
     (state: RootState) => state.wsx.oraclePrice
