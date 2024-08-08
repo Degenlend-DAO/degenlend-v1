@@ -45,7 +45,8 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
+  // When the dialog is opened, update information
+  useEffect(()=> {
     if (props.open) {
       dispatch(updateUSDCBalance());
       dispatch(updateBorrowBalance());
@@ -56,7 +57,11 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
     (state: RootState) => state.usdc.borrowRate
   );
   const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.walletBalance
+    (state: RootState) => state.usdc.balance
+  );
+
+  const usdcBorrowBalance = useSelector(
+    (state: RootState) => state.usdc.borrowBalance
   );
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -132,13 +137,13 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                 </TabList>
               </Box>
               <TabPanel value="0">
-
-                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance} borrowLimit={0} borrowLimitUsed={0} />
+                
+                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcBorrowBalance} borrowLimit={87} borrowLimitUsed={22}/>
 
               </TabPanel>
               <TabPanel value="1">
-
-                <RepayDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcWalletBalance} />
+                
+                <RepayDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcBorrowBalance} />
 
               </TabPanel>
             </Box>
