@@ -9,7 +9,7 @@ interface USDCState {
     loading: boolean;
     error: string;
     status: string,
-    walletBalance: number,
+    balance: number,
     borrowBalance: number,
     borrowRate: number,
     supplyBalance: number,
@@ -43,7 +43,7 @@ const initialState: USDCState = {
     status: 'initial',
     borrowRate: 0.00,
     borrowBalance: 0.00,
-    walletBalance: 0.00,
+    balance: 0.00,
     supplyBalance: 0.00,
     supplyRate: 0.00,
     isCollateral: false,
@@ -66,10 +66,10 @@ export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async ()
         const usdcBalance = formatUnits(balance, decimals)
         console.log(`[Console] successfully called on thunk 'updateUSDCBalance'`);
 
-        return usdcBalance;
+        return Number(usdcBalance);
     } catch (error) {
 
-        console.log(`[Console] an error occured on thunk 'updateWSXBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateUSDCBalance': ${error}`)
         return 0;
 
     }
@@ -88,6 +88,8 @@ export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', 
     // This code is currently incomplete
     try {
         console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`);
+        const supplyBalance = "0";
+        return Number(supplyBalance);
     } catch(error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
         return 0;
@@ -106,7 +108,7 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
         console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
-        return borrowBalance;
+        return Number(borrowBalance);
 
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)
@@ -126,7 +128,7 @@ export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async 
         const supplyRate = formatUnits(supplyRateMantissa, decimals);
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return supplyRate;
+        return Number(supplyRate);
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
         return 0;
@@ -145,7 +147,7 @@ export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async 
         const borrowRate = formatUnits(borrowRateMantissa, decimals);
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return borrowRate;
+        return Number(borrowRate);
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
         return 0;
@@ -239,9 +241,158 @@ export const USDCSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        // Views
+        ///////////  Views
 
-        // Activities
+        //  Price Oracle
+        builder.addCase(updateOraclePrice.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateOraclePrice.rejected, (state, action) => {
+            state.status = "failed";
+            state.oraclePrice = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateOraclePrice.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.oraclePrice = action.payload;
+        })
+
+        // Borrow Rate
+
+        builder.addCase(updateBorrowRate.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateBorrowRate.rejected, (state, action) => {
+            state.status = "failed";
+            state.borrowRate = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateBorrowRate.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.borrowRate = action.payload;
+        })
+
+        // Supply Rate
+
+        builder.addCase(updateSupplyRate.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateSupplyRate.rejected, (state, action) => {
+            state.status = "failed";
+            state.supplyRate = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateSupplyRate.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.supplyRate = action.payload;
+        })
+
+        // WSX Balance
+
+        builder.addCase(updateUSDCBalance.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateUSDCBalance.rejected, (state, action) => {
+            state.status = "failed";
+            state.balance = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateUSDCBalance.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.balance = action.payload;
+        })
+
+        // Borrow Balance
+
+        builder.addCase(updateBorrowBalance.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateBorrowBalance.rejected, (state, action) => {
+            state.status = "failed";
+            state.borrowBalance = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateBorrowBalance.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.borrowBalance = action.payload;
+        })
+
+        // Supply Balance
+        
+        builder.addCase(updateSupplyBalance.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateSupplyBalance.rejected, (state, action) => {
+            state.status = "failed";
+            state.supplyBalance = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.supplyBalance = action.payload;
+        })
+        
+        
+        ///////////  Activities
+
+        // Borrow Wrapped USDC
+
+        builder.addCase(borrowUSDC.pending, (state, action) => {});
+
+        builder.addCase(borrowUSDC.rejected, (state, action) => {});
+
+        builder.addCase(borrowUSDC.fulfilled, (state, action) => {});
+
+        // Repay Wrapped USDC
+
+        builder.addCase(repayUSDC.pending, (state, action) => {});
+
+        builder.addCase(repayUSDC.rejected, (state, action) => {});
+
+        builder.addCase(repayUSDC.fulfilled, (state, action) => {});
+
+        // Supply Wrapped USDC
+
+        builder.addCase(supplyUSDC.pending, (state, action) => {});
+
+        builder.addCase(supplyUSDC.rejected, (state, action) => {});
+
+        builder.addCase(supplyUSDC.fulfilled, (state, action) => {});
+
+        // Withdraw Wrapped USDC
+
+        builder.addCase(withdrawUSDC.pending, (state, action) => {});
+
+        builder.addCase(withdrawUSDC.rejected, (state, action) => {});
+
+        builder.addCase(withdrawUSDC.fulfilled, (state, action) => {});
+
+        // Approve USDC
+
+        builder.addCase(approveUSDC.pending, (state, action) => {});
+
+        builder.addCase(approveUSDC.rejected, (state, action) => {});
+
+        builder.addCase(approveUSDC.fulfilled, (state, action) => {});
+
     }
 });
 
