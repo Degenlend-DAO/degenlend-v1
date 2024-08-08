@@ -65,7 +65,7 @@ const ConnectWallet = () => {
                         size='medium'
                         aria-label="button to connect wallet"
                     >
-                        Conntect Wallet
+                        Connect Wallet
                     </Button>
                 )
             }
