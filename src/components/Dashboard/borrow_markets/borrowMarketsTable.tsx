@@ -25,7 +25,7 @@ export default function BorrowMarkets() {
     (state: RootState) => state.usdc.borrowRate
   );
   const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.walletBalance
+    (state: RootState) => state.usdc.balance
   );
   const usdcOraclePrice = useSelector(
     (state: RootState) => state.usdc.oraclePrice
@@ -33,7 +33,7 @@ export default function BorrowMarkets() {
 
   const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
   const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.walletBalance
+    (state: RootState) => state.wsx.balance
   );
   const wsxOraclePrice = useSelector(
     (state: RootState) => state.wsx.oraclePrice
