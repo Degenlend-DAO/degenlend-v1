@@ -57,9 +57,15 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
   );
-  const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.walletBalance
+
+  const usdcSupplyBalance = useSelector(
+    (state: RootState) => state.usdc.supplyBalance
+
   );
+  const usdcWalletBalance = useSelector(
+    (state: RootState) => state.usdc.balance
+  );
+
 
   return (
     <React.Fragment>
@@ -128,7 +134,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
               </TabPanel>
               <TabPanel value="1">
 
-              <WithdrawDetails type={"usdc"} supplyAPY={usdcSupplyAPY} borrowAPY={0} supplyBalance={0} />
+              <WithdrawDetails type={"usdc"} supplyAPY={usdcSupplyAPY} supplyBalance={usdcSupplyBalance} borrowLimit={899} borrowLimitUsed={12} />
 
 
               </TabPanel>
