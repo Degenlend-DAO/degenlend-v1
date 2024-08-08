@@ -46,8 +46,9 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   };
 
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
+  const wsxSupplyBalance = useSelector((state: RootState) => state.wsx.supplyBalance);
   const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.walletBalance
+    (state: RootState) => state.wsx.balance
   );
 
   return (
@@ -115,7 +116,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
               </TabPanel>
               <TabPanel value="1">
                 
-                <WithdrawDetails type={"sx"} supplyAPY={wsxSupplyAPY} borrowAPY={0} supplyBalance={0} />
+                <WithdrawDetails type={"sx"} supplyAPY={wsxSupplyAPY} supplyBalance={wsxSupplyBalance} borrowLimit={1111} borrowLimitUsed={45}/>
 
               </TabPanel>
             </Box>
