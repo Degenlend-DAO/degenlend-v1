@@ -7,13 +7,14 @@ import WithdrawButton from "./withdrawButton";
 interface DetailProps {
     type: String,
     supplyAPY: number,
-    borrowAPY: number,
+    borrowLimit: number,
+    borrowLimitUsed: number,
     supplyBalance: number,
 }
 
 function WithdrawDetails(props: DetailProps) {
 
-    const { type, supplyAPY, supplyBalance } = props
+    const { type, supplyAPY, supplyBalance, borrowLimit, borrowLimitUsed } = props
 
     return (
         <Box sx={{width: "100%", alignContent: "center",}}>
@@ -24,7 +25,7 @@ function WithdrawDetails(props: DetailProps) {
 
         {/* Borrow APY */}
 
-        <BorrowLimit type={type} borrowLimit={0} borrowLimitUsed={0}  />
+        <BorrowLimit type={type} borrowLimit={borrowLimit} borrowLimitUsed={borrowLimitUsed}  />
 
         {/* Enable Button */}
 
