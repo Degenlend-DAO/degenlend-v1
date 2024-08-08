@@ -11,7 +11,7 @@ interface WSXState {
     loading: boolean;
     error: string;
     status: string,
-    walletBalance: number,
+    balance: number,
     borrowBalance: number,
     borrowRate: number,
     supplyBalance: number,
@@ -26,7 +26,7 @@ const initialState: WSXState = {
     status: 'initial',
     borrowRate: 0.00,
     borrowBalance: 0.00,
-    walletBalance: 0.00,
+    balance: 0.00,
     supplyBalance: 0.00,
     supplyRate: 0.00,
     isCollateral: false,
@@ -61,11 +61,11 @@ export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () =
 
     try {
 
-        let balance = await WSX.balanceOf(walletAddress);
-        const wsxBalance = formatUnits(balance, decimals)
+        let wsxBalance = await WSX.balanceOf(walletAddress);
+        const balance = formatUnits(wsxBalance, decimals)
         console.log(`[Console] successfully called on thunk 'updateWSXBalance'`);
 
-        return wsxBalance;
+        return Number(balance);
     } catch (error) {
 
         console.log(`[Console] an error occured on thunk 'updateWSXBalance': ${error}`)
@@ -82,7 +82,8 @@ export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', a
     const walletAddress = wallet.accounts[0].address;
     // This code is currently incomplete
     try {
-        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`);
+        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`)
+        return 0;
     } catch(error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
         return 0;
@@ -101,7 +102,9 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
         console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
-        return borrowBalance;
+        // return borrowBalance;
+
+        return 0;
 
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)
@@ -121,7 +124,7 @@ export const updateSupplyRate = createAsyncThunk('wsxSupplyRate/update', async (
         const supplyRate = formatUnits(supplyRateMantissa, decimals);
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return supplyRate;
+        return Number(supplyRate);
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
         return 0;
@@ -140,7 +143,7 @@ export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async (
         const borrowRate = formatUnits(borrowRateMantissa, decimals);
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        return borrowRate;
+        return Number(borrowRate);
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateBorrowRate': ${error}`)
         return 0;
@@ -148,6 +151,21 @@ export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async (
 
 });
 
+export const updateOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
+    const priceOracle = new Contract( testnet_addresses.price_oracle, SimplePriceOracle.abi, signer)
+    
+    try {
+     let wsxPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+     console.log(`[Console] successfully got the oracle price from 'updatePriceOracle': ${wsxPrice} `);
+     return wsxPrice as number;
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'updatePriceOracle': ${error} `)
+        return 0;
+    }
+    
+})
 
 // Activities
 
@@ -201,22 +219,6 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
 })
 
 
-///////////  Oracle Price Thunks
-export const updateOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-    const priceOracle = new Contract( testnet_addresses.price_oracle, SimplePriceOracle.abi, signer)
-    
-    try {
-     let wsxPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
-     console.log(`[Console] successfully got the oracle price from 'updatePriceOracle': ${wsxPrice} `);
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'updatePriceOracle': ${error} `)
-        return null;
-    }
-    
-})
-
 
 
 /// Exporting the Slice
@@ -225,10 +227,162 @@ export const WSXSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        // Views
+        ///////////  Views
+
+        //  Price Oracle
+        builder.addCase(updateOraclePrice.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateOraclePrice.rejected, (state, action) => {
+            state.status = "failed";
+            state.oraclePrice = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateOraclePrice.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.oraclePrice = action.payload;
+        })
+
+        // Borrow Rate
+
+        builder.addCase(updateBorrowRate.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateBorrowRate.rejected, (state, action) => {
+            state.status = "failed";
+            state.borrowRate = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateBorrowRate.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.borrowRate = action.payload;
+        })
+
+        // Supply Rate
+
+        builder.addCase(updateSupplyRate.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateSupplyRate.rejected, (state, action) => {
+            state.status = "failed";
+            state.supplyRate = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateSupplyRate.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.supplyRate = action.payload;
+        })
+
+        // WSX Balance
+
+        builder.addCase(updateWSXBalance.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateWSXBalance.rejected, (state, action) => {
+            state.status = "failed";
+            state.balance = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateWSXBalance.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.balance = action.payload;
+        })
+
+        // Borrow Balance
+
+        builder.addCase(updateBorrowBalance.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateBorrowBalance.rejected, (state, action) => {
+            state.status = "failed";
+            state.borrowBalance = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateBorrowBalance.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.borrowBalance = action.payload;
+        })
+
+        // Supply Balance
+        
+        builder.addCase(updateSupplyBalance.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        });
+
+        builder.addCase(updateSupplyBalance.rejected, (state, action) => {
+            state.status = "failed";
+            state.supplyBalance = 0;
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.supplyBalance = action.payload;
+        })
+        
+        
+        ///////////  Activities
+
+        // Borrow Wrapped SX
+
+        builder.addCase(borrowWSX.pending, (state, action) => {});
+
+        builder.addCase(borrowWSX.rejected, (state, action) => {});
+
+        builder.addCase(borrowWSX.fulfilled, (state, action) => {});
+
+        // Repay Wrapped SX
+
+        builder.addCase(repayWSX.pending, (state, action) => {});
+
+        builder.addCase(repayWSX.rejected, (state, action) => {});
+
+        builder.addCase(repayWSX.fulfilled, (state, action) => {});
+
+        // Supply Wrapped SX
+
+        builder.addCase(supplyWSX.pending, (state, action) => {});
+
+        builder.addCase(supplyWSX.rejected, (state, action) => {});
+
+        builder.addCase(supplyWSX.fulfilled, (state, action) => {});
+
+        // Withdraw Wrapped SX
+
+        builder.addCase(withdrawWSX.pending, (state, action) => {});
+
+        builder.addCase(withdrawWSX.rejected, (state, action) => {});
+
+        builder.addCase(withdrawWSX.fulfilled, (state, action) => {});
+
+        // Approve USDC
+
+        builder.addCase(approveWSX.pending, (state, action) => {});
+
+        builder.addCase(approveWSX.rejected, (state, action) => {});
+
+        builder.addCase(approveWSX.fulfilled, (state, action) => {});
     }
 });
 
 
 
 export default WSXSlice.reducer;
+
+// Note for devs: Please don't forget to implement supply & borrow balances
