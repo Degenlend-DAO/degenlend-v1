@@ -45,10 +45,14 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
     setValue(newValue);
   };
 
+  // Views
+
   const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
   const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.walletBalance
+    (state: RootState) => state.wsx.balance
   );
+
+  // Action Items
 
   return (
     <React.Fragment>
@@ -111,7 +115,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </Box>
               <TabPanel value="0">
                 
-                <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} borrowLimit={0} borrowLimitUsed={0} />
+                <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} borrowLimit={11} borrowLimitUsed={78} />
 
               </TabPanel>
               <TabPanel value="1">
