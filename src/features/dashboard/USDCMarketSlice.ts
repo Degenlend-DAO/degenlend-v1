@@ -241,7 +241,7 @@ export const USDCSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        ///////////  Views
+///////////  Views
 
         //  Price Oracle
         builder.addCase(updateOraclePrice.pending, (state, action) => {
