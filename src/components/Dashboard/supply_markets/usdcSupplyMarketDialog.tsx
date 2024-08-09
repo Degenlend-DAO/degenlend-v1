@@ -60,12 +60,18 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
 
   const usdcSupplyBalance = useSelector(
     (state: RootState) => state.usdc.supplyBalance
-
   );
   const usdcWalletBalance = useSelector(
     (state: RootState) => state.usdc.balance
   );
 
+  const borrowLimit = useSelector(
+    (state: RootState) => state.account.borrowLimit
+  );
+
+  const borrowLimitUsed = useSelector(
+    (state: RootState) => state.account.borrowLimitUsed
+  );
 
   return (
     <React.Fragment>
@@ -108,7 +114,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="0">
-            <EnableWarning type={"usdc"} />
+              <EnableWarning type={"usdc"} />
             </TabPanel>
 
             <TabPanel value="1">
@@ -128,15 +134,20 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                 </TabList>
               </Box>
               <TabPanel value="0">
-
-              <SupplyDetails type={"usdc"} supplyAPY={usdcSupplyAPY} supplyBalance={usdcWalletBalance} />
-
+                <SupplyDetails
+                  type={"usdc"}
+                  supplyAPY={usdcSupplyAPY}
+                  supplyBalance={usdcWalletBalance}
+                />
               </TabPanel>
               <TabPanel value="1">
-
-              <WithdrawDetails type={"usdc"} supplyAPY={usdcSupplyAPY} supplyBalance={usdcSupplyBalance} borrowLimit={899} borrowLimitUsed={12} />
-
-
+                <WithdrawDetails
+                  type={"usdc"}
+                  supplyAPY={usdcSupplyAPY}
+                  supplyBalance={usdcSupplyBalance}
+                  borrowLimit={borrowLimit}
+                  borrowLimitUsed={borrowLimitUsed}
+                />
               </TabPanel>
             </Box>
           </TabContext>
