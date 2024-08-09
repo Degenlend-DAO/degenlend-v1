@@ -15,6 +15,11 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 
 // Action Items
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from '../../../app/Store';
+
+import { enterUSDCMarket, enterWSXMarket, exitWSXMarket, exitUSDCMarket } from '../../../features/dashboard/AccountSlice';
+
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -34,12 +39,28 @@ const Transition = React.forwardRef(function Transition(
 
 function EnableMarketDialog(props: EnableMarketsProps) {
     const [value, setValue] = React.useState(0);
+    const dispatch = useDispatch<AppDispatch>();
+    const { onClose, type, open } = props;
+
+    
+    
 
     // const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     //   setValue(newValue);
     // };
   
-    
+    const handleClick = () => {
+      if (type === "sx")
+      {
+        dispatch(enterWSXMarket);
+      }
+
+      if (type === "usdc")
+      {
+        dispatch(enterUSDCMarket);
+      }
+      onClose();
+    }
   
     return (
       <React.Fragment>
@@ -98,7 +119,7 @@ function EnableMarketDialog(props: EnableMarketsProps) {
           color="primary"
           fullWidth
           sx={{ marginTop: 2, fontWeight: 'bold', paddingY: 1.5 }}
-          onClick={props.onClose} // Assuming this button will close the dialog for now
+          onClick={handleClick} // Clicking the button 
           aria-label="button to toggle collateral"
         >
           Use {props.title} as Collateral
