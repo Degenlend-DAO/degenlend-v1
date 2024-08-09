@@ -19,10 +19,13 @@ import SXBorrowDetails from "../widgets/wsxBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 // Action Items
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app/Store";
 import RepayDetails from "../widgets/repay/repayDetails";
 import EnableWarning from "../widgets/enableWarning";
+import borrowLimit from "../widgets/borrow/borrowLimit";
+import { updateBorrowBalance, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
+import { useEffect } from "react";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -41,6 +44,16 @@ interface BorrowMarketDialogProps {
 
 function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (props.open) {
+      dispatch(updateWSXBalance());
+      dispatch(updateBorrowBalance());
+    }
+  }, [props.open, dispatch])
+
+
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -48,10 +61,10 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   // Views
 
   const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
-  const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.balance
-  );
-
+  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
+  const borrowBalance = useSelector((state: RootState) => state.wsx.borrowBalance);
+  const borrowLimit = useSelector((state: RootState) => state.account.borrowLimit);
+  const borrowLimitUsed = useSelector((state: RootState) => state.account.borrowLimitUsed);
   // Action Items
 
   return (
@@ -92,11 +105,11 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             {/* Details above the tab list */}
-            
+
             <TabPanel value="0">
               <SXBorrowDetails type={"sx"} />
             </TabPanel>
-            
+
             <TabPanel value="1">
               <EnableWarning type={"sx"} />
             </TabPanel>
@@ -114,14 +127,20 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                 </TabList>
               </Box>
               <TabPanel value="0">
-                
-                <BorrowDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={wsxWalletBalance} borrowLimit={11} borrowLimitUsed={78} />
-
+                <BorrowDetails
+                  type={"SX"}
+                  borrowAPY={wsxBorrowAPY}
+                  borrowBalance={wsxWalletBalance}
+                  borrowLimit={borrowLimit}
+                  borrowLimitUsed={borrowLimitUsed}
+                />
               </TabPanel>
               <TabPanel value="1">
-                
-                <RepayDetails type={"SX"} borrowAPY={wsxBorrowAPY} borrowBalance={0} />
-
+                <RepayDetails
+                  type={"SX"}
+                  borrowAPY={wsxBorrowAPY}
+                  borrowBalance={borrowBalance}
+                />
               </TabPanel>
             </Box>
           </TabContext>
