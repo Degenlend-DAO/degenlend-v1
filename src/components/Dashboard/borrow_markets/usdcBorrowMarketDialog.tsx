@@ -64,6 +64,15 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
     (state: RootState) => state.usdc.borrowBalance
   );
 
+  const borrowLimit = useSelector(
+    (state: RootState) => state.account.borrowLimit
+  );
+
+  const borrowLimitUsed = useSelector(
+    (state: RootState) => state.account.borrowLimitUsed
+  );
+
+
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -138,7 +147,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </Box>
               <TabPanel value="0">
                 
-                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcBorrowBalance} borrowLimit={87} borrowLimitUsed={22}/>
+                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcBorrowBalance} borrowLimit={borrowLimit} borrowLimitUsed={borrowLimitUsed}/>
 
               </TabPanel>
               <TabPanel value="1">
