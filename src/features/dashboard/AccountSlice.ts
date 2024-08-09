@@ -76,7 +76,7 @@ export const updateNetAPR = createAsyncThunk('netAPR/update', async () => {
 /**
  * Enters the wallet into a particular money market
  */
-export const enterWSXMarket = createAsyncThunk('account/enterMarket', async () => {
+export const enterWSXMarket = createAsyncThunk('account/enterWSXMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
@@ -98,7 +98,7 @@ export const enterWSXMarket = createAsyncThunk('account/enterMarket', async () =
 /**
  * Enters the wallet into a particular money market
  */
-export const enterUSDCMarket = createAsyncThunk('account/enterMarket', async () => {
+export const enterUSDCMarket = createAsyncThunk('account/enterUSDCMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
@@ -121,7 +121,7 @@ export const enterUSDCMarket = createAsyncThunk('account/enterMarket', async () 
  * Exits the wallet from the WSX money market 
  * @remarks this function does not take in params
  */
-export const exitWSXMarket = createAsyncThunk('account/exitMarket', async () => {
+export const exitWSXMarket = createAsyncThunk('account/exitWSXMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const signer = await ethersProvider.getSigner();
