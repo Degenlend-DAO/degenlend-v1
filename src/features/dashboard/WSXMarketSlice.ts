@@ -49,13 +49,19 @@ interface withdrawWSXParams {
 
 
 // Views
-const [wallet] = onboard.state.get().wallets;
 
 
 
 export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const WSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
     const decimals = await WSX.decimals();
     const walletAddress = wallet.accounts[0].address;
 
@@ -76,6 +82,12 @@ export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () =
 
 export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', async () => {
     
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
@@ -91,6 +103,12 @@ export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', a
     });
 
 export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
@@ -115,6 +133,12 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
 
 export const updateSupplyRate = createAsyncThunk('wsxSupplyRate/update', async () => {
 
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
 
@@ -134,6 +158,12 @@ export const updateSupplyRate = createAsyncThunk('wsxSupplyRate/update', async (
 
 export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async () => {
 
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
 
@@ -152,6 +182,13 @@ export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async (
 });
 
 export const updateOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const priceOracle = new Contract( testnet_addresses.price_oracle, SimplePriceOracle.abi, signer)
@@ -171,6 +208,13 @@ export const updateOraclePrice = createAsyncThunk('wsxOraclePrice/update', async
 
 ///////////  Approve WSX Thunks
 export const approveWSX = createAsyncThunk('wsx/approve', async () => {
+   
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+   
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const WSXContract = new Contract( testnet_addresses.degenWSX,ERC20.abi, signer );
@@ -186,6 +230,12 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
 ///////////  Supply Market Thunks
 export const supplyWSX = createAsyncThunk('wsx/supply', async ({ amount }: supplyWSXParams) => {
     
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
@@ -201,17 +251,38 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async ({ amount }: suppl
 })
 
 export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
 })
 
 ///////////  Borrow Market Thunks
 export const repayWSX = createAsyncThunk('wsx/repay', async () => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
 })
 
 export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
 

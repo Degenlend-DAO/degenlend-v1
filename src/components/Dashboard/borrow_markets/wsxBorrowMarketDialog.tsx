@@ -47,11 +47,9 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (props.open) {
       dispatch(updateWSXBalance());
       dispatch(updateBorrowBalance());
-    }
-  }, [props.open, dispatch])
+  })
 
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {

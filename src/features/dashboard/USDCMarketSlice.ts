@@ -51,19 +51,31 @@ const initialState: USDCState = {
 }
 
 // Views
-const [wallet] = onboard.state.get().wallets;
 
 
 export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async () => {
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
+    console.log(`[Console] initiating thunk, 'updateUSDCBalance' ...`);
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const USDC = new Contract(testnet_addresses.USDC, ERC20Immutable.abi, ethersProvider);
     const decimals = await USDC.decimals();
     const walletAddress = wallet.accounts[0].address;
 
-    try {
+    // const walletAddress = "0x00000000000000"
+    console.log(`[Console] listing thunk values... USDC Address: ${testnet_addresses.USDC} Wallet Address: ${walletAddress}...`);
 
+    try {
+        console.log(`[Console] initiating wallet balances.  USDC address: ${testnet_addresses.USDC}`)
         let balance = await USDC.balanceOf(walletAddress);
-        const usdcBalance = formatUnits(balance, decimals)
+        const usdcBalance = formatUnits(balance, decimals);
+        console.log(`[Console] initiating wallet balances.  USDC Balance: ${usdcBalance}`)
+
         console.log(`[Console] successfully called on thunk 'updateUSDCBalance'`);
 
         return Number(usdcBalance);
@@ -81,6 +93,12 @@ export const updateOraclePrice = createAsyncThunk('usdcOraclePrice/update', asyn
 
 export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
     
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
@@ -97,6 +115,12 @@ export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', 
     });
 
 export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
@@ -119,6 +143,12 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
 
 export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {
 
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
@@ -137,6 +167,12 @@ export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async 
 });
 
 export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
@@ -158,6 +194,13 @@ export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async 
 
 ///////////  Supply Market Thunks
 export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, addressToApprove }: { amount: number, addressToApprove: string }) => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const USDC = new Contract(testnet_addresses.USDC, ERC20.abi, signer);
@@ -175,6 +218,13 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, add
 ///////////  Supply Market Thunks
 
 export const supplyUSDC = createAsyncThunk('usdc/Supply', async ({ amount, addressToApprove } : supplyUSDCParams) => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
 
@@ -192,6 +242,13 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async ({ amount, addre
 })
 
 export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async ({ amount }: withdrawUSDCParams) => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
@@ -210,6 +267,13 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async ({ amount }:
 ///////////  Borrow Market Thunks
 
 export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
@@ -223,6 +287,13 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
 })
 
 export const repayUSDC = createAsyncThunk('usdc/repay', async () => {
+    
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return 0;
+    }
+    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);

@@ -28,9 +28,11 @@ import SupplyDetails from "../widgets/supply/supplyDetails";
 import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 
 // Action Items
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app/Store";
 import EnableWarning from "../widgets/enableWarning";
+import { updateSupplyBalance, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
+import { useEffect } from "react";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -49,6 +51,12 @@ interface SupplyMarketDialogProps {
 
 function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const [value, setValue] = React.useState("0");
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+      dispatch(updateUSDCBalance());
+      dispatch(updateSupplyBalance());
+  })
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
