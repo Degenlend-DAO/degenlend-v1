@@ -1,6 +1,10 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
 import { useState } from "react";
+import { AppDispatch } from "../../../../app/Store";
+import { useDispatch } from "react-redux";
+import { withdrawWSX } from "../../../../features/dashboard/WSXMarketSlice";
+import { withdrawUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 
 interface WithdrawButtonProps {
     type: String,
@@ -10,6 +14,8 @@ interface WithdrawButtonProps {
 function WithdrawButton(props: WithdrawButtonProps) {
 
     const { type, supplyBalance } = props
+
+    const dispatch = useDispatch<AppDispatch>();
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
@@ -28,6 +34,16 @@ function WithdrawButton(props: WithdrawButtonProps) {
 
     function handleChange() {
         alert('You pressed the withdraw button!');
+
+        if (type === "sx")
+            {
+                dispatch(withdrawWSX());
+            }
+        if (type === "usdc")
+            {
+                dispatch(withdrawUSDC());
+            }
+
         setConfirmTransactionOpen(true);
 
     }

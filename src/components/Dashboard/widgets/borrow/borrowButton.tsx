@@ -1,7 +1,10 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
 import { useState } from "react";
-
+import { AppDispatch } from "../../../../app/Store";
+import { useDispatch } from "react-redux";
+import { borrowUSDC } from "../../../../features/dashboard/USDCMarketSlice";
+import { borrowWSX } from "../../../../features/dashboard/WSXMarketSlice";
 
 interface BorrowButtonProps {
     type: String,
@@ -13,6 +16,8 @@ function BorrowButton(props: BorrowButtonProps) {
     const { type, BorrowBalance } = props
 
     // const [isDisabled, setIsDisabled] = useState(false);
+    const dispatch = useDispatch<AppDispatch>();
+
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
@@ -36,6 +41,16 @@ function BorrowButton(props: BorrowButtonProps) {
 
     function handleChange() {
         alert('You pressed the Borrow button!');
+
+        if (type === "sx")
+            {
+                dispatch(borrowWSX());
+            }
+        if (type === "usdc")
+            {
+                dispatch(borrowUSDC());
+            }
+
         setConfirmTransactionOpen(true);
     }
 

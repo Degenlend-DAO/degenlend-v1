@@ -1,6 +1,10 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
 import { useState } from "react";
+import { AppDispatch } from "../../../../app/Store";
+import { useDispatch } from "react-redux";
+import { supplyWSX } from "../../../../features/dashboard/WSXMarketSlice";
+import { supplyUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 
 interface SupplyButtonProps {
     type: String,
@@ -10,6 +14,9 @@ interface SupplyButtonProps {
 function SupplyButton(props: SupplyButtonProps) {
 
     const { type, supplyBalance } = props
+
+    const dispatch = useDispatch<AppDispatch>();
+
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
@@ -29,6 +36,16 @@ function SupplyButton(props: SupplyButtonProps) {
 
     function handleChange() {
         alert('You pressed the Supply button!');
+
+        if (type === "sx")
+            {
+                dispatch(supplyWSX());
+            }
+        if (type === "usdc")
+            {
+                dispatch(supplyUSDC());
+            }
+
         setConfirmTransactionOpen(true);
     }
 

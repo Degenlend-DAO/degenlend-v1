@@ -55,12 +55,12 @@ function EnableMarketDialog(props: EnableMarketsProps) {
     const handleClick = () => {
       if (type === "sx")
       {
-        dispatch(enterWSXMarket);
+        dispatch(enterWSXMarket());
       }
 
       if (type === "usdc")
       {
-        dispatch(enterUSDCMarket);
+        dispatch(enterUSDCMarket());
       }
       setConfirmTransactionOpen(true);
 

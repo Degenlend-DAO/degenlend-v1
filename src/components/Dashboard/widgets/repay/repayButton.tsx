@@ -1,6 +1,10 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
 import { useState } from "react";
+import { AppDispatch } from "../../../../app/Store";
+import { useDispatch } from "react-redux";
+import { repayWSX } from "../../../../features/dashboard/WSXMarketSlice";
+import { repayUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 
 interface RepayButtonProps {
     type: String,
@@ -10,6 +14,9 @@ interface RepayButtonProps {
 function RepayButton(props: RepayButtonProps) {
 
     const { type, borrowBalance } = props
+
+    const dispatch = useDispatch<AppDispatch>();
+
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
@@ -29,6 +36,16 @@ function RepayButton(props: RepayButtonProps) {
 
     function handleChange() {
         alert('You pressed the Repay button!');
+
+        if (type === "sx")
+            {
+                dispatch(repayWSX());
+            }
+        if (type === "usdc")
+            {
+                dispatch(repayUSDC());
+            }
+
         setConfirmTransactionOpen(true);
 
     }
