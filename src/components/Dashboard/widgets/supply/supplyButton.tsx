@@ -1,5 +1,6 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-
+import ConfirmTransactionDialog from "../confirmTransactionDialog";
+import { useState } from "react";
 
 interface SupplyButtonProps {
     type: String,
@@ -9,6 +10,9 @@ interface SupplyButtonProps {
 function SupplyButton(props: SupplyButtonProps) {
 
     const { type, supplyBalance } = props
+
+    const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
+
 
 
     let buttonText = ""
@@ -25,6 +29,7 @@ function SupplyButton(props: SupplyButtonProps) {
 
     function handleChange() {
         alert('You pressed the Supply button!');
+        setConfirmTransactionOpen(true);
     }
 
     return (
@@ -38,6 +43,8 @@ function SupplyButton(props: SupplyButtonProps) {
             <Typography variant="body2">{supplyBalance} {type.toUpperCase()}</Typography>
         </Stack>
         
+        <ConfirmTransactionDialog open={confirmTransactionOpen} onClose={() => { setConfirmTransactionOpen (false)}} />
+
         </Box>
     );
 }

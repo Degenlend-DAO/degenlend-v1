@@ -1,5 +1,6 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-
+import ConfirmTransactionDialog from "../confirmTransactionDialog";
+import { useState } from "react";
 
 interface RepayButtonProps {
     type: String,
@@ -9,6 +10,9 @@ interface RepayButtonProps {
 function RepayButton(props: RepayButtonProps) {
 
     const { type, borrowBalance } = props
+
+    const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
+
 
 
     let buttonText = ""
@@ -25,6 +29,8 @@ function RepayButton(props: RepayButtonProps) {
 
     function handleChange() {
         alert('You pressed the Repay button!');
+        setConfirmTransactionOpen(true);
+
     }
 
     return (
@@ -37,6 +43,9 @@ function RepayButton(props: RepayButtonProps) {
             {/* Supply Balance in that unit of currency */}
             <Typography>{borrowBalance} {type.toUpperCase()}</Typography>
         </Stack>
+
+        <ConfirmTransactionDialog open={confirmTransactionOpen} onClose={() => { setConfirmTransactionOpen (false)}} />
+
         
         </Box>
     );

@@ -1,5 +1,6 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-
+import ConfirmTransactionDialog from "../confirmTransactionDialog";
+import { useState } from "react";
 
 interface WithdrawButtonProps {
     type: String,
@@ -9,6 +10,8 @@ interface WithdrawButtonProps {
 function WithdrawButton(props: WithdrawButtonProps) {
 
     const { type, supplyBalance } = props
+
+    const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
 
     let buttonText = ""
@@ -25,6 +28,8 @@ function WithdrawButton(props: WithdrawButtonProps) {
 
     function handleChange() {
         alert('You pressed the withdraw button!');
+        setConfirmTransactionOpen(true);
+
     }
 
     return (
@@ -38,6 +43,9 @@ function WithdrawButton(props: WithdrawButtonProps) {
             <Typography>{supplyBalance} {type.toUpperCase()}</Typography>
         </Stack>
         
+        <ConfirmTransactionDialog open={confirmTransactionOpen} onClose={() => { setConfirmTransactionOpen (false)}} />
+
+
         </Box>
     );
 }
