@@ -1,5 +1,4 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -14,7 +13,7 @@ import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
-import { Box, Divider, IconButton, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import SXBorrowDetails from "../widgets/wsxBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
@@ -23,9 +22,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import RepayDetails from "../widgets/repay/repayDetails";
 import EnableWarning from "../widgets/enableWarning";
-import borrowLimit from "../widgets/borrow/borrowLimit";
-import { updateBorrowBalance, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
+import {
+  updateBorrowBalance,
+  updateWSXBorrowRate,
+} from "../../../features/dashboard/WSXMarketSlice";
 import { useEffect } from "react";
+import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -46,24 +48,33 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
-      dispatch(updateWSXBalance());
-      dispatch(updateBorrowBalance());
-  })
-
-
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
   // Views
 
-  const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
-  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
-  const borrowBalance = useSelector((state: RootState) => state.wsx.borrowBalance);
-  const borrowLimit = useSelector((state: RootState) => state.account.borrowLimit);
-  const borrowLimitUsed = useSelector((state: RootState) => state.account.borrowLimitUsed);
+  const wsxBorrowBalance = useSelector(
+    (state: RootState) => state.wsx.borrowBalance
+  );
+  const wsxBorrowAPY = useSelector(
+    (state: RootState) => state.wsx.borrowRate
+  );
+  const borrowLimit = useSelector(
+    (state: RootState) => state.account.borrowLimit
+  );
+  const borrowLimitUsed = useSelector(
+    (state: RootState) => state.account.borrowLimitUsed
+  );
+
   // Action Items
+
+  useEffect(() => {
+    // On load of market dialog, refresh the values of all the 'views' variables
+    dispatch(updateBorrowBalance());
+    dispatch(updateWSXBorrowRate());
+    dispatch(updateBorrowLimit());
+  });
 
   return (
     <React.Fragment>
@@ -128,7 +139,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                 <BorrowDetails
                   type={"SX"}
                   borrowAPY={wsxBorrowAPY}
-                  borrowBalance={wsxWalletBalance}
+                  borrowBalance={wsxBorrowBalance}
                   borrowLimit={borrowLimit}
                   borrowLimitUsed={borrowLimitUsed}
                 />
@@ -137,7 +148,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                 <RepayDetails
                   type={"SX"}
                   borrowAPY={wsxBorrowAPY}
-                  borrowBalance={borrowBalance}
+                  borrowBalance={wsxBorrowBalance}
                 />
               </TabPanel>
             </Box>

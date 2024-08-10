@@ -23,9 +23,16 @@ import RepayDetails from "../widgets/repay/repayDetails";
 import EnableWarning from "../widgets/enableWarning";
 
 // Action Items
-import { updateUSDCBalance, updateBorrowBalance, borrowUSDC, repayUSDC } from "../../../features/dashboard/USDCMarketSlice";
+import {
+  updateUSDCBalance,
+  updateBorrowBalance,
+  borrowUSDC,
+  repayUSDC,
+  updateUSDCBorrowRate,
+} from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
 import { AppDispatch } from "../../../app/Store";
+import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -45,19 +52,8 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
   const dispatch = useDispatch<AppDispatch>();
 
-  // When the dialog is opened, update information
-  useEffect(()=> {
-    if (props.open) {
-      dispatch(updateUSDCBalance());
-      dispatch(updateBorrowBalance());
-    }
-  }, [props.open, dispatch]);
-
   const usdcBorrowAPY = useSelector(
     (state: RootState) => state.usdc.borrowRate
-  );
-  const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.balance
   );
 
   const usdcBorrowBalance = useSelector(
@@ -72,19 +68,17 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
     (state: RootState) => state.account.borrowLimitUsed
   );
 
+  // When the dialog is opened, update information
+  useEffect(() => {
+    dispatch(updateBorrowBalance());
+    dispatch(updateUSDCBorrowRate());
+    dispatch(updateBorrowLimit());
+    dispatch(updateBorrowLimit());
+  });
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
-
-  const handleBorrow = () => {
-    dispatch(borrowUSDC());
-  }
-
-  const handleRepay = () => {
-    dispatch(repayUSDC());
-  }
-
 
   return (
     <React.Fragment>
@@ -122,10 +116,10 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
           <Divider></Divider>
         </DialogTitle>
         <DialogContent>
-          <TabContext value={value} >
+          <TabContext value={value}>
             {/* Details above the tab list */}
 
-            <TabPanel value="0" >
+            <TabPanel value="0">
               <USDCBorrowDetails type={"USDC"} />
             </TabPanel>
             <TabPanel value="1">
@@ -146,14 +140,20 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                 </TabList>
               </Box>
               <TabPanel value="0">
-                
-                <BorrowDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcBorrowBalance} borrowLimit={borrowLimit} borrowLimitUsed={borrowLimitUsed}/>
-
+                <BorrowDetails
+                  type={"usdc"}
+                  borrowAPY={usdcBorrowAPY}
+                  borrowBalance={usdcBorrowBalance}
+                  borrowLimit={borrowLimit}
+                  borrowLimitUsed={borrowLimitUsed}
+                />
               </TabPanel>
               <TabPanel value="1">
-                
-                <RepayDetails type={"usdc"} borrowAPY={usdcBorrowAPY} borrowBalance={usdcBorrowBalance} />
-
+                <RepayDetails
+                  type={"usdc"}
+                  borrowAPY={usdcBorrowAPY}
+                  borrowBalance={usdcBorrowBalance}
+                />
               </TabPanel>
             </Box>
           </TabContext>
