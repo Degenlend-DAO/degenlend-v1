@@ -32,7 +32,7 @@ function BorrowRates(props: BorrowRatesProps) {
                     ></Box>
                     <Typography variant="body2" color="textSecondary">Borrow APY</Typography>
                 </Stack>
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{props.borrowAPY.toFixed(2)}%</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{props.borrowAPY.toFixed(12)}%</Typography>
             </Stack>
         </Box>
     );
