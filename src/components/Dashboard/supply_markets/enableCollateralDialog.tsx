@@ -19,6 +19,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from '../../../app/Store';
 
 import { enterUSDCMarket, enterWSXMarket, exitWSXMarket, exitUSDCMarket } from '../../../features/dashboard/AccountSlice';
+import { useState } from 'react';
+import ConfirmTransactionDialog from '../widgets/confirmTransactionDialog';
 
 
 const Transition = React.forwardRef(function Transition(
@@ -43,7 +45,8 @@ function EnableMarketDialog(props: EnableMarketsProps) {
     const { onClose, type, open } = props;
 
     
-    
+    const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
+
 
     // const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     //   setValue(newValue);
@@ -59,6 +62,8 @@ function EnableMarketDialog(props: EnableMarketsProps) {
       {
         dispatch(enterUSDCMarket);
       }
+      setConfirmTransactionOpen(true);
+
       onClose();
     }
   
@@ -127,6 +132,9 @@ function EnableMarketDialog(props: EnableMarketsProps) {
 
           </DialogContent>
         </Dialog>
+
+        <ConfirmTransactionDialog open={confirmTransactionOpen} onClose={() => { setConfirmTransactionOpen (false)}} />
+
       </React.Fragment>
     );
 
