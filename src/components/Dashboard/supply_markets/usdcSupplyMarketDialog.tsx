@@ -31,8 +31,9 @@ import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import EnableWarning from "../widgets/enableWarning";
-import { updateSupplyBalance, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
+import { updateSupplyBalance, updateUSDCSupplyRate, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
+import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -52,11 +53,6 @@ interface SupplyMarketDialogProps {
 function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const [value, setValue] = React.useState("0");
   const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-      dispatch(updateUSDCBalance());
-      dispatch(updateSupplyBalance());
-  })
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -80,6 +76,13 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const borrowLimitUsed = useSelector(
     (state: RootState) => state.account.borrowLimitUsed
   );
+
+  useEffect(() => {
+    dispatch(updateUSDCBalance());
+    dispatch(updateSupplyBalance());
+    dispatch(updateUSDCSupplyRate());
+    dispatch(updateBorrowLimit());
+})
 
   return (
     <React.Fragment>

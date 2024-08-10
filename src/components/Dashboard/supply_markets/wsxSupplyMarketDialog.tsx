@@ -19,9 +19,12 @@ import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 import SupplyDetails from "../widgets/supply/supplyDetails";
 
 // Action Items
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app/Store";
 import EnableWarning from "../widgets/enableWarning";
+import { useEffect } from "react";
+import { updateSupplyBalance, updateWSXSupplyRate, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
+import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -40,16 +43,17 @@ interface SupplyMarketDialogProps {
 
 function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const [value, setValue] = React.useState("0");
-
+  const dispatch = useDispatch<AppDispatch>();
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
-
-  const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
+  
+  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
   const wsxSupplyBalance = useSelector(
     (state: RootState) => state.wsx.supplyBalance
   );
-  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
+  const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
+
   const borrowLimit = useSelector(
     (state: RootState) => state.account.borrowLimit
   );
@@ -57,6 +61,13 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   const borrowLimitUsed = useSelector(
     (state: RootState) => state.account.borrowLimitUsed
   );
+
+  useEffect( () => {
+    dispatch(updateWSXBalance());
+    dispatch(updateSupplyBalance());
+    dispatch(updateWSXSupplyRate());
+    dispatch(updateBorrowLimit());
+  });
 
   return (
     <React.Fragment>
@@ -120,7 +131,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
                 <SupplyDetails
                   type={"sx"}
                   supplyAPY={wsxSupplyAPY}
-                  supplyBalance={wsxWalletBalance}
+                  supplyBalance={wsxSupplyBalance}
                 />
               </TabPanel>
               <TabPanel value="1">
