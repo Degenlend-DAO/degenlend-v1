@@ -85,7 +85,7 @@ export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async ()
     }
 });
 
-export const updateOraclePrice = createAsyncThunk('usdcOraclePrice/update', async () => {
+export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', async () => {
     return 1.00;
 })
 
@@ -139,7 +139,7 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
 
 });
 
-export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {
+export const updateUSDCSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -164,7 +164,7 @@ export const updateSupplyRate = createAsyncThunk('usdcSupplyRate/update', async 
 
 });
 
-export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {
+export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -179,11 +179,11 @@ export const updateBorrowRate = createAsyncThunk('usdcBorrowRate/update', async 
         const  borrowRateMantissa = await degenUSDC.borrowRatePerBlock();
         const decimals = await degenUSDC.decimals()
         const borrowRate = formatUnits(borrowRateMantissa, decimals);
-        console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
+        console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
         return Number(borrowRate);
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateBorrowRate': ${error}`)
         return 0;
     }
 });
@@ -329,54 +329,54 @@ export const USDCSlice = createSlice({
 ///////////  Views
 
         //  Price Oracle
-        builder.addCase(updateOraclePrice.pending, (state, action) => {
+        builder.addCase(updateUSDCOraclePrice.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateOraclePrice.rejected, (state, action) => {
+        builder.addCase(updateUSDCOraclePrice.rejected, (state, action) => {
             state.status = "failed";
             state.oraclePrice = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateOraclePrice.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCOraclePrice.fulfilled, (state, action) => {
             state.status = "completed";
             state.oraclePrice = action.payload;
         })
 
         // Borrow Rate
 
-        builder.addCase(updateBorrowRate.pending, (state, action) => {
+        builder.addCase(updateUSDCBorrowRate.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateBorrowRate.rejected, (state, action) => {
+        builder.addCase(updateUSDCBorrowRate.rejected, (state, action) => {
             state.status = "failed";
             state.borrowRate = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateBorrowRate.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCBorrowRate.fulfilled, (state, action) => {
             state.status = "completed";
             state.borrowRate = action.payload;
         })
 
         // Supply Rate
 
-        builder.addCase(updateSupplyRate.pending, (state, action) => {
+        builder.addCase(updateUSDCSupplyRate.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateSupplyRate.rejected, (state, action) => {
+        builder.addCase(updateUSDCSupplyRate.rejected, (state, action) => {
             state.status = "failed";
             state.supplyRate = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateSupplyRate.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCSupplyRate.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyRate = action.payload;
         })

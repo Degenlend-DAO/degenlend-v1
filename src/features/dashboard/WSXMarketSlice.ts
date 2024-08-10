@@ -131,7 +131,7 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
 
 });
 
-export const updateSupplyRate = createAsyncThunk('wsxSupplyRate/update', async () => {
+export const updateWSXSupplyRate = createAsyncThunk('wsxSupplyRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -156,7 +156,7 @@ export const updateSupplyRate = createAsyncThunk('wsxSupplyRate/update', async (
 
 });
 
-export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async () => {
+export const updateWSXBorrowRate = createAsyncThunk('wsxBorrowRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -181,7 +181,7 @@ export const updateBorrowRate = createAsyncThunk('wsxBorrowRate/update', async (
 
 });
 
-export const updateOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
+export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -316,54 +316,54 @@ export const WSXSlice = createSlice({
         ///////////  Views
 
         //  Price Oracle
-        builder.addCase(updateOraclePrice.pending, (state, action) => {
+        builder.addCase(updateWSXOraclePrice.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateOraclePrice.rejected, (state, action) => {
+        builder.addCase(updateWSXOraclePrice.rejected, (state, action) => {
             state.status = "failed";
             state.oraclePrice = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateOraclePrice.fulfilled, (state, action) => {
+        builder.addCase(updateWSXOraclePrice.fulfilled, (state, action) => {
             state.status = "completed";
             state.oraclePrice = action.payload;
         })
 
         // Borrow Rate
 
-        builder.addCase(updateBorrowRate.pending, (state, action) => {
+        builder.addCase(updateWSXBorrowRate.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateBorrowRate.rejected, (state, action) => {
+        builder.addCase(updateWSXBorrowRate.rejected, (state, action) => {
             state.status = "failed";
             state.borrowRate = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateBorrowRate.fulfilled, (state, action) => {
+        builder.addCase(updateWSXBorrowRate.fulfilled, (state, action) => {
             state.status = "completed";
             state.borrowRate = action.payload;
         })
 
         // Supply Rate
 
-        builder.addCase(updateSupplyRate.pending, (state, action) => {
+        builder.addCase(updateWSXSupplyRate.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateSupplyRate.rejected, (state, action) => {
+        builder.addCase(updateWSXSupplyRate.rejected, (state, action) => {
             state.status = "failed";
             state.supplyRate = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateSupplyRate.fulfilled, (state, action) => {
+        builder.addCase(updateWSXSupplyRate.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyRate = action.payload;
         })
