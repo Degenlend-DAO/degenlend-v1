@@ -11,20 +11,24 @@ import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 
 // Action Items
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app/Store";
 import EnableMarketDialog from "./enableCollateralDialog";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import USDCSupplyMarketDialog from "./usdcSupplyMarketDialog";
 import WSXSupplyMarketDialog from "./wsxSupplyMarketDialog";
+import { updateUSDCSupplyRate, updateUSDCOraclePrice, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
+import { updateWSXSupplyRate, updateWSXOraclePrice, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
 
 export default function SupplyMarkets() {
   // These values are grabbed directly from the blockchain
 
-  const [enableSXDialogOpen, setEnableSXDialogOpen] = React.useState(false);
-  const [enableUSDCDialogOpen, setEnableUSDCDialogOpen] = React.useState(false);
-  const [supplySXDialogOpen, setSupplySXDialogOpen] = React.useState(false);
-  const [supplyUSDCDialogOpen, setSupplyUSDCDialogOpen] = React.useState(false);
+  const [enableSXDialogOpen, setEnableSXDialogOpen] = useState(false);
+  const [enableUSDCDialogOpen, setEnableUSDCDialogOpen] = useState(false);
+  const [supplySXDialogOpen, setSupplySXDialogOpen] = useState(false);
+  const [supplyUSDCDialogOpen, setSupplyUSDCDialogOpen] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
 
 
   const usdcSupplyAPY = useSelector(
@@ -62,6 +66,20 @@ export default function SupplyMarkets() {
     event.stopPropagation();
     setEnableUSDCDialogOpen(true);
   };
+
+  useEffect( () => {
+    // update supply apys, wallet balances, and oracle prices
+    
+    dispatch(updateUSDCSupplyRate());
+    dispatch(updateWSXSupplyRate());
+
+    dispatch(updateWSXBalance());
+    dispatch(updateUSDCBalance());
+    
+    dispatch(updateUSDCOraclePrice());
+    dispatch(updateWSXOraclePrice());
+  });
+
 
   return (
     <>

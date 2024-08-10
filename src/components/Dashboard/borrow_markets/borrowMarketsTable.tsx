@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,14 +12,18 @@ import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 
 // Action Items
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app/Store";
 import WSXBorrowMarketDialog from "./wsxBorrowMarketDialog";
 import USDCBorrowMarketDialog from "./usdcBorrowMarketDialog";
+import { updateUSDCBalance, updateUSDCBorrowRate, updateUSDCOraclePrice } from "../../../features/dashboard/USDCMarketSlice";
+import { updateWSXBalance, updateWSXBorrowRate, updateWSXOraclePrice } from "../../../features/dashboard/WSXMarketSlice";
 
 export default function BorrowMarkets() {
   const [borrowSXDialogOpen, setBorrowSXDialogOpen] = React.useState(false);
   const [borrowUSDCDialogOpen, setBorrowUSDCDialogOpen] = React.useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const usdcBorrowAPY = useSelector(
     (state: RootState) => state.usdc.borrowRate
@@ -46,6 +50,19 @@ export default function BorrowMarkets() {
   function handleUSDCRowClick(event: React.MouseEvent) {
     setBorrowUSDCDialogOpen(true);
   }
+
+  useEffect( () => {
+    // update borrow apys, wallet balances, and oracle prices
+    
+    dispatch(updateUSDCBorrowRate());
+    dispatch(updateWSXBorrowRate());
+
+    dispatch(updateWSXBalance());
+    dispatch(updateUSDCBalance());
+    
+    dispatch(updateUSDCOraclePrice());
+    dispatch(updateWSXOraclePrice());
+  });
 
   return (
     <>
