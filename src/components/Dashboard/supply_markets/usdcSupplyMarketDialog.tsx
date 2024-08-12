@@ -8,8 +8,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
 
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
@@ -34,15 +32,7 @@ import EnableWarning from "../widgets/enableWarning";
 import { updateSupplyBalance, updateUSDCSupplyRate, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { Transition } from "../../../utils/Transition";
 
 interface SupplyMarketDialogProps {
   open: boolean;

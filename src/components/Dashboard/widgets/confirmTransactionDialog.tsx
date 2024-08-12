@@ -18,21 +18,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
 
-import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
-
 // Action Items
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/Store";
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { Transition } from "../../../utils/Transition";
 
 interface confirmTransactionProps {
   open: boolean;
