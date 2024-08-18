@@ -3,8 +3,10 @@ import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { connectWallet, disconnectWallet } from '../features/wallet/walletSlice';
 import { AppDispatch, RootState } from "../app/Store";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
+import { isUSDCListedAsCollateral, updateUSDCSupplyRate, updateUSDCBalance, updateUSDCOraclePrice } from '../features/dashboard/USDCMarketSlice';
+import { isWSXListedAsCollateral, updateWSXSupplyRate, updateWSXBalance, updateWSXOraclePrice } from '../features/dashboard/WSXMarketSlice';
 
 const ConnectWallet = () => {
     const [anchorElement, setAnchorElement] = useState<EventTarget & HTMLButtonElement | null>(null)
@@ -34,6 +36,22 @@ const ConnectWallet = () => {
     const onDisconnectWallet = () => {
         dispatch(disconnectWallet());
     }
+
+    useEffect( () => {
+        // update collateral, supply apys, wallet balances, and oracle prices
+        
+        dispatch(isWSXListedAsCollateral());
+        dispatch(isUSDCListedAsCollateral());
+    
+        dispatch(updateUSDCSupplyRate());
+        dispatch(updateWSXSupplyRate());
+    
+        dispatch(updateWSXBalance());
+        dispatch(updateUSDCBalance());
+        
+        dispatch(updateUSDCOraclePrice());
+        dispatch(updateWSXOraclePrice());
+      });
 
     return (
         <Box sx={{ maxWidth: '200px' }}>
