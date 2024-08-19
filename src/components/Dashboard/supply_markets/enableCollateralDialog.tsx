@@ -13,10 +13,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 // Action Items
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from '../../../app/Store';
+import { AppDispatch, RootState } from '../../../app/Store';
 
 import { enterUSDCMarket, enterWSXMarket, exitWSXMarket, exitUSDCMarket } from '../../../features/dashboard/AccountSlice';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ConfirmTransactionDialog from '../widgets/confirmTransactionDialog';
 import { Transition } from '../../../utils/Transition';
 
@@ -28,30 +28,62 @@ interface EnableMarketsProps {
 }
 
 function EnableMarketDialog(props: EnableMarketsProps) {
-  const [value, setValue] = React.useState(0);
   const dispatch = useDispatch<AppDispatch>();
   const { onClose, type, open } = props;
 
+  let isCollateralTextHeader = `Enable ${props.title} as Collateral`;
+  let isCollateralTextBody = "";
+  let isCollateralTextButtonTitle = `Add ${props.title} as Collateral`;
+
+  const isUSDCCollateral = useSelector(
+    (state: RootState) => state.usdc.isCollateral
+  );
+
+  const isWSXCollateral = useSelector(
+    (state: RootState) => state.wsx.isCollateral
+  );
 
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
 
-  // const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-  //   setValue(newValue);
-  // };
 
   const handleClick = () => {
     if (type === "sx") {
-      dispatch(enterWSXMarket());
+      // If wsx is already listed as collateral, exit the market
+      if (isWSXCollateral) {
+        dispatch(exitWSXMarket());
+      } else {
+        dispatch(enterWSXMarket());
+      }
+
     }
 
     if (type === "usdc") {
+
+      // If USDC is already listed as collateral, exit the market
+      if (isUSDCCollateral) {
+        dispatch(exitUSDCMarket());
+      } else {
+      }
       dispatch(enterUSDCMarket());
     }
     setConfirmTransactionOpen(true);
 
     onClose();
   }
+
+  useEffect( () => {
+
+    if ( isUSDCCollateral === true || isWSXCollateral === true )
+    {
+      isCollateralTextHeader = `Remove ${props.title} as Collateral`;
+
+      isCollateralTextButtonTitle = `Remove ${props.title} as Collateral`;
+      
+    }
+
+  });
+
 
   return (
     <React.Fragment>
@@ -66,7 +98,7 @@ function EnableMarketDialog(props: EnableMarketsProps) {
       >
         <DialogTitle>
           <div style={{ textAlign: 'center' }}>
-            <Box component="span" sx={{ fontSize: 20, fontWeight: 'bold' }}> Enable {props.title} as Collateral</Box>
+            <Box component="span" sx={{ fontSize: 20, fontWeight: 'bold' }}> {isCollateralTextHeader} </Box>
           </div>
           <IconButton
             aria-label="close"
@@ -113,7 +145,7 @@ function EnableMarketDialog(props: EnableMarketsProps) {
             onClick={handleClick} // Clicking the button 
             aria-label="button to toggle collateral"
           >
-            Use {props.title} as Collateral
+            {isCollateralTextButtonTitle}
           </Button>
 
         </DialogContent>
@@ -127,3 +159,5 @@ function EnableMarketDialog(props: EnableMarketsProps) {
 }
 
 export default EnableMarketDialog
+
+// TODO: 
