@@ -28,17 +28,10 @@ interface EnableMarketsProps {
 }
 
 function EnableMarketDialog(props: EnableMarketsProps) {
-  const [value, setValue] = React.useState(0);
   const dispatch = useDispatch<AppDispatch>();
   const { onClose, type, open } = props;
 
-
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
-
-
-  // const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-  //   setValue(newValue);
-  // };
 
   const handleClick = () => {
     if (type === "sx") {
