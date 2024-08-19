@@ -17,12 +17,11 @@ import EnableMarketDialog from "./enableCollateralDialog";
 import React, { useEffect, useState } from "react";
 import USDCSupplyMarketDialog from "./usdcSupplyMarketDialog";
 import WSXSupplyMarketDialog from "./wsxSupplyMarketDialog";
-import { updateUSDCSupplyRate, updateUSDCOraclePrice, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
-import { updateWSXSupplyRate, updateWSXOraclePrice, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
+import { isUSDCListedAsCollateral, updateUSDCSupplyRate, updateUSDCOraclePrice, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
+import { isWSXListedAsCollateral, updateWSXSupplyRate, updateWSXOraclePrice, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
 
 export default function SupplyMarkets() {
-  // These values are grabbed directly from the blockchain
-
+  
   const [enableSXDialogOpen, setEnableSXDialogOpen] = useState(false);
   const [enableUSDCDialogOpen, setEnableUSDCDialogOpen] = useState(false);
   const [supplySXDialogOpen, setSupplySXDialogOpen] = useState(false);
@@ -30,6 +29,13 @@ export default function SupplyMarkets() {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  const isUSDCCollateral = useSelector(
+    (state: RootState) => state.usdc.isCollateral
+  );
+
+  const isWSXCollateral = useSelector(
+    (state: RootState) => state.wsx.isCollateral
+  );
 
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
@@ -68,8 +74,11 @@ export default function SupplyMarkets() {
   };
 
   useEffect( () => {
-    // update supply apys, wallet balances, and oracle prices
+    // update collateral, supply apys, wallet balances, and oracle prices
     
+    dispatch(isWSXListedAsCollateral());
+    dispatch(isUSDCListedAsCollateral());
+
     dispatch(updateUSDCSupplyRate());
     dispatch(updateWSXSupplyRate());
 
@@ -135,7 +144,7 @@ export default function SupplyMarkets() {
               <TableCell>{wsxSupplyAPY}%</TableCell>
               <TableCell>{wsxWalletBalance} WSX</TableCell>
               <TableCell>
-                <Switch onClick={(event) => { handleSXSwitchClick(event) }} />
+                <Switch onClick={(event) => { handleSXSwitchClick(event) }} checked={isUSDCCollateral} />
               </TableCell>
               <TableCell>{wsxOraclePrice}</TableCell>
             </TableRow>
@@ -162,7 +171,7 @@ export default function SupplyMarkets() {
               <TableCell>{usdcWalletBalance} USDC</TableCell>
               <TableCell>
 
-                <Switch onClick={(event) => { handleUSDCSwitchClick(event) }} />
+                <Switch onClick={(event) => { handleUSDCSwitchClick(event) }} checked={isWSXCollateral} />
 
               </TableCell>
               <TableCell>{usdcOraclePrice}</TableCell>
