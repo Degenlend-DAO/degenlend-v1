@@ -1,121 +1,47 @@
-import React from 'react';
-import Link from '@mui/material/Link';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import { Title } from '@mui/icons-material';
-import { Box, Container, Switch, Typography } from '@mui/material';
+import {
+  Container,
+} from "@mui/material";
 
-// SX Token
-import sxTokenLogo from '../../assets/img/sx_coin_token.png'
-import usdcTokenLogo from '../../assets/img/usdc_coin_token.png'
-import CustomBarChart from './MarketSupplyChart';
+import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 
-// Generate Markets Data
-function createData(
-    id: number,
-    name: string,
-    img: string,
-    tokenString: string,
-    supplyAPY: number,
-    borrowAPY: number,
-    walletBalance: number,
-    collateral: boolean,
-) {
-    return {
-        id,
-        name,
-        img,
-        tokenString,
-        supplyAPY,
-        borrowAPY,
-        walletBalance,
-        collateral
-    }
-};
-
-// New market details have to be listed here
-const activeMarkets = [
-    createData(
-        0,
-        'SX Token',
-        'sxTokenLogo',
-        '0x0000000000000000',
-        2.00,
-        5.00,
-        4000,
-        false
-    ),
-    createData(
-        0,
-        'USDC Token',
-        'usdcTokenLogo',
-        '0x000000000000000000',
-        2.00,
-        5.00,
-        100000,
-        true
-    )
-];
-
+// Market Items
+import BorrowMarkets from "./borrow_markets/borrowMarketsTable";
+import SupplyMarkets from "./supply_markets/supplyMarketsTable";
+import MarketHeader from "./marketHeader";
 
 function Markets() {
-    return (
-        <Container
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                pt: { xs: 14, sm: 20 },
-                pb: { xs: 8, sm: 12 },
-            }} >
-            {/* <CustomBarChart /> */}
-            <Table size='medium'>
-                <TableHead>
-                    <TableRow>
-                        <TableCell> Asset </TableCell>
-                        <TableCell> Supply APY </TableCell>
-                        <TableCell> Borrow APY </TableCell>
-                        <TableCell> Wallet Balance </TableCell>
-                        <TableCell> Collateral </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {activeMarkets.map(market => (
-                        <TableRow key={market.id}>
-                            <TableCell>
-                                <Box
-                                    component="img"
-                                    sx={{
-                                        height: 20,
-                                        width: 25,
-                                    }}
-                                    alt={`${market.name} Logo`}
-                                    src={sxTokenLogo}
-                                /> {market.name}
-                            </TableCell>
-                            <TableCell>
-                                {market.supplyAPY}
-                            </TableCell>
-                            <TableCell>
-                                {market.borrowAPY}
-                            </TableCell>
-                            <TableCell>
-                                {market.walletBalance}
-                            </TableCell>
-                            <TableCell>
-                                <Switch />
-                            </TableCell>
-                        </TableRow>
-                    ))}
+  //  This fragment holds the supply & borrow markets tables in one container
 
-                </TableBody>
-            </Table>
-        </Container>
-    )
+  return (
+    <Container
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        pt: { xs: 14, sm: 20 },
+        pb: { xs: 8, sm: 12 },
+      }}
+    >
+
+    <MarketHeader />
+
+      <Grid
+        container
+        spacing={6}
+        columns={16}
+        justifyContent="space-evenly"
+        alignItems="stretch"
+        sx={{ width: '100%' }}
+      >
+        <Grid xs={8}>
+          <SupplyMarkets />
+        </Grid>
+        <Grid xs={8}>
+          <BorrowMarkets />
+        </Grid>
+      </Grid>
+    </Container>
+  );
 }
 
-
-export default Markets
+export default Markets;
