@@ -17,6 +17,7 @@ interface WSXState {
     borrowRate: number,
     supplyBalance: number,
     supplyRate: number,
+    isEnabled: boolean,
     isCollateral: boolean,
     oraclePrice: number,
 }
@@ -30,6 +31,7 @@ const initialState: WSXState = {
     balance: 0.00,
     supplyBalance: 0.00,
     supplyRate: 0.00,
+    isEnabled: false,
     isCollateral: false,
     oraclePrice: 1.0000
 }
@@ -77,6 +79,29 @@ export const isWSXListedAsCollateral = createAsyncThunk('wsxCollateral/update', 
         return false;
     }
 });
+
+export const isWSXEnabled = createAsyncThunk('wsxCollateral/enabled', async () => {
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return false;
+    }
+
+    const walletAddress = wallet.accounts[0].address;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
+
+    try {
+        const allowance = await WSX.allowance(walletAddress, testnet_addresses.degenWSX); // Get the allowance of the 
+        if (allowance > 0)
+            return true
+        else 
+            return false
+    } catch (error) {
+        console.log(`[Console] an error occured on thunk 'isWSXEnabled': ${error}`);
+        return false;
+    }
+})
 
 
 export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () => {
@@ -466,6 +491,19 @@ export const WSXSlice = createSlice({
         builder.addCase(isWSXListedAsCollateral.fulfilled, (state, action) => {
             state.status = "completed";
             state.isCollateral = action.payload;
+        })
+
+        builder.addCase(isWSXEnabled.pending, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isWSXEnabled.rejected, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isWSXEnabled.fulfilled, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = action.payload;
         })
         
         

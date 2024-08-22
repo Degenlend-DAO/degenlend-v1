@@ -17,6 +17,7 @@ interface USDCState {
     supplyBalance: number,
     supplyRate: number,
     isCollateral: boolean,
+    isEnabled: boolean,
     oraclePrice: number,
 }
 
@@ -49,6 +50,7 @@ const initialState: USDCState = {
     supplyBalance: 0.00,
     supplyRate: 0.00,
     isCollateral: false,
+    isEnabled: false,
     oraclePrice: 1.000,
 }
 
@@ -82,6 +84,30 @@ export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', 
     }
 
 })
+
+export const isUSDCEnabled = createAsyncThunk('usdcCollateral/enabled', async () => {
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return false;
+    }
+
+    const walletAddress = wallet.accounts[0].address;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const USDC = new Contract(testnet_addresses.USDC, ERC20Immutable.abi, ethersProvider);
+
+    try {
+        const allowance = await USDC.allowance(walletAddress, testnet_addresses.degenUSDC); // Get the allowance of the 
+        if (allowance > 0)
+            return true
+        else 
+            return false
+    } catch (error) {
+        console.log(`[Console] an error occured on thunk 'isUSDCEnabled': ${error}`);
+        return false;
+    }
+})
+
 
 export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
@@ -411,7 +437,7 @@ export const USDCSlice = createSlice({
             state.supplyRate = action.payload;
         })
 
-        // WSX Balance
+        // USDC Balance
 
         builder.addCase(updateUSDCBalance.pending, (state, action) => {
             state.status = "loading";
@@ -478,6 +504,20 @@ export const USDCSlice = createSlice({
         builder.addCase(isUSDCListedAsCollateral.fulfilled, (state, action) => {
             state.status = "completed";
             state.isCollateral = action.payload;
+        })
+
+
+        builder.addCase(isUSDCEnabled.pending, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isUSDCEnabled.rejected, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isUSDCEnabled.fulfilled, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = action.payload;
         })
         
         
