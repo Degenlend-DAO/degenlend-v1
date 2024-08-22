@@ -7,6 +7,8 @@ import {
   Typography,
 } from "@mui/material";
 import { getTokenDetails } from "../../../utils/TokenType";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/Store";
 
 interface SupplyHeaderProps {
   type: string;
@@ -15,6 +17,16 @@ interface SupplyHeaderProps {
 function SupplyHeader(props: SupplyHeaderProps) {
   let tokenLogo;
   let tokenText;
+  let isEnabled;
+
+  const isUSDCEnabled = useSelector(
+    (state: RootState) => state.usdc.isEnabled
+  );
+
+  const isWSXEnabled = useSelector(
+    (state: RootState) => state.wsx.isEnabled
+  );;
+
 
   const details = getTokenDetails(props.type);
 
@@ -42,7 +54,7 @@ function SupplyHeader(props: SupplyHeaderProps) {
           <Box
             component="img"
             sx={{ height: 50, width: 50, marginRight: 1 }}
-            alt="Wrapped SX Logo"
+            alt={`${props.type} Logo`}
             src={tokenLogo}
           />
           {/* <Typography variant="body1">WSX Token</Typography> */}
