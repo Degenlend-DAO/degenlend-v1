@@ -20,7 +20,18 @@ function SupplyButton(props: SupplyButtonProps) {
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
+    let SupplyButton: JSX.Element = <Button disabled ></Button>;
 
+    switch(type) {
+        case "sx" : 
+
+        break;
+
+        case "usdc": 
+        
+        
+        break;
+    }
 
     let buttonText = ""
 
@@ -52,7 +63,7 @@ function SupplyButton(props: SupplyButtonProps) {
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Wallet Balance </Typography>

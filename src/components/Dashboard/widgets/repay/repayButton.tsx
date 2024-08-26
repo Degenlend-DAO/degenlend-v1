@@ -53,7 +53,7 @@ function RepayButton(props: RepayButtonProps) {
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Supplying </Typography>

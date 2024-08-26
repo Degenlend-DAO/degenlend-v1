@@ -32,6 +32,13 @@ function WithdrawButton(props: WithdrawButtonProps) {
         buttonText = `Withdraw ${supplyBalance} ${type.toUpperCase()} tokens`
     }
 
+    function SupplyButton(isCollateral: boolean) {
+        if (isCollateral)
+            {
+                return <Button></Button>
+            }
+    }
+
     function handleChange() {
         alert('You pressed the withdraw button!');
 
@@ -51,7 +58,7 @@ function WithdrawButton(props: WithdrawButtonProps) {
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Supplying </Typography>
