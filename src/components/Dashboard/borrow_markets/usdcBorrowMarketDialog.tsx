@@ -32,6 +32,7 @@ import { useEffect } from "react";
 import { AppDispatch } from "../../../app/Store";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
+import BorrowMarketsHeader from "../widgets/borrow/borrowMarketsHeader";
 
 interface BorrowMarketDialogProps {
   open: boolean;
@@ -108,16 +109,17 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
         </DialogTitle>
         <DialogContent>
           <TabContext value={value}>
-            {/* Details above the tab list */}
+            {/* Header Details above the tab list */}
 
             <TabPanel value="0">
-              <USDCBorrowDetails type={"USDC"} />
+              <USDCBorrowDetails type={"USDC"}  />
             </TabPanel>
             <TabPanel value="1">
-              <EnableWarning type={"usdc"} />
+              <BorrowMarketsHeader type={"usdc"} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
+
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
                   centered
@@ -130,6 +132,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   <Tab label="Repay" value="1" />
                 </TabList>
               </Box>
+
               <TabPanel value="0">
                 <BorrowDetails
                   type={"usdc"}

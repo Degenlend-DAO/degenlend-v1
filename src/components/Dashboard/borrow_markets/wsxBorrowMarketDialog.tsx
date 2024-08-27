@@ -12,14 +12,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
-import SXBorrowDetails from "../widgets/wsxBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 // Action Items
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import RepayDetails from "../widgets/repay/repayDetails";
-import EnableWarning from "../widgets/enableWarning";
 import {
   updateBorrowBalance,
   updateWSXBorrowRate,
@@ -27,6 +25,7 @@ import {
 import { useEffect } from "react";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
+import BorrowMarketsHeader from "../widgets/borrow/borrowMarketsHeader";
 
 interface BorrowMarketDialogProps {
   open: boolean;
@@ -106,11 +105,11 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
             {/* Details above the tab list */}
 
             <TabPanel value="0">
-              <SXBorrowDetails type={"sx"} />
+              <BorrowMarketsHeader type={"sx"} input={true} />
             </TabPanel>
 
             <TabPanel value="1">
-              <EnableWarning type={"sx"} />
+              <BorrowMarketsHeader type={"sx"} input={false} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
