@@ -12,7 +12,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import SXBorrowDetails from "../widgets/wsxBorrow";
 import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 import SupplyDetails from "../widgets/supply/supplyDetails";
 
@@ -24,6 +23,8 @@ import { useEffect } from "react";
 import { updateSupplyBalance, updateWSXSupplyRate, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
+import SupplyHeader from "../widgets/supply/supplyMarketsHeader";
+import SupplyMarketsHeader from "../widgets/supply/supplyMarketsHeader";
 
 interface SupplyMarketDialogProps {
   open: boolean;
@@ -98,11 +99,11 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="0">
-              <EnableWarning type={"sx"} />
+              <SupplyMarketsHeader type={"sx"} input={false} />
             </TabPanel>
 
             <TabPanel value="1">
-              <SXBorrowDetails type={"SX"} />
+            <SupplyMarketsHeader type={"sx"} input={true} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
