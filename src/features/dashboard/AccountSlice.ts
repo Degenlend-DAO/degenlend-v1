@@ -10,6 +10,7 @@ interface AccountState {
     error: string;
     status: string,
     transactionHash: string,
+    amount: number,
     liquidity: number,
     borrowLimit: number,
     borrowLimitUsed: number,
@@ -23,6 +24,7 @@ const initialState: AccountState = {
     error: "",
     status: "initial",
     transactionHash: "0x00000000000000000000000000000000000000000",
+    amount: 0,
     liquidity: 0e18,
     borrowLimit: 0,
     borrowLimitUsed: 0,
@@ -59,6 +61,11 @@ export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async
         return 0e18;
     }
 })
+
+
+export const updateAmount = createAsyncThunk('account/updateAmount', async (amountToUpdate: number) =>{
+    return amountToUpdate;
+});
 
 /**
  * Updates the available borrow limit & borrow limit used from the smart contract.
@@ -189,6 +196,12 @@ export const AccountSlice = createSlice({
 
 
         // Activities
+
+        // Update the amount placeholder
+
+        builder.addCase(updateAmount.fulfilled, (state, action) => {
+            state.amount = action.payload;
+        })
 
         //  Enter a Wrapped SX market
 
