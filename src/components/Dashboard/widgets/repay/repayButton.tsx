@@ -9,11 +9,12 @@ import { repayUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 interface RepayButtonProps {
     type: String,
     borrowBalance: number,
+    isRepayingEnabled: boolean,
 }
 
 function RepayButton(props: RepayButtonProps) {
 
-    const { type, borrowBalance } = props
+    const { type, borrowBalance, isRepayingEnabled } = props
 
     const dispatch = useDispatch<AppDispatch>();
 

@@ -7,10 +7,13 @@ interface DetailProps {
     type: string,
     borrowAPY: number,
     borrowBalance: number,
+    isRepayingEnabled: boolean,
 }
 
 function RepayDetails(props: DetailProps) {
-       const { type, borrowAPY, borrowBalance } = props
+       const { type, borrowAPY, borrowBalance, isRepayingEnabled } = props
+       let enabled;
+       isRepayingEnabled ? enabled = true : enabled = false;
     return (
         <Box sx={{width: "100%", alignItems: "center", alignContent: "center" }}>
             
@@ -20,7 +23,7 @@ function RepayDetails(props: DetailProps) {
             
             {/* Button */}
 
-            <RepayButton type={type} borrowBalance={borrowBalance} />
+            <RepayButton type={type} borrowBalance={borrowBalance} isRepayingEnabled={enabled} />
 
         </Box>
     );
