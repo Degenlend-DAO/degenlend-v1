@@ -43,6 +43,8 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
   // Views
 
+  const isWSXEnabled = useSelector((state: RootState) => state.wsx.isEnabled);
+
   const wsxBorrowBalance = useSelector(
     (state: RootState) => state.wsx.borrowBalance
   );
@@ -138,6 +140,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   type={"SX"}
                   borrowAPY={wsxBorrowAPY}
                   borrowBalance={wsxBorrowBalance}
+                  isRepayingEnabled={isWSXEnabled}
                 />
               </TabPanel>
             </Box>
