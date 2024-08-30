@@ -39,6 +39,10 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
     setValue(newValue);
   };
   
+  // Views
+
+  const isWSXEnabled = useSelector((state: RootState) => state.wsx.isEnabled);
+
   const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
   const wsxSupplyBalance = useSelector(
     (state: RootState) => state.wsx.supplyBalance
@@ -123,6 +127,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   type={"sx"}
                   supplyAPY={wsxSupplyAPY}
                   supplyBalance={wsxSupplyBalance}
+                  isSupplyingEnabled={isWSXEnabled}
                 />
               </TabPanel>
               <TabPanel value="1">
