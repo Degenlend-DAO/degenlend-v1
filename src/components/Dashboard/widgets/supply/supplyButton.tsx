@@ -1,26 +1,29 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
 import { useState } from "react";
-import { AppDispatch } from "../../../../app/Store";
-import { useDispatch } from "react-redux";
-import { supplyWSX } from "../../../../features/dashboard/WSXMarketSlice";
-import { supplyUSDC } from "../../../../features/dashboard/USDCMarketSlice";
+import { AppDispatch, RootState } from "../../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { approveWSX, supplyWSX } from "../../../../features/dashboard/WSXMarketSlice";
+import { approveUSDC, supplyUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 
 interface SupplyButtonProps {
     type: String,
     supplyBalance: number,
+    isEnabled: boolean,
 }
 
 function SupplyButton(props: SupplyButtonProps) {
 
-    const { type, supplyBalance } = props
+    const { type, supplyBalance, isEnabled } = props
 
     const dispatch = useDispatch<AppDispatch>();
 
+    const amount = useSelector(
+        (state: RootState) => state.account.amount
+    );
+
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
-
-    let SupplyButton: JSX.Element = <Button disabled ></Button>;
 
     switch(type) {
         case "sx" : 
@@ -28,26 +31,37 @@ function SupplyButton(props: SupplyButtonProps) {
         break;
 
         case "usdc": 
-        
-        
+
         break;
     }
 
     let buttonText = ""
 
-    if (supplyBalance === 0 || supplyBalance === undefined )
+    if (amount === 0 || supplyBalance === undefined )
+        {
+            buttonText = "No Balance to Supply!"
+        }
+    
+        if (amount > 0)
+        {
+            buttonText = `Supply ${amount} ${type.toUpperCase()} tokens`
+        }
+
+    let SupplyButton: JSX.Element = <Button disabled size="large" variant="contained">{buttonText}</Button>;
+
+    if (isEnabled === true )
     {
-        buttonText = "No Balance to Supply!"
+        SupplyButton = <Button size="large" onClick={supplyAssets} variant="contained"></Button>
     }
 
-    if (supplyBalance > 0)
+    if (isEnabled === false )
     {
-        buttonText = `Supply ${supplyBalance} ${type.toUpperCase()} tokens`
+        buttonText = `Enable ${type} Token`
+        SupplyButton = <Button size="large" variant="contained" onClick={enableAssets}>{buttonText}</Button>
     }
 
-    function handleChange() {
-        alert('You pressed the Supply button!');
 
+    function supplyAssets() {
         if (type === "sx")
             {
                 dispatch(supplyWSX());
@@ -60,10 +74,22 @@ function SupplyButton(props: SupplyButtonProps) {
         setConfirmTransactionOpen(true);
     }
 
+    function enableAssets() {
+        if (type === "sx" )
+            {
+                dispatch(approveWSX());
+            }
+        if (type === "usdc" )
+            {
+                // dispatch(approveUSDC());
+            }
+    }
+
+
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        {SupplyButton}
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Wallet Balance </Typography>

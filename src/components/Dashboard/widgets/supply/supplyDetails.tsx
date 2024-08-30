@@ -6,10 +6,14 @@ interface DetailsProps {
     type: String,
     supplyAPY: number,
     supplyBalance: number,
+    isSupplyingEnabled: boolean | undefined,
 }
 
 function SupplyDetails(props: DetailsProps) {
-       const {type, supplyAPY, supplyBalance } = props;
+       const {type, supplyAPY, supplyBalance, isSupplyingEnabled } = props;
+
+       let enabledValue;
+       isSupplyingEnabled ?  enabledValue = true : enabledValue = false;
     return (
         <Box sx={{ width: "100%", padding: "3%"}}>
 
@@ -19,7 +23,7 @@ function SupplyDetails(props: DetailsProps) {
         
         {/* Supply Button */}
         
-        <SupplyButton type={type} supplyBalance={supplyBalance} />
+        <SupplyButton type={type} supplyBalance={supplyBalance} isEnabled={enabledValue} />
 
         </Box>
     );
