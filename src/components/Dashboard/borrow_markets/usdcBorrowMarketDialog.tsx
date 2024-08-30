@@ -12,7 +12,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
-import USDCBorrowDetails from "../widgets/usdcBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -43,6 +42,10 @@ interface BorrowMarketDialogProps {
 function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
   const dispatch = useDispatch<AppDispatch>();
+
+  const isUSDCEnabled = useSelector(
+    (state: RootState) => state.usdc.isEnabled
+  );
 
   const usdcBorrowAPY = useSelector(
     (state: RootState) => state.usdc.borrowRate
@@ -112,7 +115,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
             {/* Header Details above the tab list */}
 
             <TabPanel value="0">
-              <USDCBorrowDetails type={"USDC"}  />
+              <BorrowMarketsHeader type={"usdc"} input={true}/>
             </TabPanel>
             <TabPanel value="1">
               <BorrowMarketsHeader type={"usdc"} />
@@ -147,6 +150,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   type={"usdc"}
                   borrowAPY={usdcBorrowAPY}
                   borrowBalance={usdcBorrowBalance}
+                  isRepayingEnabled={isUSDCEnabled}
                 />
               </TabPanel>
             </Box>
