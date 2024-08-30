@@ -21,7 +21,6 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import USDCBorrowDetails from "../widgets/usdcBorrow";
 import SupplyDetails from "../widgets/supply/supplyDetails";
 import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 
@@ -29,10 +28,15 @@ import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import EnableWarning from "../widgets/enableWarning";
-import { updateSupplyBalance, updateUSDCSupplyRate, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
+import {
+  updateSupplyBalance,
+  updateUSDCSupplyRate,
+  updateUSDCBalance,
+} from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
+import SupplyMarketsHeader from "../widgets/supply/supplyMarketsHeader";
 
 interface SupplyMarketDialogProps {
   open: boolean;
@@ -72,7 +76,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
     dispatch(updateSupplyBalance());
     dispatch(updateUSDCSupplyRate());
     dispatch(updateBorrowLimit());
-})
+  });
 
   return (
     <React.Fragment>
@@ -115,11 +119,11 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="0">
-              <EnableWarning type={"usdc"} />
+              <SupplyMarketsHeader type={"usdc"} input={false} />
             </TabPanel>
 
             <TabPanel value="1">
-              <USDCBorrowDetails type={"USDC"} />
+              <SupplyMarketsHeader type={"usdc"} input={true} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
@@ -139,6 +143,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   type={"usdc"}
                   supplyAPY={usdcSupplyAPY}
                   supplyBalance={usdcWalletBalance}
+                  isSupplyingEnabled={undefined}
                 />
               </TabPanel>
               <TabPanel value="1">
