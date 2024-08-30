@@ -13,11 +13,12 @@ import NumberInput from "../numberinput";
 interface BorrowMarketsHeaderProps {
     type: string;
     input?: boolean | undefined;
+    isEnabled?: boolean | undefined;
 }
 
 function BorrowMarketsHeader(props: BorrowMarketsHeaderProps) {
 
-    const {type, input } = props;
+    const {type, input, isEnabled } = props;
     let BorrowMarkets:JSX.Element = <Box></Box>;
     // useEffect();
 
@@ -25,7 +26,7 @@ function BorrowMarketsHeader(props: BorrowMarketsHeaderProps) {
         BorrowMarkets = <EnableWarning type={type} />
     }
 
-    if (input === true) {
+    if (input === true || isEnabled === true) {
         BorrowMarkets = <NumberInput type={type} />
     }
 
