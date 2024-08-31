@@ -52,6 +52,8 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
     setValue(newValue);
   };
 
+  const isUSDCTokenEnabled = useSelector((state: RootState) => state.usdc.isEnabled);
+
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
   );
@@ -143,7 +145,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   type={"usdc"}
                   supplyAPY={usdcSupplyAPY}
                   supplyBalance={usdcWalletBalance}
-                  isSupplyingEnabled={undefined}
+                  isSupplyingEnabled={isUSDCTokenEnabled}
                 />
               </TabPanel>
               <TabPanel value="1">
