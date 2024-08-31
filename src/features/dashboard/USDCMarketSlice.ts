@@ -247,7 +247,7 @@ export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', as
 // Activities
 
 ///////////  Misc Market Thunks
-export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, addressToApprove }: { amount: number, addressToApprove: string }) => {
+export const approveUSDC = createAsyncThunk('usdc/Approve', async () => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -263,7 +263,7 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, add
     const USDC = new Contract(testnet_addresses.USDC, ERC20.abi, signer);
     const spender = testnet_addresses.degenUSDC;
     try {
-        let tx = await USDC.approve(spender, amount);
+        let tx = await USDC.approve(spender, 10000000);
         await tx.wait();
         console.log(`[Console] successfully called on thunk 'approveUSDC'`);
     } catch (error) {

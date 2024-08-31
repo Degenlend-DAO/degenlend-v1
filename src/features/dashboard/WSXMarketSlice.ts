@@ -275,10 +275,14 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
    
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-    const WSXContract = new Contract( testnet_addresses.degenWSX,ERC20.abi, signer );
+    const WSXContract = new Contract(testnet_addresses.degenWSX,ERC20.abi, signer );
+    const spender = testnet_addresses.degenWSX;
 
     try {
-        WSXContract.approve();
+        let txn = await WSXContract.approve(spender, 10000000);
+        await txn.wait();
+        console.log(`[Console] successfully called on thunk 'approveWSX'`);
+
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'approveWSX' : ${error}`)
     }
