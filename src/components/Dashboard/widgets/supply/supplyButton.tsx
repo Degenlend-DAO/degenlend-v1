@@ -1,10 +1,10 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../../../../app/Store";
 import { useDispatch, useSelector } from "react-redux";
-import { approveWSX, supplyWSX } from "../../../../features/dashboard/WSXMarketSlice";
-import { approveUSDC, supplyUSDC } from "../../../../features/dashboard/USDCMarketSlice";
+import { approveWSX, isWSXEnabled, supplyWSX } from "../../../../features/dashboard/WSXMarketSlice";
+import { approveUSDC, isUSDCEnabled, supplyUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 
 interface SupplyButtonProps {
     type: String,
@@ -54,7 +54,7 @@ function SupplyButton(props: SupplyButtonProps) {
         SupplyButton = <Button size="large" onClick={supplyAssets} variant="contained"></Button>
     }
 
-    if (isEnabled === false )
+    if (isEnabled === false && supplyBalance > 0 )
     {
         buttonText = `Enable ${type} Token`
         SupplyButton = <Button size="large" variant="contained" onClick={enableAssets}>{buttonText}</Button>
@@ -78,12 +78,21 @@ function SupplyButton(props: SupplyButtonProps) {
         if (type === "sx" )
             {
                 dispatch(approveWSX());
+                
             }
         if (type === "usdc" )
             {
-                // dispatch(approveUSDC());
+                dispatch(approveUSDC());
             }
+
+            setConfirmTransactionOpen(true);
+
     }
+
+    useEffect(() => {
+        dispatch(isWSXEnabled());
+        dispatch(isUSDCEnabled());
+    });
 
 
     return (
