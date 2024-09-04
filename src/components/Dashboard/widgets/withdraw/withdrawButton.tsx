@@ -1,8 +1,8 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
-import { useState } from "react";
-import { AppDispatch } from "../../../../app/Store";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { AppDispatch, RootState } from "../../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
 import { withdrawWSX } from "../../../../features/dashboard/WSXMarketSlice";
 import { withdrawUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 
@@ -17,48 +17,38 @@ function WithdrawButton(props: WithdrawButtonProps) {
 
     const dispatch = useDispatch<AppDispatch>();
 
+    const amount = useSelector((state: RootState) => state.account.amount);
+
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
 
-    let buttonText = ""
+    let buttonText = "No Balance to Withdraw!"
 
-    if (supplyBalance === 0 || supplyBalance === undefined )
-    {
-        buttonText = "No Balance to Withdraw!"
-    }
+    let WithdrawButton = <Button disabled size="large" onClick={withdrawAssets} variant="contained">{buttonText}</Button>;
 
     if (supplyBalance > 0)
     {
-        buttonText = `Withdraw ${supplyBalance} ${type.toUpperCase()} tokens`
+        buttonText = `Withdraw ${amount} ${type.toUpperCase()} tokens`
     }
 
-    function SupplyButton(isCollateral: boolean) {
-        if (isCollateral)
-            {
-                return <Button></Button>
-            }
-    }
+    function withdrawAssets() {
+        switch (type) {
+        case "sx":
+            dispatch(withdrawWSX());
+            break;
 
-    function handleChange() {
-        alert('You pressed the withdraw button!');
-
-        if (type === "sx")
-            {
-                dispatch(withdrawWSX());
-            }
-        if (type === "usdc")
-            {
-                dispatch(withdrawUSDC());
-            }
+        case "usdc":
+            dispatch(withdrawUSDC());
+            break;                                              
+        }
 
         setConfirmTransactionOpen(true);
-
     }
 
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        {WithdrawButton}
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Supplying </Typography>

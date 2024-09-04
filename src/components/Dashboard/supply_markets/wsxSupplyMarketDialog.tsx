@@ -58,10 +58,6 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   );
 
   useEffect( () => {
-    dispatch(updateWSXBalance());
-    dispatch(updateSupplyBalance());
-    dispatch(updateWSXSupplyRate());
-    dispatch(updateBorrowLimit());
   });
 
   return (
@@ -103,11 +99,13 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="0">
-              <SupplyMarketsHeader type={"sx"} input={false} />
+              {/* Supply Tab */}
+              <SupplyMarketsHeader type={"sx"} isInput={true} />
             </TabPanel>
 
             <TabPanel value="1">
-            <SupplyMarketsHeader type={"sx"} input={true} />
+              {/* Withdraw Tab */}
+            <SupplyMarketsHeader type={"sx"} isInput={true} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>

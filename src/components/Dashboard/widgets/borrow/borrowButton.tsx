@@ -24,40 +24,30 @@ function BorrowButton(props: BorrowButtonProps) {
     
 
 
-    let buttonText = ""
-
-    if (BorrowBalance === 0 || BorrowBalance === undefined )
-    {
-        buttonText = "No Balance to Borrow!"
-        // setIsDisabled(true);
-    }
+    let buttonText = "No Balance to Borrow!"
 
     if (BorrowBalance > 0)
     {
         buttonText = `Borrow ${BorrowBalance} ${type.toUpperCase()} tokens`
-        // setIsDisabled(false);
-
     }
 
-    function handleChange() {
-        alert('You pressed the Borrow button!');
-
-        if (type === "sx")
-            {
+    function borrowAssets() {
+        switch (type) {
+            case "sx":
                 dispatch(borrowWSX());
-            }
-        if (type === "usdc")
-            {
-                dispatch(borrowUSDC());
-            }
+                break;
 
+            case "usdc":
+                dispatch(borrowUSDC());
+                break;
+        }
         setConfirmTransactionOpen(true);
     }
 
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        <Button disabled size="large" onClick={borrowAssets} variant="contained">{buttonText}</Button>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Borrowing </Typography>

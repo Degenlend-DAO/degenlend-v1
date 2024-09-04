@@ -62,9 +62,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
   useEffect(() => {
     // On load of market dialog, refresh the values of all the 'views' variables
-    dispatch(updateBorrowBalance());
-    dispatch(updateWSXBorrowRate());
-    dispatch(updateBorrowLimit());
+
   });
 
   return (

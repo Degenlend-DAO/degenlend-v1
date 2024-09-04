@@ -23,7 +23,7 @@ function SupplyDetails(props: DetailsProps) {
         
         {/* Supply Button */}
         
-        <SupplyButton type={type} supplyBalance={supplyBalance} isEnabled={enabledValue} />
+        <SupplyButton type={type} walletBalance={supplyBalance} isEnabled={enabledValue} />
 
         </Box>
     );

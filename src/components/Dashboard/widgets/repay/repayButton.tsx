@@ -1,10 +1,18 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
-import { useState } from "react";
-import { AppDispatch } from "../../../../app/Store";
-import { useDispatch } from "react-redux";
-import { repayWSX } from "../../../../features/dashboard/WSXMarketSlice";
-import { repayUSDC } from "../../../../features/dashboard/USDCMarketSlice";
+import { useEffect, useState } from "react";
+import { AppDispatch, RootState } from "../../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    approveWSX,
+    isWSXEnabled,
+    repayWSX,
+  } from "../../../../features/dashboard/WSXMarketSlice";
+  import {
+    approveUSDC,
+    isUSDCEnabled,
+    repayUSDC,
+  } from "../../../../features/dashboard/USDCMarketSlice";
 
 interface RepayButtonProps {
     type: String,
@@ -18,16 +26,17 @@ function RepayButton(props: RepayButtonProps) {
 
     const dispatch = useDispatch<AppDispatch>();
 
+    const amount = useSelector((state: RootState) => state.account.amount);
+    
+    let buttonText = "No Balance to Repay!" 
+
+    let RepayButton = <Button disabled size="large" onClick={enableAssets} variant="contained">{buttonText}</Button>;
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
-
-
-    let buttonText = ""
-
-    if (borrowBalance === 0 || borrowBalance === undefined )
+    if (isRepayingEnabled === true )
     {
-        buttonText = "No Balance to Repay!"
+        RepayButton = <Button size="large" onClick={repayAssets} variant="contained">{buttonText}</Button>;
     }
 
     if (borrowBalance > 0)
@@ -35,26 +44,46 @@ function RepayButton(props: RepayButtonProps) {
         buttonText = `Repay ${borrowBalance} ${type.toUpperCase()} tokens`
     }
 
-    function handleChange() {
-        alert('You pressed the Repay button!');
+    // Button Effects
 
-        if (type === "sx")
-            {
-                dispatch(repayWSX());
-            }
-        if (type === "usdc")
-            {
-                dispatch(repayUSDC());
-            }
+    function repayAssets() {
+        switch (type) {
+        case "sx":
+            dispatch(repayWSX());
+            break;
 
+        case "usdc":
+            dispatch(repayUSDC());
+            break;                                              
+        }
+        
         setConfirmTransactionOpen(true);
-
     }
+
+// When called, you 'approve'
+  function enableAssets() {
+    if (type === "sx") {
+      dispatch(approveWSX());
+    }
+    if (type === "usdc") {
+      dispatch(approveUSDC());
+    }
+
+    setConfirmTransactionOpen(true);
+  }
+
+
+    useEffect(
+        () => {
+        dispatch(isWSXEnabled());
+        dispatch(isUSDCEnabled());
+        }
+    );
 
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button disabled size="large" onClick={handleChange} variant="contained">{buttonText}</Button>
+        {RepayButton}
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Supplying </Typography>

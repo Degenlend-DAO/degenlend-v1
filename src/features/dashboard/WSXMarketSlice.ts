@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { onboard, testnet_addresses } from '../../utils/web3';
-import { ethers, Contract, formatUnits } from 'ethers'
+import { ethers, Contract, formatUnits, parseUnits } from 'ethers'
 
 // ABIs
 import Comptroller from '../../abis/Comptroller.json';
@@ -272,14 +272,17 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
 
     console.log(`[Console] initiating thunk, 'approveWSX' ...`);
 
-   
+
+    try {
+           
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const WSXContract = new Contract(testnet_addresses.degenWSX,ERC20.abi, signer );
     const spender = testnet_addresses.degenWSX;
 
-    try {
-        let txn = await WSXContract.approve(spender, 10000000);
+    console.log(`[Console] approve details loaded, attempting to execute now`);
+        const txn = await WSXContract.approve(spender, parseUnits("21"));
+        console.log(`[Console] calling txn: ${txn}`);
         await txn.wait();
         console.log(`[Console] successfully called on thunk 'approveWSX'`);
 
@@ -547,11 +550,19 @@ export const WSXSlice = createSlice({
 
         // Approve Wrapped SX
 
-        builder.addCase(approveWSX.pending, (state, action) => {});
+        builder.addCase(approveWSX.pending, (state, action) => {
+            state.loading = true;
+        });
 
-        builder.addCase(approveWSX.rejected, (state, action) => {});
+        builder.addCase(approveWSX.rejected, (state, action) => {
+            state.loading = false;
+            state.isEnabled = false;
+        });
 
-        builder.addCase(approveWSX.fulfilled, (state, action) => {});
+        builder.addCase(approveWSX.fulfilled, (state, action) => {
+            state.loading = false;
+            state.isEnabled = true;
+        });
     }
 });
 

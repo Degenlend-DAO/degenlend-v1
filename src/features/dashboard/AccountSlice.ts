@@ -124,8 +124,6 @@ export const enterUSDCMarket = createAsyncThunk('account/enterUSDCMarket', async
         console.log(`something went wrong: ${error}`)
         return rejectWithValue(error);
     }
-
-    console.log("Done: 'enterMarket' ");
 })
 
 /**

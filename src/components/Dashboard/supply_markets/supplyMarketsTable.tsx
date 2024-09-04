@@ -91,20 +91,6 @@ export default function SupplyMarkets() {
 
   useEffect(() => {
     // update collateral, supply apys, wallet balances, and oracle prices
-
-    dispatch(isWSXListedAsCollateral());
-    dispatch(isUSDCListedAsCollateral());
-
-    dispatch(updateUSDCSupplyRate());
-    dispatch(updateWSXSupplyRate());
-
-    dispatch(updateWSXBalance());
-    dispatch(updateUSDCBalance());
-
-    dispatch(updateUSDCOraclePrice());
-    dispatch(updateWSXOraclePrice());
-
-    dispatch(updateBorrowLimit());
   });
 
   return (

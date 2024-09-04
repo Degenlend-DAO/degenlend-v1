@@ -17,7 +17,7 @@ function NumberInput(props: NumberInputProps) {
 
 
   const [values, setValues] = React.useState({
-    numberformat: '69.42',
+    numberformat: '00.0000',
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

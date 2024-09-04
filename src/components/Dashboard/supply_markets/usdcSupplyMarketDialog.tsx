@@ -74,10 +74,6 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
   );
 
   useEffect(() => {
-    dispatch(updateUSDCBalance());
-    dispatch(updateSupplyBalance());
-    dispatch(updateUSDCSupplyRate());
-    dispatch(updateBorrowLimit());
   });
 
   return (
@@ -121,11 +117,13 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="0">
-              <SupplyMarketsHeader type={"usdc"} input={false} />
+              {/* This is the Supply Market  */}
+              <SupplyMarketsHeader type={"usdc"} isInput={isUSDCTokenEnabled} />
             </TabPanel>
 
             <TabPanel value="1">
-              <SupplyMarketsHeader type={"usdc"} input={true} />
+              {/* Withdraw Market */}
+              <SupplyMarketsHeader type={"usdc"} isInput={true} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
