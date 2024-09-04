@@ -15,22 +15,22 @@ import NumberInput from "../numberinput";
 
 interface SupplyMarketsHeaderProps {
   type: string;
-  input?: boolean;
+  isInput?: boolean;
   isSupplyingEnabled?: boolean;
 }
 
 function SupplyMarketsHeader(props: SupplyMarketsHeaderProps) {
 
-  const { type, input, isSupplyingEnabled } = props;
+  const { type, isInput, isSupplyingEnabled } = props;
 
   let SupplyMarkets:JSX.Element = <Box></Box>;
 
 
-  if (input === undefined || input === false) {
+  if (isInput === undefined || isInput === false) {
     SupplyMarkets = <EnableWarning type={type} />
 }
 
-if (input === true || isSupplyingEnabled === true) {
+if (isInput === true || isSupplyingEnabled === true) {
     SupplyMarkets = <NumberInput type={type} />
 }
 
