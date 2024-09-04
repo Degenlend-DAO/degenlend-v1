@@ -54,14 +54,7 @@ export default function BorrowMarkets() {
   useEffect( () => {
     // update borrow apys, wallet balances, and oracle prices
     
-    dispatch(updateUSDCBorrowRate());
-    dispatch(updateWSXBorrowRate());
-
-    dispatch(updateWSXBalance());
-    dispatch(updateUSDCBalance());
     
-    dispatch(updateUSDCOraclePrice());
-    dispatch(updateWSXOraclePrice());
   });
 
   return (
