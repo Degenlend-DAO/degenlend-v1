@@ -277,7 +277,7 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
            
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-    const WSXContract = new Contract(testnet_addresses.degenWSX,ERC20.abi, signer );
+    const WSXContract = new Contract(testnet_addresses.WSX,ERC20.abi, signer );
     const spender = testnet_addresses.degenWSX;
 
     console.log(`[Console] approve details loaded, attempting to execute now`);
