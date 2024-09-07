@@ -100,7 +100,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
           <TabContext value={value}>
             <TabPanel value="0">
               {/* Supply Tab */}
-              <SupplyMarketsHeader type={"sx"} isInput={true} />
+              <SupplyMarketsHeader type={"sx"} isInput={isWSXTokenEnabled} />
             </TabPanel>
 
             <TabPanel value="1">

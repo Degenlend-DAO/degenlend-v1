@@ -7,6 +7,8 @@ import Comptroller from '../../abis/Comptroller.json';
 import ERC20Immutable from '../../abis/Erc20Immutable.json';
 import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
 import ERC20 from '../../abis/ERC20.json';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/Store';
 
 interface WSXState {
     loading: boolean;
@@ -281,7 +283,7 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
     const spender = testnet_addresses.degenWSX;
 
     console.log(`[Console] approve details loaded, attempting to execute now`);
-        const txn = await WSXContract.approve(spender, parseUnits("21"));
+        const txn = await WSXContract.approve(spender, parseUnits("999999"));
         console.log(`[Console] calling txn: ${txn}`);
         await txn.wait();
         console.log(`[Console] successfully called on thunk 'approveWSX'`);
@@ -300,18 +302,20 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async () => {
     if (wallet === undefined) {
         return 0;
     }
+    console.log(`[Console] initiating thunk, 'supplyWSX' ...`);
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
-    const supplyAmount = 1 * 1e18;
+    console.log(`[Console] signer & provider setup properly`);
 
-    console.log(`[Console] initiating thunk, 'supplyWSX' ...`);
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+
+    console.log(`[Console] attempting to mint now...`);
 
 
     try {
-        const tx = await degenWSX.mint(supplyAmount);
-        tx.wait();
+        const tx = await degenWSX.mint(parseUnits("5"));
+        await tx.wait();
         console.log(`[Console] successfully called on thunk 'supplyWSX'`);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'supplyWSX': ${error} `)
