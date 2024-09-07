@@ -92,9 +92,6 @@ function SupplyButton(props: SupplyButtonProps) {
   }
 
   useEffect(() => {
-
-    dispatch(isWSXEnabled());
-    dispatch(isUSDCEnabled());
   });
 
   return (

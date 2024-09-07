@@ -65,6 +65,11 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
   // When the dialog is opened, update information
   useEffect(() => {
+    dispatch(updateBorrowBalance());
+    dispatch(updateUSDCBorrowRate());
+    dispatch(updateBorrowLimit());
+    dispatch(updateBorrowLimit());
+
   });
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
