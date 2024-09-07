@@ -81,7 +81,7 @@ function SupplyButton(props: SupplyButtonProps) {
             }
         if (type === "usdc" )
             {
-                // dispatch(approveUSDC());
+                dispatch(approveUSDC());
             }
     }
 
