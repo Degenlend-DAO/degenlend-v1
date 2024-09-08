@@ -1,11 +1,11 @@
 import * as React from "react";
+import { useState } from "react";
 import {
   Box,
   CircularProgress,
   Divider,
   IconButton,
 } from "@mui/material";
-
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
@@ -25,40 +25,42 @@ import { pink, red } from "@mui/material/colors";
 interface confirmTransactionProps {
   open: boolean;
   onClose: () => void;
-}
-
-let state = 'success'; // State can be 'pendng' | 'rejected' | 'success'
-let ConfirmTransactionHeaderText = `Confirm Transaction`;
-let ConfirmIcon = <CircularProgress />;
-let ConfirmTransactionDialogText = `Confirm the Transaction.`;
-
-switch (state) {
-  case 'pending':
-    ConfirmTransactionHeaderText = `Confirm Transaction`;
-    ConfirmIcon = <CircularProgress />;
-    ConfirmTransactionDialogText = `Confirming the Transaction.`;
-    break;
-  
-    case 'rejected':
-      ConfirmTransactionHeaderText = `Transaction Rejected!`;
-      ConfirmIcon = <NotInterestedIcon fontSize="large" sx={{ color: pink[500] }} />
-      ConfirmTransactionDialogText = `The action not completed, transaction was rejected.`;
-    break;
-
-    case 'success':
-      ConfirmTransactionHeaderText = `Transaction Confirmed!`;
-      ConfirmIcon = <CheckCircleOutlineIcon fontSize="large" color="success" />
-      ConfirmTransactionDialogText = `You have successfully completed the transaction`;
-    break;
-
-  default:
-     ConfirmTransactionHeaderText = `Confirm Transaction`;
-     ConfirmIcon = <CircularProgress />;
-     ConfirmTransactionDialogText = `Confirming the Transaction.`;
-    break;
+  state?: string | undefined ;
 }
 
 function ConfirmTransactionDialog(props: confirmTransactionProps) {
+
+  const { state } = props;
+  let ConfirmTransactionHeaderText = `Confirm Transaction`;
+  let ConfirmIcon = <CircularProgress />;
+  let ConfirmTransactionDialogText = `Confirm the Transaction.`;
+  
+  switch (state) {
+    case 'pending':
+      ConfirmTransactionHeaderText = `Confirm Transaction`;
+      ConfirmIcon = <CircularProgress />;
+      ConfirmTransactionDialogText = `Confirming the Transaction.`;
+      break;
+    
+      case 'rejected':
+        ConfirmTransactionHeaderText = `Transaction Rejected!`;
+        ConfirmIcon = <NotInterestedIcon fontSize="large" sx={{ color: pink[500] }} />
+        ConfirmTransactionDialogText = `The action not completed, transaction was rejected.`;
+      break;
+  
+      case 'success':
+        ConfirmTransactionHeaderText = `Transaction Confirmed!`;
+        ConfirmIcon = <CheckCircleOutlineIcon fontSize="large" color="success" />
+        ConfirmTransactionDialogText = `You have successfully completed the transaction`;
+      break;
+  
+    default:
+       ConfirmTransactionHeaderText = `Confirm Transaction`;
+       ConfirmIcon = <CircularProgress />;
+       ConfirmTransactionDialogText = `Confirming the Transaction.`;
+      break;
+  }
+
   return (
     <React.Fragment>
       <Dialog
