@@ -6,6 +6,9 @@ import {
   IconButton,
 } from "@mui/material";
 
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+
 // Dialogs
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -17,14 +20,43 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/Store";
 import { Transition } from "../../../utils/Transition";
+import { pink, red } from "@mui/material/colors";
 
 interface confirmTransactionProps {
   open: boolean;
   onClose: () => void;
 }
 
+let state = 'success'; // State can be 'pendng' | 'rejected' | 'success'
 let ConfirmTransactionHeaderText = `Confirm Transaction`;
+let ConfirmIcon = <CircularProgress />;
 let ConfirmTransactionDialogText = `Confirm the Transaction.`;
+
+switch (state) {
+  case 'pending':
+    ConfirmTransactionHeaderText = `Confirm Transaction`;
+    ConfirmIcon = <CircularProgress />;
+    ConfirmTransactionDialogText = `Confirming the Transaction.`;
+    break;
+  
+    case 'rejected':
+      ConfirmTransactionHeaderText = `Transaction Rejected!`;
+      ConfirmIcon = <NotInterestedIcon fontSize="large" sx={{ color: pink[500] }} />
+      ConfirmTransactionDialogText = `The action not completed, transaction was rejected.`;
+    break;
+
+    case 'success':
+      ConfirmTransactionHeaderText = `Transaction Confirmed!`;
+      ConfirmIcon = <CheckCircleOutlineIcon fontSize="large" color="success" />
+      ConfirmTransactionDialogText = `You have successfully completed the transaction`;
+    break;
+
+  default:
+     ConfirmTransactionHeaderText = `Confirm Transaction`;
+     ConfirmIcon = <CircularProgress />;
+     ConfirmTransactionDialogText = `Confirming the Transaction.`;
+    break;
+}
 
 function ConfirmTransactionDialog(props: confirmTransactionProps) {
   return (
@@ -41,7 +73,6 @@ function ConfirmTransactionDialog(props: confirmTransactionProps) {
         <DialogTitle>
           <div style={{ textAlign: "center" }}>
             <Box component="span" sx={{ fontSize: 20, fontWeight: "bold" }}>
-              {" "}
               {ConfirmTransactionHeaderText}
             </Box>
           </div>
@@ -61,7 +92,7 @@ function ConfirmTransactionDialog(props: confirmTransactionProps) {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ textAlign: "center", alignContent: "center" }}>
-            <CircularProgress />
+            {ConfirmIcon}
             
             <DialogContentText sx={{ color: "text.secondary" }}>
               {ConfirmTransactionDialogText}
