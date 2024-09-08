@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ethers, Contract, formatUnits } from 'ethers';
+import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
 
@@ -263,7 +263,7 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async () => {
     const USDC = new Contract(testnet_addresses.USDC, ERC20.abi, signer);
     const spender = testnet_addresses.degenUSDC;
     try {
-        let tx = await USDC.approve(spender, 10000000);
+        let tx = await USDC.approve(spender, parseUnits(`999999`));
         await tx.wait();
         console.log(`[Console] successfully called on thunk 'approveUSDC'`);
     } catch (error) {
