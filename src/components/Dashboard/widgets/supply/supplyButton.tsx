@@ -70,7 +70,7 @@ function SupplyButton(props: SupplyButtonProps) {
   // When called, you 'supply'
   function supplyAssets() {
     if (type === "sx") {
-      dispatch(supplyWSX());
+      dispatch(supplyWSX(amount));
     }
     if (type === "usdc") {
       dispatch(supplyUSDC());
