@@ -41,7 +41,7 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   
   // Views
 
-  const isWSXTokenEnabled = useSelector((state: RootState) => state.wsx.isEnabled);
+  const isWSXTokenEnabled: boolean = useSelector((state: RootState) => state.wsx.isEnabled);
 
   const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
   const wsxSupplyBalance = useSelector(

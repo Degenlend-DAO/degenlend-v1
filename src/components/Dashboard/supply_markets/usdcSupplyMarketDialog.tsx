@@ -52,7 +52,7 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
     setValue(newValue);
   };
 
-  const isUSDCTokenEnabled = useSelector((state: RootState) => state.usdc.isEnabled);
+  const isUSDCTokenEnabled: boolean = useSelector((state: RootState) => state.usdc.isEnabled);
 
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
