@@ -73,7 +73,7 @@ function SupplyButton(props: SupplyButtonProps) {
       dispatch(supplyWSX(amount));
     }
     if (type === "usdc") {
-      dispatch(supplyUSDC());
+      dispatch(supplyUSDC(amount));
     }
 
     setConfirmTransactionOpen(true);
