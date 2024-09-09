@@ -274,7 +274,7 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async () => {
 
 ///////////  Supply Market Thunks
 
-export const supplyUSDC = createAsyncThunk('usdc/Supply', async () => {
+export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: number) => {
     console.log(`[Console] initiating thunk, 'supplyUSDC' ...`);
 
     const [wallet] = onboard.state.get().wallets;
@@ -290,10 +290,10 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async () => {
     const signer = await ethersProvider.getSigner();
 
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-    const supplyAmount = 1 * 1e18;
+    const amount = parseUnits(`${supplyAmount}`);
 
     try {
-        const tx = await degenUSDC.mint(supplyAmount);
+        const tx = await degenUSDC.mint(amount);
         tx.wait();
         console.log(`[Console] successfully called on thunk 'supplyUSDC'`);
     } catch (error) {
@@ -557,11 +557,19 @@ export const USDCSlice = createSlice({
 
         // Approve USDC
 
-        builder.addCase(approveUSDC.pending, (state, action) => {});
+        builder.addCase(approveUSDC.pending, (state, action) => {
+            state.loading = true
+        });
 
-        builder.addCase(approveUSDC.rejected, (state, action) => {});
+        builder.addCase(approveUSDC.rejected, (state, action) => {
+            state.loading = false;
+            state.isEnabled = false;
+        });
 
-        builder.addCase(approveUSDC.fulfilled, (state, action) => {});
+        builder.addCase(approveUSDC.fulfilled, (state, action) => {
+            state.loading = false;
+            state.isEnabled = true;
+        });
 
     }
 });
