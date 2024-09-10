@@ -144,12 +144,16 @@ export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', a
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-
+    const decimals = await degenWSX.decimals();
     const walletAddress = wallet.accounts[0].address;
     // This code is currently incomplete
     try {
+
+        let balance = await degenWSX.balanceOf(walletAddress);
+        const degenWSXBalance = formatUnits(balance, decimals);
+
         console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`)
-        return 0;
+        return Number(degenWSXBalance);
     } catch(error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
         return 0;
@@ -176,7 +180,7 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
         console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
         // return borrowBalance;
 
-        return 0;
+        return Number(borrowBalance);
 
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)

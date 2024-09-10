@@ -22,24 +22,6 @@ interface USDCState {
 }
 
 
-interface approveUSDCParams {
-    amount: number,
-    addressToApprove: string,
-}
-
-interface supplyUSDCParams {
-    amount: number,
-    addressToApprove: string,
-}
-
-interface withdrawUSDCParams {
-    amount: number,
-}
-
-interface borrowUSDCParams {
-    borrowAddress: string,
-}
-
 const initialState: USDCState = {
     loading: false,
     error: "",
@@ -155,12 +137,14 @@ export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', 
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+    const decimals = await degenUSDC.decimals();
 
     const walletAddress = wallet.accounts[0].address;
     // This code is currently incomplete
     try {
         console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`);
-        const supplyBalance = "0";
+        let balance = await degenUSDC.balanceOf(walletAddress);
+        const supplyBalance = formatUnits(balance, decimals);
         return Number(supplyBalance);
     } catch(error) {
         console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)

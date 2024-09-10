@@ -38,8 +38,8 @@ export const testnet_addresses = {
   "price_oracle": '0x6ca684b4773aF95AB5AE8d0aB7bA078237536DDF',
   "USDC": '0x5147891461a7C81075950f8eE6384e019e39ab98',
   "WSX": '0x2D4e10Ee64CCF407C7F765B363348f7F62D2E06e',
-  "degenUSDC": '',
-  "degenWSX": '',
+  "degenUSDC": '0xC863E82CD46296F1F81C63cDEB3708505B5b0d97',
+  "degenWSX": '0x5cB7786A478eEc37Da5F6EA2e946cD860E784743',
 }
 
 export const mainnet_addresses = {
