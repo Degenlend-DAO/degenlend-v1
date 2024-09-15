@@ -28,6 +28,7 @@ import {
   updateWSXSupplyRate,
   updateWSXOraclePrice,
   updateWSXBalance,
+  updateWSXSupplyBalance,
 } from "../../../features/dashboard/WSXMarketSlice";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 
@@ -51,14 +52,14 @@ export default function SupplyMarkets() {
     (state: RootState) => state.usdc.supplyRate
   );
   const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.balance
+    (state: RootState) => state.usdc.supplyBalance
   );
   const usdcOraclePrice = useSelector(
     (state: RootState) => state.usdc.oraclePrice
   );
 
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
-  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
+  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.supplyBalance);
   const wsxOraclePrice = useSelector(
     (state: RootState) => state.wsx.oraclePrice
   );
@@ -91,6 +92,7 @@ export default function SupplyMarkets() {
 
   useEffect(() => {
     // update collateral, supply apys, wallet balances, and oracle prices
+    dispatch(updateWSXSupplyBalance())
   });
 
   return (
