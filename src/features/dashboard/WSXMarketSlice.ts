@@ -146,7 +146,6 @@ export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update'
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
     const decimals = await degenWSX.decimals();
     const walletAddress = wallet.accounts[0].address;
-    // This code is currently incomplete
     try {
 
         let balance = await degenWSX.balanceOf(walletAddress);
