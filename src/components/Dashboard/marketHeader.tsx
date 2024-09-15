@@ -1,15 +1,23 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, Grid, Paper, LinearProgress } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../app/Store';
-import { updateBorrowLimit, updateNetAPR, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../app/Store';
+import { updateBorrowLimit, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
 
 function MarketHeader() {
   // Dummy data, replace with real data as needed
-  const supplyBalance = 0;
-  const borrowBalance = 0;
-  const netAPY = 0;
-  const borrowLimit = 0;
+  const supplyBalance = useSelector(
+    (state: RootState) => state.account.netSupplyBalance
+  );
+  const borrowBalance = useSelector(
+    (state: RootState) => state.account.netBorrowBalance
+  );
+  const netAPY = useSelector(
+    (state: RootState) => state.account.netAPY
+  );
+  const borrowLimit = useSelector(
+    (state: RootState) => state.account.borrowLimit
+  );;
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -18,7 +26,7 @@ function MarketHeader() {
     dispatch(updateNetSupplyBalance());
     dispatch(updateNetBorrowBalance());
     dispatch(updateBorrowLimit());
-    dispatch(updateNetAPR());
+    dispatch(updateNetAPY());
     }
   );
 
@@ -28,7 +36,7 @@ function MarketHeader() {
         <Grid container spacing={4} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={4} textAlign="center">
             <Typography variant="h6" color="textSecondary">
-              Supply Balance
+              Supply Balance ( in USD)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
               ${supplyBalance}
@@ -44,7 +52,7 @@ function MarketHeader() {
           </Grid>
           <Grid item xs={12} sm={4} textAlign="center">
             <Typography variant="h6" color="textSecondary">
-              Borrow Balance
+              Borrow Balance ( in USD)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
               ${borrowBalance}
