@@ -134,7 +134,7 @@ export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () =
 
 });
 
-export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', async () => {
+export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', async () => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -152,10 +152,10 @@ export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', a
         let balance = await degenWSX.balanceOf(walletAddress);
         const degenWSXBalance = formatUnits(balance, decimals);
 
-        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`)
+        console.log(`[Console] successfully called on thunk 'updateWSXSupplyBalance'`)
         return Number(degenWSXBalance);
     } catch(error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateWSXSupplyBalance': ${error}`)
         return 0;
     }
     });
@@ -478,18 +478,18 @@ export const WSXSlice = createSlice({
 
         // Supply Balance
         
-        builder.addCase(updateSupplyBalance.pending, (state, action) => {
+        builder.addCase(updateWSXSupplyBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateSupplyBalance.rejected, (state, action) => {
+        builder.addCase(updateWSXSupplyBalance.rejected, (state, action) => {
             state.status = "failed";
             state.supplyBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
+        builder.addCase(updateWSXSupplyBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyBalance = action.payload;
         })
