@@ -18,12 +18,8 @@ import SupplyDetails from "../widgets/supply/supplyDetails";
 // Action Items
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
-import EnableWarning from "../widgets/enableWarning";
 import { useEffect } from "react";
-import { updateSupplyBalance, updateWSXSupplyRate, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
-import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
-import SupplyHeader from "../widgets/supply/supplyMarketsHeader";
 import SupplyMarketsHeader from "../widgets/supply/supplyMarketsHeader";
 
 interface SupplyMarketDialogProps {
