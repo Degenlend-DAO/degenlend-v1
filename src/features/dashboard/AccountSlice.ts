@@ -5,6 +5,9 @@ import { ethers, Contract, formatUnits } from 'ethers'
 // ABIs
 import ERC20Immutable from '../../abis/Erc20Immutable.json'
 import Comptroller from '../../abis/Comptroller.json'
+import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/Store";
 interface AccountState {
     loading: boolean;
     error: string;
@@ -14,7 +17,7 @@ interface AccountState {
     liquidity: number,
     borrowLimit: number,
     borrowLimitUsed: number,
-    netAPR: number,
+    netAPY: number,
     netBorrowBalance: number,
     netSupplyBalance: number,
 }
@@ -28,7 +31,7 @@ const initialState: AccountState = {
     liquidity: 0e18,
     borrowLimit: 0,
     borrowLimitUsed: 0,
-    netAPR: 0,
+    netAPY: 0,
     netBorrowBalance: 0,
     netSupplyBalance: 0
 }
@@ -36,11 +39,63 @@ const initialState: AccountState = {
 // Views
 
 export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', async () => {
-    const [wallet] = onboard.state.get().wallets;  
+    const [wallet] = onboard.state.get().wallets; 
+
+    if (wallet === undefined ) {
+        return 0;
+    }
+    // How this works -> 1) Each money market has a supply balance, the net supply balance is : (amount in market * price in USD) + (amount in market * price in USD)
+
+    console.log(`[Console] Invoking net supply balance... `)
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    let signer = await ethersProvider.getSigner();
+    const priceOracle = new Contract( testnet_addresses.price_oracle, SimplePriceOracle.abi, signer)
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+
+    const wsxPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+    const usdcPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenUSDC);
+
+    const walletAddress = wallet.accounts[0].address;
+
+    try {
+        let wsxBalance = await degenWSX.balanceOf(walletAddress);
+        let wsxDecimals = await degenWSX.decimals();
+        const wsxSupplyBalance: any = formatUnits(wsxBalance, wsxDecimals);
+    
+
+        let usdcBalance = await degenUSDC.balanceOf(walletAddress);
+        let usdcDecimals = await degenUSDC.decimals();
+        const usdcSupplyBalance: any = formatUnits(usdcBalance, usdcDecimals);
+    
+        console.log(`[Console] updateNetSupplyBalance values: ${typeof(wsxSupplyBalance)} wsxSupplyBalance: ${wsxSupplyBalance} & ${typeof(usdcSupplyBalance)} usdcSupplyBalance: ${usdcSupplyBalance}`)
+        const netBalance = (Number(wsxSupplyBalance) * Number(wsxPrice)) + (Number(usdcSupplyBalance) * Number(usdcPrice));
+        console.log(`[Console] updateNetSupplyBalance net balance: ${netBalance}`)
+        return Number(netBalance);
+    } catch (error) {
+        console.log(`[Console] an error occured with updateNetSupplyBalance.  View here: \n\n ${error}`)
+        return Number(-1);
+    }
+
 })
 
 export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
+    if (wallet === undefined ) {
+        return false;
+    }
+
+    const wsxBorrowBalance = useSelector(
+        (state: RootState ) => state.wsx.borrowBalance
+    );
+
+    const usdcBorrowBalance = useSelector(
+        (state: RootState ) => state.usdc.borrowBalance
+    );
+
+    const netBalance = wsxBorrowBalance + usdcBorrowBalance;
+
+    return netBalance;
 })
 
 export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async () => {
@@ -76,7 +131,7 @@ export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async ()
     const [wallet] = onboard.state.get().wallets;
 })
 
-export const updateNetAPR = createAsyncThunk('netAPR/update', async () => {
+export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
     const [wallet] = onboard.state.get().wallets;
 })
 
@@ -186,6 +241,7 @@ export const AccountSlice = createSlice({
         });
         builder.addCase(updateNetSupplyBalance.fulfilled, (state, action) => {
             state.loading = false;
+            state.netSupplyBalance = action.payload;
         });
         builder.addCase(updateNetSupplyBalance.rejected, (state, action) => {
             state.loading = false;
