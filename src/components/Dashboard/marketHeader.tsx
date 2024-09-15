@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, Grid, Paper, LinearProgress } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../app/Store';
+import { updateBorrowLimit, updateNetAPR, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
 
 function MarketHeader() {
   // Dummy data, replace with real data as needed
@@ -7,6 +10,17 @@ function MarketHeader() {
   const borrowBalance = 0;
   const netAPY = 0;
   const borrowLimit = 0;
+
+  const dispatch = useDispatch<AppDispatch>();
+
+
+  useEffect(() => {
+    dispatch(updateNetSupplyBalance());
+    dispatch(updateNetBorrowBalance());
+    dispatch(updateBorrowLimit());
+    dispatch(updateNetAPR());
+    }
+  );
 
   return (
     <Box sx={{ width: '90%', mb: 4 }}>
