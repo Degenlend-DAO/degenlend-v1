@@ -34,12 +34,12 @@ export const onboard = Onboard({
 
 // USDC, WSX, and Comptroller addresses
 export const testnet_addresses = {
-  "comptroller": '0x8D1230e6Ae4C1Bc573697D93103349C3FDefC944',
+  "comptroller": '0x937C076C8D9F85291F5cd22E95b1212C0138A609',
   "price_oracle": '0x6ca684b4773aF95AB5AE8d0aB7bA078237536DDF',
   "USDC": '0x5147891461a7C81075950f8eE6384e019e39ab98',
   "WSX": '0x2D4e10Ee64CCF407C7F765B363348f7F62D2E06e',
-  "degenUSDC": '0xC863E82CD46296F1F81C63cDEB3708505B5b0d97',
-  "degenWSX": '0x5cB7786A478eEc37Da5F6EA2e946cD860E784743',
+  "degenUSDC": '0xc3eAff959EB22aea6581D7bf52d4d44BdbbDCcD1',
+  "degenWSX": '0xf547a2FE994E2207d4d7F13e69B0b2C0aC24cc2f',
 }
 
 export const mainnet_addresses = {
