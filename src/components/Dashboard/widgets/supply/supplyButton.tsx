@@ -19,6 +19,7 @@ import {
   isUSDCEnabled,
   supplyUSDC,
 } from "../../../../features/dashboard/USDCMarketSlice";
+import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
 
 interface SupplyButtonProps {
   type: String;
@@ -70,10 +71,10 @@ function SupplyButton(props: SupplyButtonProps) {
   // When called, you 'supply'
   function supplyAssets() {
     if (type === "sx") {
-      dispatch(supplyWSX(amount));
+      dispatch(handleTransaction(() => supplyWSX(amount)));
     }
     if (type === "usdc") {
-      dispatch(supplyUSDC(amount));
+      dispatch(handleTransaction(() => supplyUSDC(amount)));
     }
 
     setConfirmTransactionOpen(true);
@@ -82,10 +83,10 @@ function SupplyButton(props: SupplyButtonProps) {
   // When called, you 'approve'
   function enableAssets() {
     if (type === "sx") {
-      dispatch(approveWSX());
+      dispatch(handleTransaction(() => approveWSX()));
     }
     if (type === "usdc") {
-      dispatch(approveUSDC());
+      dispatch(handleTransaction(() => approveUSDC()));
     }
 
     setConfirmTransactionOpen(true);
