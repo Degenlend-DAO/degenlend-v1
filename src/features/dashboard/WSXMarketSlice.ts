@@ -172,7 +172,7 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
     const walletAddress = wallet.accounts[0].address;
 
     try {
-        const borrowBalanceMantissa = await degenWSX.borrowBalanceCurrent(walletAddress);
+        const borrowBalanceMantissa = await degenWSX.borrowBalanceStored(walletAddress);
         const decimals = await degenWSX.decimals();
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
@@ -192,22 +192,29 @@ export const updateWSXSupplyRate = createAsyncThunk('wsxSupplyRate/update', asyn
 
     const [wallet] = onboard.state.get().wallets;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    
+    const blocksPerYear = 6570 * 365; // ~2,397,050 blocks per year
 
     try {
-        const  supplyRateMantissa = await degenWSX.supplyRatePerBlock();
-        const decimals = await degenWSX.decimals()
-        const supplyRate = formatUnits(supplyRateMantissa, decimals);
+        // Fetch the supply rate per block in mantissa (1e18)
+        const supplyRateMantissa = await degenWSX.supplyRatePerBlock();
+        console.log("Raw Supply Rate Mantissa:", supplyRateMantissa.toString());
+
+        // Calculate the continuously compounded APY
+        const supplyAPY = Math.exp(Number(supplyRateMantissa) / 1e18 * blocksPerYear) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return Number(supplyRate);
+        // Return the APY as a percentage
+        return Number(supplyAPY * 100); // Convert to percentage
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateSupplyRate': ${error}`);
         return 0;
     }
 
@@ -217,26 +224,34 @@ export const updateWSXBorrowRate = createAsyncThunk('wsxBorrowRate/update', asyn
 
     const [wallet] = onboard.state.get().wallets;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    
+    const blocksPerYear = 6570 * 365; // ~2,397,050 blocks per year
 
     try {
-        const  borrowRateMantissa = await degenWSX.borrowRatePerBlock();
-        const decimals = await degenWSX.decimals();
-        const borrowRate = formatUnits(borrowRateMantissa, decimals);
+        // Fetch the borrow rate per block in mantissa (1e18)
+        const borrowRateMantissa = await degenWSX.borrowRatePerBlock();
+        console.log("Raw Borrow Rate Mantissa:", borrowRateMantissa.toString());
+
+        // Calculate the continuously compounded APY
+        const borrowAPY = Math.exp(Number(borrowRateMantissa) / 1e18 * blocksPerYear) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        return Number(borrowRate);
+        // Return the APY as a percentage
+        return Number(borrowAPY * 100); // Convert to percentage
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateBorrowRate': ${error}`);
         return 0;
     }
 
 });
+
 
 export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
     
