@@ -165,7 +165,7 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
     const walletAddress = wallet.accounts[0].address;
 
     try {
-        const borrowBalanceMantissa = await degenUSDC.borrowBalanceCurrent(walletAddress);
+        const borrowBalanceMantissa = await degenUSDC.borrowBalanceStored(walletAddress);
         const decimals = await degenUSDC.decimals();
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
@@ -182,56 +182,70 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
 export const updateUSDCSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
+    const blocksPerDay = 6570; // ~13.15 seconds per block
+    const daysPerYear = 365;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
     try {
-        const  supplyRateMantissa = await degenUSDC.supplyRatePerBlock();
-        const decimals = await degenUSDC.decimals()
-        const supplyRate = formatUnits(supplyRateMantissa, decimals);
+        // Fetch the supply rate per block (always in 1e18 scale)
+        const supplyRateMantissa = await degenUSDC.supplyRatePerBlock();
+        console.log("Raw Supply Rate Mantissa:", supplyRateMantissa.toString());
+        
+        // Calculate the supply APY using compound interest formula
+        const supplyAPY = ((1 + Number(supplyRateMantissa) / 1e18) ** (blocksPerDay * daysPerYear)) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return Number(supplyRate);
+        // Return the APY as a percentage
+        return Number(supplyAPY * 100);
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateSupplyRate': ${error}`);
         return 0;
     }
-
 });
 
 export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
+    const blocksPerDay = 6570; // ~13.15 seconds per block
+    const daysPerYear = 365;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
     try {
-        const  borrowRateMantissa = await degenUSDC.borrowRatePerBlock();
-        const decimals = await degenUSDC.decimals()
-        const borrowRate = formatUnits(borrowRateMantissa, decimals);
+        // Fetch the borrow rate per block (always in 1e18 scale)
+        const borrowRateMantissa = await degenUSDC.borrowRatePerBlock();
+        console.log("Raw Borrow Rate Mantissa:", borrowRateMantissa.toString());
+
+        // Calculate the borrow APY using compound interest formula
+        const borrowAPY = ((1 + Number(borrowRateMantissa) / 1e18) ** (blocksPerDay * daysPerYear)) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        return Number(borrowRate);
+        // Return the APY as a percentage
+        return Number(borrowAPY * 100);
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateBorrowRate': ${error}`);
         return 0;
     }
 });
 
+
 // Activities
 
 ///////////  Misc Market Thunks
-export const approveUSDC = createAsyncThunk('usdc/Approve', async () => {
+export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectWithValue }) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -250,8 +264,9 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async () => {
         let tx = await USDC.approve(spender, parseUnits(`999999`));
         await tx.wait();
         console.log(`[Console] successfully called on thunk 'approveUSDC'`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'approveUSDC': ${error} `)
+        return rejectWithValue(error.message);
     }
 
 })
