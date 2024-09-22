@@ -36,86 +36,109 @@ const initialState: AccountState = {
     netSupplyBalance: 0
 }
 
+// Helper to get contract instances
+const getContract = (address: string, abi: any, signer: any) => {
+    return new ethers.Contract(address, abi, signer);
+};
+
 // Views
 
 export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', async () => {
-    const [wallet] = onboard.state.get().wallets; 
+    const [wallet] = onboard.state.get().wallets;
 
-    if (wallet === undefined ) {
+    if (!wallet) {
         return 0;
     }
-    // How this works -> 1) Each money market has a supply balance, the net supply balance is : (amount in market * price in USD) + (amount in market * price in USD)
 
-    console.log(`[Console] Invoking net supply balance... `)
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    let signer = await ethersProvider.getSigner();
-    const priceOracle = new Contract( testnet_addresses.price_oracle, SimplePriceOracle.abi, signer)
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
 
-    const wsxPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
-    const usdcPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenUSDC);
+    const wsxAddress = testnet_addresses.degenWSX;
+    const usdcAddress = testnet_addresses.degenUSDC;
+    const oracleAddress = testnet_addresses.price_oracle;
 
-    const walletAddress = wallet.accounts[0].address;
-
-    try {
-        let wsxBalance = await degenWSX.balanceOf(walletAddress);
-        let wsxDecimals = await degenWSX.decimals();
-        const wsxSupplyBalance: any = formatUnits(wsxBalance, wsxDecimals);
-    
-
-        let usdcBalance = await degenUSDC.balanceOf(walletAddress);
-        let usdcDecimals = await degenUSDC.decimals();
-        const usdcSupplyBalance: any = formatUnits(usdcBalance, usdcDecimals);
-    
-        console.log(`[Console] updateNetSupplyBalance values: ${typeof(wsxSupplyBalance)} wsxSupplyBalance: ${wsxSupplyBalance} & ${typeof(usdcSupplyBalance)} usdcSupplyBalance: ${usdcSupplyBalance}`)
-        const netBalance = (Number(wsxSupplyBalance) * Number(wsxPrice)) + (Number(usdcSupplyBalance) * Number(usdcPrice));
-        console.log(`[Console] updateNetSupplyBalance net balance: ${netBalance}`)
-        return Number(netBalance);
-    } catch (error) {
-        console.log(`[Console] an error occured with updateNetSupplyBalance.  View here: \n\n ${error}`)
-        return Number(-1);
+    if (!wsxAddress || !usdcAddress || !oracleAddress) {
+        throw new Error("Missing contract addresses. Check testnet_addresses.");
     }
 
-})
+    const priceOracle = getContract(oracleAddress, SimplePriceOracle.abi, signer);
+    const degenWSX = getContract(wsxAddress, ERC20Immutable.abi, signer);
+    const degenUSDC = getContract(usdcAddress, ERC20Immutable.abi, signer);
+
+    try {
+        const [wsxPrice, usdcPrice, wsxBalance, usdcBalance] = await Promise.all([
+            priceOracle.getUnderlyingPrice(wsxAddress),
+            priceOracle.getUnderlyingPrice(usdcAddress),
+            degenWSX.balanceOf(wallet.accounts[0].address),
+            degenUSDC.balanceOf(wallet.accounts[0].address)
+        ]);
+
+        // Proper formatting and calculation of net supply balance
+        const netSupplyBalance = (parseFloat(formatUnits(wsxBalance, 18)) * parseFloat(formatUnits(wsxPrice, 18))) +
+            (parseFloat(formatUnits(usdcBalance, 6)) * parseFloat(formatUnits(usdcPrice, 18))); // USDC has 6 decimals
+
+        return netSupplyBalance;
+    } catch (error) {
+        console.error("Error fetching net supply balance:", error);
+        throw new Error('Failed to update net supply balance');
+    }
+});
+
 
 export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
-    if (wallet === undefined ) {
-        return false;
+
+    if (!wallet) {
+        return 0;
     }
 
-    const wsxBorrowBalance = useSelector(
-        (state: RootState ) => state.wsx.borrowBalance
-    );
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
 
-    const usdcBorrowBalance = useSelector(
-        (state: RootState ) => state.usdc.borrowBalance
-    );
+    const wsxContract = getContract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
 
-    const netBalance = wsxBorrowBalance + usdcBorrowBalance;
+    try {
+        const [wsxBorrowBalance, usdcBorrowBalance] = await Promise.all([
+            wsxContract.borrowBalanceStored(wallet.accounts[0].address),
+            usdcContract.borrowBalanceStored(wallet.accounts[0].address),
+        ]);
 
-    return netBalance;
-})
+        // Convert borrow balances to readable format
+        const totalBorrowBalance = parseFloat(formatUnits(wsxBorrowBalance, 18)) + parseFloat(formatUnits(usdcBorrowBalance, 6)); // USDC is 6 decimals
+
+        return totalBorrowBalance;
+    } catch (error) {
+        console.error("Error fetching borrow balances:", error);
+        throw new Error('Failed to update net borrow balance');
+    }
+});
+
 
 export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async () => {
-    /** Local instance of the wallet 
-     * @author user2745
-    */
     const [wallet] = onboard.state.get().wallets;
+
+    if (!wallet) {
+        return 0;
+    }
+
     const walletAddress = wallet.accounts[0].address;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
+
     try {
-        const liquidity = await comptroller.getAccountLiquidity(walletAddress);
+        const [liquidity] = await comptroller.getAccountLiquidity(walletAddress);  // Get the liquidity (first item in the response array)
+
+        const formattedLiquidity = parseFloat(formatUnits(liquidity, 18));  // Format liquidity from 1e18
         console.log(`[Console] successfully called on thunk 'updateAccountLiquidity'`);
-        const formattedLiquidity = liquidity / 1e18;
+
         return formattedLiquidity;
     } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'updateAccountLiquidity': ${error} `)
-        return 0e18;
+        console.log(`[Console] an error occurred on thunk 'updateAccountLiquidity': ${error}`);
+        return 0;
     }
-})
+});
+
 
 
 export const updateAmount = createAsyncThunk('account/updateAmount', async (amountToUpdate: number) =>{
@@ -129,11 +152,88 @@ export const updateAmount = createAsyncThunk('account/updateAmount', async (amou
  */
 export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async () => {
     const [wallet] = onboard.state.get().wallets;
-})
+
+    if (!wallet) {
+        return 0;
+    }
+
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
+
+    const comptroller = getContract(testnet_addresses.comptroller, Comptroller.abi, signer);
+    const wsxContract = getContract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
+    const priceOracle = getContract(testnet_addresses.price_oracle, SimplePriceOracle.abi, signer);
+
+    try {
+        // Fetch liquidity (collateral value)
+        const [liquidity] = await comptroller.getAccountLiquidity(wallet.accounts[0].address);
+        const formattedLiquidity = parseFloat(formatUnits(liquidity, 18));
+
+        // Fetch borrow balances and their USD prices
+        const [wsxBorrowBalance, usdcBorrowBalance, wsxPrice, usdcPrice] = await Promise.all([
+            wsxContract.borrowBalanceStored(wallet.accounts[0].address),
+            usdcContract.borrowBalanceStored(wallet.accounts[0].address),
+            priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX),
+            priceOracle.getUnderlyingPrice(testnet_addresses.degenUSDC),
+        ]);
+
+        // Convert borrow balances to USD
+        const wsxBorrowBalanceUSD = parseFloat(formatUnits(wsxBorrowBalance, 18)) * parseFloat(formatUnits(wsxPrice, 18));
+        const usdcBorrowBalanceUSD = parseFloat(formatUnits(usdcBorrowBalance, 6)) * parseFloat(formatUnits(usdcPrice, 18)); // Convert USDC borrow balance using its price
+
+        const totalBorrowBalanceUSD = wsxBorrowBalanceUSD + usdcBorrowBalanceUSD;
+
+        // Calculate borrow limit as a percentage (borrowed / liquidity * 100)
+        const borrowLimit = formattedLiquidity > 0 ? (totalBorrowBalanceUSD / formattedLiquidity) * 100 : 0;
+
+        return borrowLimit;
+    } catch (error) {
+        console.error("Error calculating borrow limit:", error);
+        throw new Error('Failed to update borrow limit');
+    }
+});
+
+
+
 
 export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
     const [wallet] = onboard.state.get().wallets;
-})
+
+    if (!wallet) {
+        return 0;
+    }
+
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
+
+    const wsxContract = getContract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
+
+    try {
+        const [wsxSupplyRate, wsxBorrowRate, usdcSupplyRate, usdcBorrowRate] = await Promise.all([
+            wsxContract.supplyRatePerBlock(),
+            wsxContract.borrowRatePerBlock(),
+            usdcContract.supplyRatePerBlock(),
+            usdcContract.borrowRatePerBlock(),
+        ]);
+
+        // Convert supply and borrow rates to APY format
+        const totalSupplyAPY = parseFloat(formatUnits(wsxSupplyRate, 18)) + parseFloat(formatUnits(usdcSupplyRate, 18));
+        const totalBorrowAPY = parseFloat(formatUnits(wsxBorrowRate, 18)) + parseFloat(formatUnits(usdcBorrowRate, 18));
+
+        // Calculate net APY as supply APY minus borrow APY
+        const netAPY = totalSupplyAPY - totalBorrowAPY;
+
+        return netAPY;
+    } catch (error) {
+        console.error("Error fetching APY rates:", error);
+        throw new Error('Failed to update net APY');
+    }
+});
+
+
+
 
 // Activities
 
@@ -236,7 +336,8 @@ export const AccountSlice = createSlice({
     extraReducers: (builder) => {
 ///////////  Views
 
-        builder.addCase(updateNetSupplyBalance.pending, (state, action) => {
+        //  Net Supply Balance
+        builder.addCase(updateNetSupplyBalance.pending, (state) => {
             state.loading = true;
         });
         builder.addCase(updateNetSupplyBalance.fulfilled, (state, action) => {
@@ -248,6 +349,44 @@ export const AccountSlice = createSlice({
             state.error = action.error.message!;
         });
 
+            // Net Borrow Balance
+    builder.addCase(updateNetBorrowBalance.pending, (state) => {
+        state.loading = true;
+    });
+    builder.addCase(updateNetBorrowBalance.fulfilled, (state, action) => {
+        state.loading = false;
+        state.netBorrowBalance = action.payload;
+    });
+    builder.addCase(updateNetBorrowBalance.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message!;
+    });
+
+    // Net APY
+    builder.addCase(updateNetAPY.pending, (state) => {
+        state.loading = true;
+    });
+    builder.addCase(updateNetAPY.fulfilled, (state, action) => {
+        state.loading = false;
+        state.netAPY = action.payload;
+    });
+    builder.addCase(updateNetAPY.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message!;
+    });
+
+    // Borrow Limit
+    builder.addCase(updateBorrowLimit.pending, (state) => {
+        state.loading = true;
+    });
+    builder.addCase(updateBorrowLimit.fulfilled, (state, action) => {
+        state.loading = false;
+        state.borrowLimit = action.payload;
+    });
+    builder.addCase(updateBorrowLimit.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message!;
+    });
 
         // Activities
 
