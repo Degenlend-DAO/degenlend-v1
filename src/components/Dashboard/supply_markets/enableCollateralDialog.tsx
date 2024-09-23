@@ -31,6 +31,7 @@ import {
 import { useState, useEffect } from "react";
 import ConfirmTransactionDialog from "../widgets/confirmTransactionDialog";
 import { Transition } from "../../../utils/Transition";
+import { handleTransaction } from "../../../features/dashboard/transactionSlice";
 
 interface EnableMarketsProps {
   open: boolean;
@@ -62,18 +63,18 @@ function EnableMarketDialog(props: EnableMarketsProps) {
     if (type === "sx") {
       // If wsx is already listed as collateral, exit the market
       if (isWSXCollateral) {
-        dispatch(exitWSXMarket());
+        dispatch(handleTransaction( () => exitWSXMarket()));
       } else {
-        dispatch(enterWSXMarket());
+        dispatch(handleTransaction( () => enterWSXMarket()));
       }
     }
 
     if (type === "usdc") {
       // If USDC is already listed as collateral, exit the market
       if (isUSDCCollateral) {
-        dispatch(exitUSDCMarket());
+        dispatch(handleTransaction( () => exitUSDCMarket()));
       } else {
-        dispatch(enterUSDCMarket());
+        dispatch(handleTransaction( () => enterUSDCMarket()));
       }
     }
     setConfirmTransactionOpen(true);
