@@ -20,7 +20,7 @@ function MarketHeader() {
     dispatch(updateNetAPY());
   }, [dispatch]);
 
-  const formatNumber = (number: number, decimals = 2) => {
+  const formatNumber = (number: number, decimals = 6) => {
     return number.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   };
 
