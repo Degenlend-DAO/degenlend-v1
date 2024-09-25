@@ -93,7 +93,7 @@ export default function BorrowMarkets() {
               <TableCell> Asset </TableCell>
               <TableCell> APY </TableCell>
               <TableCell> Balance </TableCell>
-              <TableCell> Liquidity </TableCell>
+              {/* <TableCell> Liquidity </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -118,7 +118,7 @@ export default function BorrowMarkets() {
               </TableCell>
               <TableCell>{formatNumber(wsxBorrowAPY)}%</TableCell>
               <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
-              <TableCell>{formatNumber(wsxOraclePrice)}</TableCell>
+              {/* <TableCell>{formatNumber(wsxOraclePrice)}</TableCell> */}
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
@@ -141,7 +141,7 @@ export default function BorrowMarkets() {
               </TableCell>
               <TableCell>{formatNumber(usdcBorrowAPY)}%</TableCell>
               <TableCell>{formatNumber(usdcWalletBalance)} USDC</TableCell>
-              <TableCell>{formatNumber(usdcOraclePrice)}</TableCell>
+              {/* <TableCell>{formatNumber(usdcOraclePrice)}</TableCell> */}
             </TableRow>
           </TableBody>
         </Table>

@@ -157,7 +157,7 @@ export default function SupplyMarkets() {
                   checked={isWSXCollateral}
                 />
               </TableCell>
-              <TableCell>{formatNumber(wsxOraclePrice)}</TableCell>
+              <TableCell>${formatNumber(wsxOraclePrice)}</TableCell>
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
@@ -188,7 +188,7 @@ export default function SupplyMarkets() {
                   checked={isUSDCCollateral}
                 />
               </TableCell>
-              <TableCell>{formatNumber(usdcOraclePrice)}</TableCell>
+              <TableCell>${formatNumber(usdcOraclePrice)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

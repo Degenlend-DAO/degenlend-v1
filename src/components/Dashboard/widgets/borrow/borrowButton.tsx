@@ -1,8 +1,8 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ConfirmTransactionDialog from "../confirmTransactionDialog";
 import { useState } from "react";
-import { AppDispatch } from "../../../../app/Store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../../../app/Store";
+import { useDispatch, useSelector } from "react-redux";
 import { borrowUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 import { borrowWSX } from "../../../../features/dashboard/WSXMarketSlice";
 
@@ -18,14 +18,26 @@ function BorrowButton(props: BorrowButtonProps) {
     // const [isDisabled, setIsDisabled] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
+    const amount = useSelector((state: RootState) => state.account.amount);
+
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
     let buttonText = "No Balance to Borrow!"
 
+    let BorrowButton = <Button disabled size="large" onClick={borrowAssets} variant="contained">{buttonText}</Button>
+
+
     if (BorrowBalance > 0)
     {
         buttonText = `Borrow ${BorrowBalance} ${type.toUpperCase()} tokens`
+    }
+
+    if (amount > 0 ) 
+    {
+        BorrowButton = (
+            <Button disabled size="large" onClick={borrowAssets} variant="contained">{buttonText}</Button>
+        );
     }
 
     function borrowAssets() {
@@ -44,7 +56,7 @@ function BorrowButton(props: BorrowButtonProps) {
     return (
         <Box sx={{ width: "100%", alignItems: "center" , textAlign: 'center', padding: '3%'}}>
         
-        <Button disabled size="large" onClick={borrowAssets} variant="contained">{buttonText}</Button>
+        {BorrowButton}
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography> Currently Borrowing </Typography>

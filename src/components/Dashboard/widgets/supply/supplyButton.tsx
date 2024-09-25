@@ -21,6 +21,7 @@ import {
 } from "../../../../features/dashboard/USDCMarketSlice";
 import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
 import { formatNumber } from "../../../../utils/constant";
+import { updateAmount } from "../../../../features/dashboard/AccountSlice";
 
 interface SupplyButtonProps {
   type: String;
