@@ -54,7 +54,7 @@ function RepayButton(props: RepayButtonProps) {
             break;
 
         case "usdc":
-            dispatch(repayUSDC());
+            dispatch(repayUSDC(amount));
             break;                                              
         }
         

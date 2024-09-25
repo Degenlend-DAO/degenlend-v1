@@ -261,7 +261,7 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectW
     const USDC = new Contract(testnet_addresses.USDC, ERC20.abi, signer);
     const spender = testnet_addresses.degenUSDC;
     try {
-        let tx = await USDC.approve(spender, parseUnits(`999999`));
+        let tx = await USDC.approve(spender, parseUnits(`100000`));
         await tx.wait();
         console.log(`[Console] successfully called on thunk 'approveUSDC'`);
     } catch (error: any) {
@@ -301,7 +301,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
     }
 })
 
-export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
+export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -315,10 +315,11 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-
+    const amount = parseUnits(`${withdrawAmount}`);
     try {
 
-        degenUSDC.redeemUnderlying(1)
+        const tx = await degenUSDC.redeemUnderlying(amount);
+        await tx.wait(1);
         console.log(`[Console] successfully called on thunk 'withdrawUSDC'`);
     
     } catch (error) {
@@ -329,7 +330,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
 
 ///////////  Borrow Market Thunks
 
-export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
+export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -343,8 +344,11 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
+    const amount = parseUnits(`${borrowAmount}`);
 
     try {
+        const tx = await degenUSDC.borrow(amount);
+        await tx.wait(1);
         console.log(`[Console] successfully called on thunk 'borrowUSDC'`);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'borrowUSDC': ${error} `)
@@ -352,7 +356,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
     }
 })
 
-export const repayUSDC = createAsyncThunk('usdc/repay', async () => {
+export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -366,8 +370,12 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async () => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
+    const amount = parseUnits(`${repayAmount}`);
+    console.log(`[Console] attempting to repay borrow now...`);
 
     try {
+        const tx = await degenUSDC.redeemUnderlying(amount);
+        await tx.wait(1);
         console.log(`[Console] successfully called on thunk 'repayUSDC'`);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'repayUSDC': ${error} `)

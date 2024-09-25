@@ -301,7 +301,7 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
     const spender = testnet_addresses.degenWSX;
 
     console.log(`[Console] approve details loaded, attempting to execute now`);
-        const txn = await WSXContract.approve(spender, parseUnits("999999"));
+        const txn = await WSXContract.approve(spender, parseUnits("100000"));
         console.log(`[Console] calling txn: ${txn}`);
         await txn.wait();
         console.log(`[Console] successfully called on thunk 'approveWSX'`);
@@ -355,7 +355,7 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
     const signer = await ethersProvider.getSigner();
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
     const amount = parseUnits(`${withdrawAmount}`);
-    console.log(`[Console] attempting to mint now...`);
+    console.log(`[Console] attempting to withdraw now...`);
 
     try {
         const tx = await degenWSX.redeemUnderlying(amount);
@@ -382,7 +382,18 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
     
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-})
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${repayAmount}`);
+    console.log(`[Console] attempting to repay borrow now...`);
+
+    try {
+        const tx = await degenWSX.repayBorrow(amount);
+        await tx.wait();
+        console.log(`[Console] successfully called on thunk 'repayWSX'`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'repayWSX': ${error} `)
+
+    }})
 
 export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: number) => {
     
