@@ -20,6 +20,7 @@ import {
   supplyUSDC,
 } from "../../../../features/dashboard/USDCMarketSlice";
 import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
+import { formatNumber } from "../../../../utils/constant";
 
 interface SupplyButtonProps {
   type: String;
@@ -110,7 +111,7 @@ function SupplyButton(props: SupplyButtonProps) {
         <Typography> Wallet Balance </Typography>
         {/* Wallet Balance of that unit of currency */}
         <Typography variant="body2">
-          {walletBalance} {type.toUpperCase()}
+          {formatNumber(walletBalance)} {type.toUpperCase()}
         </Typography>
       </Stack>
 

@@ -3,6 +3,7 @@ import { Box, Typography, Grid, Paper, LinearProgress, Skeleton } from '@mui/mat
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/Store';
 import { updateBorrowLimit, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
+import { formatNumber } from '../../utils/constant';
 
 function MarketHeader() {
   const supplyBalance = useSelector((state: RootState) => state.account.netSupplyBalance);
@@ -20,9 +21,6 @@ function MarketHeader() {
     dispatch(updateNetAPY());
   }, [dispatch]);
 
-  const formatNumber = (number: number, decimals = 6) => {
-    return number.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-  };
 
   return (
     <Box sx={{ width: '90%', mb: 4 }}>

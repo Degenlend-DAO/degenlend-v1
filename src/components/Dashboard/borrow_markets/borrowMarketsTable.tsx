@@ -18,6 +18,7 @@ import WSXBorrowMarketDialog from "./wsxBorrowMarketDialog";
 import USDCBorrowMarketDialog from "./usdcBorrowMarketDialog";
 import { updateUSDCBalance, updateUSDCBorrowRate, updateUSDCOraclePrice } from "../../../features/dashboard/USDCMarketSlice";
 import { updateWSXBalance, updateWSXBorrowRate, updateWSXOraclePrice } from "../../../features/dashboard/WSXMarketSlice";
+import { formatNumber } from "../../../utils/constant";
 
 export default function BorrowMarkets() {
   const [borrowSXDialogOpen, setBorrowSXDialogOpen] = React.useState(false);
@@ -115,9 +116,9 @@ export default function BorrowMarkets() {
                   <Typography variant="body1">Wrapped SX</Typography>
                 </Box>
               </TableCell>
-              <TableCell>{wsxBorrowAPY}%</TableCell>
-              <TableCell>{wsxWalletBalance} WSX</TableCell>
-              <TableCell>{wsxOraclePrice}</TableCell>
+              <TableCell>{formatNumber(wsxBorrowAPY)}%</TableCell>
+              <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
+              <TableCell>{formatNumber(wsxOraclePrice)}</TableCell>
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
@@ -138,9 +139,9 @@ export default function BorrowMarkets() {
                   <Typography variant="body1">USD Coin</Typography>
                 </Box>
               </TableCell>
-              <TableCell>{usdcBorrowAPY}%</TableCell>
-              <TableCell>{usdcWalletBalance} USDC</TableCell>
-              <TableCell>{usdcOraclePrice}</TableCell>
+              <TableCell>{formatNumber(usdcBorrowAPY)}%</TableCell>
+              <TableCell>{formatNumber(usdcWalletBalance)} USDC</TableCell>
+              <TableCell>{formatNumber(usdcOraclePrice)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
