@@ -314,7 +314,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
+    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
 
     try {
 

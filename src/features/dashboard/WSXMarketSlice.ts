@@ -341,7 +341,7 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
     }
 })
 
-export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {
+export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -353,7 +353,18 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {
     
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${withdrawAmount}`);
+    console.log(`[Console] attempting to mint now...`);
 
+    try {
+        const tx = await degenWSX.redeemUnderlying(amount);
+        await tx.wait();
+        console.log(`[Console] successfully called on thunk 'withdrawWSX'`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'withdrawWSX': ${error} `)
+
+    }
 
 })
 
