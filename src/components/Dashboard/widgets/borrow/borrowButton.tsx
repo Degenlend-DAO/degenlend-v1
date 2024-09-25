@@ -21,9 +21,6 @@ function BorrowButton(props: BorrowButtonProps) {
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
-    
-
-
     let buttonText = "No Balance to Borrow!"
 
     if (BorrowBalance > 0)
