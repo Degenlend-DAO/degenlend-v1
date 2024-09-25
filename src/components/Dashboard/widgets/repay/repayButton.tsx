@@ -34,7 +34,7 @@ function RepayButton(props: RepayButtonProps) {
 
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
-    if (isRepayingEnabled === true )
+    if (amount > 0  )
     {
         RepayButton = <Button size="large" onClick={repayAssets} variant="contained">{buttonText}</Button>;
     }
@@ -44,12 +44,13 @@ function RepayButton(props: RepayButtonProps) {
         buttonText = `Repay ${borrowBalance} ${type.toUpperCase()} tokens`
     }
 
+
     // Button Effects
 
     function repayAssets() {
         switch (type) {
         case "sx":
-            dispatch(repayWSX());
+            dispatch(repayWSX(amount));
             break;
 
         case "usdc":

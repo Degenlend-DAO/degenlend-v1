@@ -369,7 +369,7 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
 })
 
 ///////////  Borrow Market Thunks
-export const repayWSX = createAsyncThunk('wsx/repay', async () => {
+export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -384,7 +384,7 @@ export const repayWSX = createAsyncThunk('wsx/repay', async () => {
     const signer = await ethersProvider.getSigner();
 })
 
-export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
+export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -397,7 +397,18 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${borrowAmount}`);
+    console.log(`[Console] attempting to borrow now...`);
 
+    try {
+        const tx = await degenWSX.borrow(amount);
+        await tx.wait();
+        console.log(`[Console] successfully called on thunk 'borrowWSX'`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'borrowWSX': ${error} `)
+
+    }
     
 })
 

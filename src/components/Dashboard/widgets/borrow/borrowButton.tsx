@@ -36,14 +36,14 @@ function BorrowButton(props: BorrowButtonProps) {
     if (amount > 0 ) 
     {
         BorrowButton = (
-            <Button disabled size="large" onClick={borrowAssets} variant="contained">{buttonText}</Button>
+            <Button size="large" onClick={borrowAssets} variant="contained">{buttonText}</Button>
         );
     }
 
     function borrowAssets() {
         switch (type) {
             case "sx":
-                dispatch(borrowWSX());
+                dispatch(borrowWSX(amount));
                 break;
 
             case "usdc":
