@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import RepayDetails from "../widgets/repay/repayDetails";
 import {
-  updateBorrowBalance,
+  updateWSXBorrowBalance,
   updateWSXBorrowRate,
 } from "../../../features/dashboard/WSXMarketSlice";
 import { useEffect } from "react";

@@ -29,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import EnableWarning from "../widgets/enableWarning";
 import {
-  updateSupplyBalance,
+  updateUSDCSupplyBalance,
   updateUSDCSupplyRate,
   updateUSDCBalance,
 } from "../../../features/dashboard/USDCMarketSlice";
