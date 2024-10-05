@@ -22,7 +22,7 @@ import EnableWarning from "../widgets/enableWarning";
 // Action Items
 import {
   updateUSDCBalance,
-  updateBorrowBalance,
+  updateUSDCBorrowBalance,
   borrowUSDC,
   repayUSDC,
   updateUSDCBorrowRate,
@@ -65,7 +65,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
   // When the dialog is opened, update information
   useEffect(() => {
-    dispatch(updateBorrowBalance());
+    dispatch(updateUSDCBorrowBalance());
     dispatch(updateUSDCBorrowRate());
     dispatch(updateBorrowLimit());
     dispatch(updateBorrowLimit());
