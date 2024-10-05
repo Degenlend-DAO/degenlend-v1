@@ -19,6 +19,7 @@ interface USDCState {
     isCollateral: boolean,
     isEnabled: boolean,
     oraclePrice: number,
+    liquidityInUSD: number,
 }
 
 
@@ -34,6 +35,7 @@ const initialState: USDCState = {
     isCollateral: false,
     isEnabled: false,
     oraclePrice: 1.000,
+    liquidityInUSD: 0.00,
 }
 
 // Views
@@ -127,7 +129,7 @@ export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', 
     return 1.00;
 })
 
-export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
+export const updateUSDCSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -142,17 +144,20 @@ export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', 
     const walletAddress = wallet.accounts[0].address;
     // This code is currently incomplete
     try {
-        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`);
+        console.log(`[Console] successfully called on thunk 'updateUSDCSupplyBalance -- but nothing was executed!'`);
         let balance = await degenUSDC.balanceOf(walletAddress);
-        const supplyBalance = formatUnits(balance, decimals);
-        return Number(supplyBalance);
+        let exchangeRateMantissa = await degenUSDC.exchangeRateStored();
+        const degenTokenBalance = formatUnits(balance, decimals);
+        const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals);
+        const degenUSDCBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
+        return Number(degenUSDCBalance);
     } catch(error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateUSDCSupplyBalance': ${error}`)
         return 0;
     }
     });
 
-export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
+export const updateUSDCBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -169,11 +174,11 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
         const decimals = await degenUSDC.decimals();
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
-        console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
+        console.log(`[Console] successfully called on thunk 'updateUSDCBorrowBalance'`);
         return Number(borrowBalance);
 
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateUSDCBorrowBalance': ${error}`)
         return 0;
     }
 
@@ -241,6 +246,11 @@ export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', as
     }
 });
 
+export const updateUSDCLiquidity = createAsyncThunk('usdcLiquidity/update', async () => { 
+
+    
+
+})
 
 // Activities
 
@@ -464,36 +474,36 @@ export const USDCSlice = createSlice({
 
         // Borrow Balance
 
-        builder.addCase(updateBorrowBalance.pending, (state, action) => {
+        builder.addCase(updateUSDCBorrowBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateBorrowBalance.rejected, (state, action) => {
+        builder.addCase(updateUSDCBorrowBalance.rejected, (state, action) => {
             state.status = "failed";
             state.borrowBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateBorrowBalance.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCBorrowBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.borrowBalance = action.payload;
         })
 
         // Supply Balance
         
-        builder.addCase(updateSupplyBalance.pending, (state, action) => {
+        builder.addCase(updateUSDCSupplyBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateSupplyBalance.rejected, (state, action) => {
+        builder.addCase(updateUSDCSupplyBalance.rejected, (state, action) => {
             state.status = "failed";
             state.supplyBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCSupplyBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyBalance = action.payload;
         })

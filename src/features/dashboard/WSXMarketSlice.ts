@@ -22,6 +22,7 @@ interface WSXState {
     isEnabled: boolean,
     isCollateral: boolean,
     oraclePrice: number,
+    liquidityInUSD: number,
 }
 
 const initialState: WSXState = {
@@ -35,7 +36,8 @@ const initialState: WSXState = {
     supplyRate: 0.00,
     isEnabled: false,
     isCollateral: false,
-    oraclePrice: 1.0000
+    oraclePrice: 1.0000,
+    liquidityInUSD: 0.00,
 }
 
 interface approveWSXParams {
@@ -149,7 +151,11 @@ export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update'
     try {
 
         let balance = await degenWSX.balanceOf(walletAddress);
-        const degenWSXBalance = formatUnits(balance, decimals);
+        let exchangeRateMantissa = await degenWSX.exchangeRateStored(); // Current exchange rate
+        const degenTokenBalance = formatUnits(balance, decimals);
+        const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals); // convert to readable format
+
+        const degenWSXBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
 
         console.log(`[Console] successfully called on thunk 'updateWSXSupplyBalance'`)
         return Number(degenWSXBalance);
@@ -159,7 +165,7 @@ export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update'
     }
     });
 
-export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', async () => {
+export const updateWSXBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -176,13 +182,13 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
         const decimals = await degenWSX.decimals();
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
-        console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
+        console.log(`[Console] successfully called on thunk 'updateWSXBorrowBalance'`);
         // return borrowBalance;
 
         return Number(borrowBalance);
 
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateWSXBorrowBalance': ${error}`)
         return 0;
     }
 
@@ -251,6 +257,38 @@ export const updateWSXBorrowRate = createAsyncThunk('wsxBorrowRate/update', asyn
     }
 
 });
+
+export const updateWSXLiquidityInUSD = createAsyncThunk('wsxLiquidity/update', async () => {
+    
+        const [wallet] = onboard.state.get().wallets;
+    
+        if (!wallet) {
+            return 0;
+        }
+    
+        const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+        const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+        const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
+    
+        try {
+            const exchangeRateMantissa = await degenWSX.exchangeRateStored();
+            const cash = await degenWSX.getCash();
+            const decimals = await degenWSX.decimals();
+            const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+    
+            const wsxPrice = formatUnits(wsxPriceMantissa, decimals);
+            const exchangeRate = formatUnits(exchangeRateMantissa, decimals);
+    
+            const wsxLiquidityInUSD = Number(wsxPrice) * Number(exchangeRate);
+    
+            console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD'`);
+    
+            return Number(wsxLiquidityInUSD);
+        } catch (error) {
+            console.log(`[Console] an error occurred on thunk 'updateLiquidityInUSD': ${error}`);
+            return 0;
+        }
+})
 
 
 export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
@@ -507,18 +545,18 @@ export const WSXSlice = createSlice({
 
         // Borrow Balance
 
-        builder.addCase(updateBorrowBalance.pending, (state, action) => {
+        builder.addCase(updateWSXBorrowBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateBorrowBalance.rejected, (state, action) => {
+        builder.addCase(updateWSXBorrowBalance.rejected, (state, action) => {
             state.status = "failed";
             state.borrowBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateBorrowBalance.fulfilled, (state, action) => {
+        builder.addCase(updateWSXBorrowBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.borrowBalance = action.payload;
         })
