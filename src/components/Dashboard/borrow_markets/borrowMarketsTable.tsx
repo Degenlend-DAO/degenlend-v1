@@ -32,16 +32,16 @@ export default function BorrowMarkets() {
   const usdcWalletBalance = useSelector(
     (state: RootState) => state.usdc.borrowBalance
   );
-  const usdcOraclePrice = useSelector(
-    (state: RootState) => state.usdc.oraclePrice
+  const usdcLiquidity = useSelector(
+    (state: RootState) => state.usdc.liquidityInUSD
   );
 
   const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
   const wsxWalletBalance = useSelector(
     (state: RootState) => state.wsx.borrowBalance
   );
-  const wsxOraclePrice = useSelector(
-    (state: RootState) => state.wsx.oraclePrice
+  const wsxLiquidity = useSelector(
+    (state: RootState) => state.wsx.liquidityInUSD
   );
 
   function handleSXRowClick(event: React.MouseEvent) {
@@ -93,7 +93,7 @@ export default function BorrowMarkets() {
               <TableCell> Asset </TableCell>
               <TableCell> APY </TableCell>
               <TableCell> Balance </TableCell>
-              {/* <TableCell> Liquidity </TableCell> */}
+              <TableCell> Liquidity </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -118,7 +118,7 @@ export default function BorrowMarkets() {
               </TableCell>
               <TableCell>{formatNumber(wsxBorrowAPY)}%</TableCell>
               <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
-              {/* <TableCell>{formatNumber(wsxOraclePrice)}</TableCell> */}
+              <TableCell>${formatNumber(wsxLiquidity)}</TableCell>
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
@@ -141,7 +141,7 @@ export default function BorrowMarkets() {
               </TableCell>
               <TableCell>{formatNumber(usdcBorrowAPY)}%</TableCell>
               <TableCell>{formatNumber(usdcWalletBalance)} USDC</TableCell>
-              {/* <TableCell>{formatNumber(usdcOraclePrice)}</TableCell> */}
+              <TableCell>${formatNumber(usdcLiquidity)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
