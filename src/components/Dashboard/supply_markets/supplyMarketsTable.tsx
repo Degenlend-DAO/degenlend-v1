@@ -17,12 +17,21 @@ import EnableMarketDialog from "./enableCollateralDialog";
 import React, { useEffect, useState } from "react";
 import USDCSupplyMarketDialog from "./usdcSupplyMarketDialog";
 import WSXSupplyMarketDialog from "./wsxSupplyMarketDialog";
-import { updateUSDCSupplyRate, updateUSDCOraclePrice, updateUSDCBalance } from "../../../features/dashboard/USDCMarketSlice";
-import { updateWSXSupplyRate, updateWSXOraclePrice, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
+import {
+  isUSDCListedAsCollateral,
+  updateUSDCSupplyRate,
+  updateUSDCOraclePrice,
+  updateUSDCBalance,
+} from "../../../features/dashboard/USDCMarketSlice";
+import {
+  isWSXListedAsCollateral,
+  updateWSXSupplyRate,
+  updateWSXOraclePrice,
+  updateWSXBalance,
+} from "../../../features/dashboard/WSXMarketSlice";
+import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 
 export default function SupplyMarkets() {
-  // These values are grabbed directly from the blockchain
-
   const [enableSXDialogOpen, setEnableSXDialogOpen] = useState(false);
   const [enableUSDCDialogOpen, setEnableUSDCDialogOpen] = useState(false);
   const [supplySXDialogOpen, setSupplySXDialogOpen] = useState(false);
@@ -30,6 +39,13 @@ export default function SupplyMarkets() {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  const isUSDCCollateral = useSelector(
+    (state: RootState) => state.usdc.isCollateral
+  );
+
+  const isWSXCollateral = useSelector(
+    (state: RootState) => state.wsx.isCollateral
+  );
 
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
@@ -42,11 +58,17 @@ export default function SupplyMarkets() {
   );
 
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
-  const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.balance
-  );
+  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
   const wsxOraclePrice = useSelector(
     (state: RootState) => state.wsx.oraclePrice
+  );
+
+  const borrowLimit = useSelector(
+    (state: RootState) => state.account.borrowLimit
+  );
+
+  const borrowLimitUsed = useSelector(
+    (state: RootState) => state.account.borrowLimitUsed
   );
 
   function handleSXRowClick(event: React.MouseEvent) {
@@ -67,19 +89,23 @@ export default function SupplyMarkets() {
     setEnableUSDCDialogOpen(true);
   };
 
-  useEffect( () => {
-    // update supply apys, wallet balances, and oracle prices
-    
+  useEffect(() => {
+    // update collateral, supply apys, wallet balances, and oracle prices
+
+    dispatch(isWSXListedAsCollateral());
+    dispatch(isUSDCListedAsCollateral());
+
     dispatch(updateUSDCSupplyRate());
     dispatch(updateWSXSupplyRate());
 
     dispatch(updateWSXBalance());
     dispatch(updateUSDCBalance());
-    
+
     dispatch(updateUSDCOraclePrice());
     dispatch(updateWSXOraclePrice());
-  });
 
+    dispatch(updateBorrowLimit());
+  });
 
   return (
     <>
@@ -106,17 +132,17 @@ export default function SupplyMarkets() {
           <TableHead>
             <TableRow>
               <TableCell> Asset </TableCell>
-              <TableCell>  APY </TableCell>
-              <TableCell>  Balance </TableCell>
+              <TableCell> APY </TableCell>
+              <TableCell> Balance </TableCell>
               <TableCell> Collateral </TableCell>
-              <TableCell>  Price </TableCell>
+              <TableCell> Price </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {/* Wrapped SX Market Details */}
             <TableRow
               hover
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: "pointer" }}
               onClick={(event) => {
                 handleSXRowClick(event);
               }}
@@ -135,14 +161,19 @@ export default function SupplyMarkets() {
               <TableCell>{wsxSupplyAPY}%</TableCell>
               <TableCell>{wsxWalletBalance} WSX</TableCell>
               <TableCell>
-                <Switch onClick={(event) => { handleSXSwitchClick(event) }} />
+                <Switch
+                  onClick={(event) => {
+                    handleSXSwitchClick(event);
+                  }}
+                  checked={isWSXCollateral}
+                />
               </TableCell>
               <TableCell>{wsxOraclePrice}</TableCell>
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
               hover
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: "pointer" }}
               onClick={(event) => {
                 handleUSDCRowClick(event);
               }}
@@ -161,9 +192,12 @@ export default function SupplyMarkets() {
               <TableCell>{usdcSupplyAPY}%</TableCell>
               <TableCell>{usdcWalletBalance} USDC</TableCell>
               <TableCell>
-
-                <Switch onClick={(event) => { handleUSDCSwitchClick(event) }} />
-
+                <Switch
+                  onClick={(event) => {
+                    handleUSDCSwitchClick(event);
+                  }}
+                  checked={isUSDCCollateral}
+                />
               </TableCell>
               <TableCell>{usdcOraclePrice}</TableCell>
             </TableRow>
@@ -172,10 +206,40 @@ export default function SupplyMarkets() {
       </TableContainer>
 
       {/* Market Dialogs */}
-      <EnableMarketDialog type='sx' title='Wrapped SX' open={enableSXDialogOpen} onClose={() => { setEnableSXDialogOpen(false) }} />
-      <EnableMarketDialog type='usdc' title='USDC' open={enableUSDCDialogOpen} onClose={() => { setEnableUSDCDialogOpen(false) }} />
-      <WSXSupplyMarketDialog open={supplySXDialogOpen} onClose={() => { setSupplySXDialogOpen(false) }} title={"Wrapped SX"} />
-      <USDCSupplyMarketDialog open={supplyUSDCDialogOpen} onClose={() => { setSupplyUSDCDialogOpen(false) }} title={"USDC"} />
+      <EnableMarketDialog
+        type="sx"
+        title="Wrapped SX"
+        open={enableSXDialogOpen}
+        onClose={() => {
+          setEnableSXDialogOpen(false);
+        }}
+        borrowLimit={borrowLimit}
+        borrowLimitUsed={borrowLimitUsed}
+      />
+      <EnableMarketDialog
+        type="usdc"
+        title="USDC"
+        open={enableUSDCDialogOpen}
+        onClose={() => {
+          setEnableUSDCDialogOpen(false);
+        }}
+        borrowLimit={borrowLimit}
+        borrowLimitUsed={borrowLimitUsed}
+      />
+      <WSXSupplyMarketDialog
+        open={supplySXDialogOpen}
+        onClose={() => {
+          setSupplySXDialogOpen(false);
+        }}
+        title={"Wrapped SX"}
+      />
+      <USDCSupplyMarketDialog
+        open={supplyUSDCDialogOpen}
+        onClose={() => {
+          setSupplyUSDCDialogOpen(false);
+        }}
+        title={"USDC"}
+      />
     </>
   );
 }

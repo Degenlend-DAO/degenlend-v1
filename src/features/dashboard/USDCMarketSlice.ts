@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ethers, Contract, formatUnits } from 'ethers';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
+
+import Comptroller from '../../abis/Comptroller.json';
 import ERC20Immutable from '../../abis/Erc20Immutable.json'
 import ERC20 from '../../abis/ERC20.json'
 
@@ -52,6 +54,34 @@ const initialState: USDCState = {
 
 // Views
 
+export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined ) {
+        return false;
+    }
+
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+
+    const theComptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
+
+    try {
+        const walletAddress = wallet.accounts[0].address;
+        const collateralMarkets = await theComptroller.getAssetsIn(walletAddress);
+        let isCollateral = false;
+        console.log(`\n\n Collateral Markets: ${collateralMarkets} \n\n`);
+        if (collateralMarkets.includes(testnet_addresses.degenUSDC))
+        {
+            isCollateral = true;
+        }
+        return isCollateral;
+    } catch (error) {
+        console.log(`[Console] unable to confirm USDC is listed as this wallet's collateral! \n ${error}`);
+    return false;
+    }
+
+})
 
 export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
@@ -190,7 +220,7 @@ export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', as
 
 // Activities
 
-///////////  Supply Market Thunks
+///////////  Misc Market Thunks
 export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, addressToApprove }: { amount: number, addressToApprove: string }) => {
     
     const [wallet] = onboard.state.get().wallets;
@@ -433,6 +463,21 @@ export const USDCSlice = createSlice({
         builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyBalance = action.payload;
+        })
+
+        builder.addCase(isUSDCListedAsCollateral.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        })
+
+        builder.addCase(isUSDCListedAsCollateral.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(isUSDCListedAsCollateral.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.isCollateral = action.payload;
         })
         
         

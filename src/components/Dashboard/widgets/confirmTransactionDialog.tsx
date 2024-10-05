@@ -28,6 +28,9 @@ interface confirmTransactionProps {
   onClose: () => void;
 }
 
+let ConfirmTransactionHeaderText = `Confirm Transaction`;
+let ConfirmTransactionDialogText = `Confirm the Transaction.`;
+
 function ConfirmTransactionDialog(props: confirmTransactionProps) {
   return (
     <React.Fragment>
@@ -44,7 +47,7 @@ function ConfirmTransactionDialog(props: confirmTransactionProps) {
           <div style={{ textAlign: "center" }}>
             <Box component="span" sx={{ fontSize: 20, fontWeight: "bold" }}>
               {" "}
-              Confirm Transaction{" "}
+              {ConfirmTransactionHeaderText}
             </Box>
           </div>
           <IconButton
@@ -64,8 +67,9 @@ function ConfirmTransactionDialog(props: confirmTransactionProps) {
         <DialogContent>
           <Box sx={{ textAlign: "center", alignContent: "center" }}>
             <CircularProgress />
+            
             <DialogContentText sx={{ color: "text.secondary" }}>
-              Confirm the Transaction.
+              {ConfirmTransactionDialogText}
             </DialogContentText>
           </Box>
         </DialogContent>

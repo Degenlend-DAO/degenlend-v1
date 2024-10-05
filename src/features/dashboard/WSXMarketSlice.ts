@@ -3,6 +3,7 @@ import { onboard, testnet_addresses } from '../../utils/web3';
 import { ethers, Contract, formatUnits } from 'ethers'
 
 // ABIs
+import Comptroller from '../../abis/Comptroller.json';
 import ERC20Immutable from '../../abis/Erc20Immutable.json';
 import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
 import ERC20 from '../../abis/ERC20.json';
@@ -50,6 +51,32 @@ interface withdrawWSXParams {
 
 // Views
 
+export const isWSXListedAsCollateral = createAsyncThunk('wsxCollateral/update', async () => {
+
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined ) {
+        return false;
+    }
+
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const theComptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
+    try { 
+        const walletAddress = wallet.accounts[0].address;
+        const collateralMarkets = await theComptroller.getAssetsIn(walletAddress);
+        let isCollateral = false;
+        console.log(`\n\n Collateral Markets: ${collateralMarkets} \n\n`);
+        if (collateralMarkets.includes(testnet_addresses.degenWSX)) {
+            isCollateral = true;
+        } else {
+            isCollateral = false;
+        }
+        return isCollateral;
+    } catch (error) {
+        console.log(`[Console] unable to confirm WSX is listed as this wallet's collateral! \n ${error}`);
+        return false;
+    }
+});
 
 
 export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () => {
@@ -192,11 +219,14 @@ export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', as
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const priceOracle = new Contract( testnet_addresses.price_oracle, SimplePriceOracle.abi, signer)
-    
+    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
+
     try {
-     let wsxPrice = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
-     console.log(`[Console] successfully got the oracle price from 'updatePriceOracle': ${wsxPrice} `);
-     return wsxPrice as number;
+     let WSXPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+     const decimals = await WSX.decimals();
+     console.log(`[Console] successfully got the oracle price from 'updatePriceOracle': ${WSXPriceMantissa} `);
+     const wsxPrice = formatUnits(WSXPriceMantissa, decimals);
+     return Number(wsxPrice);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'updatePriceOracle': ${error} `)
         return 0;
@@ -420,6 +450,22 @@ export const WSXSlice = createSlice({
         builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyBalance = action.payload;
+        })
+
+
+        builder.addCase(isWSXListedAsCollateral.pending, (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        })
+
+        builder.addCase(isWSXListedAsCollateral.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = `${action.error}`;
+        })
+
+        builder.addCase(isWSXListedAsCollateral.fulfilled, (state, action) => {
+            state.status = "completed";
+            state.isCollateral = action.payload;
         })
         
         
