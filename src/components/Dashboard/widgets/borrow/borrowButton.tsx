@@ -15,14 +15,9 @@ function BorrowButton(props: BorrowButtonProps) {
 
     const { type, BorrowBalance } = props
 
-    // const [isDisabled, setIsDisabled] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
-
     const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
-
-    
-
 
     let buttonText = ""
 
@@ -40,7 +35,6 @@ function BorrowButton(props: BorrowButtonProps) {
     }
 
     function handleChange() {
-        alert('You pressed the Borrow button!');
 
         if (type === "sx")
             {
