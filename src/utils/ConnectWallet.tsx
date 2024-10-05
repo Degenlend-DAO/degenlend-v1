@@ -5,8 +5,8 @@ import { connectWallet, disconnectWallet } from '../features/wallet/walletSlice'
 import { AppDispatch, RootState } from "../app/Store";
 import { useEffect, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
-import { isUSDCListedAsCollateral, updateUSDCSupplyRate, updateUSDCBalance, updateUSDCOraclePrice, updateBorrowBalance, updateSupplyBalance, updateUSDCBorrowRate } from '../features/dashboard/USDCMarketSlice';
-import { isWSXListedAsCollateral, updateWSXSupplyRate, updateWSXBalance, updateWSXOraclePrice, updateWSXBorrowRate } from '../features/dashboard/WSXMarketSlice';
+import { isUSDCListedAsCollateral, updateUSDCSupplyRate, updateUSDCBalance, updateUSDCOraclePrice, updateUSDCBorrowBalance, updateUSDCSupplyBalance, updateUSDCBorrowRate } from '../features/dashboard/USDCMarketSlice';
+import { isWSXListedAsCollateral, updateWSXSupplyRate, updateWSXBalance, updateWSXOraclePrice, updateWSXBorrowBalance, updateWSXSupplyBalance, updateWSXBorrowRate } from '../features/dashboard/WSXMarketSlice';
 import { updateBorrowLimit, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../features/dashboard/AccountSlice';
 
 const ConnectWallet = () => {
@@ -53,8 +53,11 @@ const ConnectWallet = () => {
         dispatch(updateWSXBalance());
         dispatch(updateUSDCBalance());
 
-        dispatch(updateSupplyBalance());
-        dispatch(updateBorrowBalance());
+        dispatch(updateUSDCSupplyBalance());
+        dispatch(updateWSXSupplyBalance());
+
+        dispatch(updateUSDCBorrowBalance());
+        dispatch(updateWSXBorrowBalance());
         
         dispatch(updateUSDCOraclePrice());
         dispatch(updateWSXOraclePrice());
