@@ -66,18 +66,32 @@ export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update'
     const degenUSDC = getContract(usdcAddress, ERC20Immutable.abi, signer);
 
     try {
-        const [wsxPrice, usdcPrice, wsxBalance, usdcBalance] = await Promise.all([
+        const [wsxDecimals, usdcDecimals, wsxPrice, usdcPrice, wsxBalance, usdcBalance, wsxExchangeRateMantissa, usdcExchangeRateMantissa ] = await Promise.all([
+            degenWSX.decimals(),
+            degenUSDC.decimals(),
             priceOracle.getUnderlyingPrice(wsxAddress),
             priceOracle.getUnderlyingPrice(usdcAddress),
             degenWSX.balanceOf(wallet.accounts[0].address),
-            degenUSDC.balanceOf(wallet.accounts[0].address)
+            degenUSDC.balanceOf(wallet.accounts[0].address),
+            degenWSX.exchangeRateStored(),
+            degenUSDC.exchangeRateStored(),
         ]);
 
+        const rawDegenWSXBalance = formatUnits(wsxBalance, wsxDecimals);
+        const rawDegenUSDCBalance = formatUnits(usdcBalance, usdcDecimals);
+        const formattedWSXExchangeRate = formatUnits(wsxExchangeRateMantissa, wsxDecimals);
+        const formattedUSDCExchangeRate = formatUnits(usdcExchangeRateMantissa, usdcDecimals);
+        const formattedWSXPrice = formatUnits(wsxPrice, wsxDecimals);
+        const formattedUSDCPrice = formatUnits(usdcPrice, usdcDecimals);
+        const DegenWSXBalance = Number(rawDegenWSXBalance) * Number(formattedWSXExchangeRate);
+        const DegenUSDCBalance = Number(rawDegenUSDCBalance) * Number(formattedUSDCExchangeRate);   
         // Proper formatting and calculation of net supply balance
-        const netSupplyBalance = (parseFloat(formatUnits(wsxBalance, 18)) * parseFloat(formatUnits(wsxPrice, 18))) +
-            (parseFloat(formatUnits(usdcBalance, 6)) * parseFloat(formatUnits(usdcPrice, 18))); // USDC has 6 decimals
 
-        return netSupplyBalance;
+        const usdDegenUSDCBalance = Number(formattedUSDCPrice) * Number(DegenUSDCBalance);
+        const usdDegenWSXBalance = Number(formattedWSXPrice) * Number(DegenWSXBalance);
+        const netSupplyBalance = usdDegenUSDCBalance + usdDegenWSXBalance;
+
+        return Number(netSupplyBalance);
     } catch (error) {
         console.error("Error fetching net supply balance:", error);
         throw new Error('Failed to update net supply balance');
