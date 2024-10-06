@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { onboard, testnet_addresses } from '../../utils/web3';
-import { ethers, Contract, formatUnits } from 'ethers'
+import { ethers, Contract, formatUnits, parseUnits } from 'ethers'
 
 // ABIs
 import Comptroller from '../../abis/Comptroller.json';
 import ERC20Immutable from '../../abis/Erc20Immutable.json';
 import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
 import ERC20 from '../../abis/ERC20.json';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/Store';
 
 interface WSXState {
     loading: boolean;
@@ -17,8 +19,10 @@ interface WSXState {
     borrowRate: number,
     supplyBalance: number,
     supplyRate: number,
+    isEnabled: boolean,
     isCollateral: boolean,
     oraclePrice: number,
+    liquidityInUSD: number,
 }
 
 const initialState: WSXState = {
@@ -30,8 +34,10 @@ const initialState: WSXState = {
     balance: 0.00,
     supplyBalance: 0.00,
     supplyRate: 0.00,
+    isEnabled: false,
     isCollateral: false,
-    oraclePrice: 1.0000
+    oraclePrice: 1.0000,
+    liquidityInUSD: 0.00,
 }
 
 interface approveWSXParams {
@@ -78,6 +84,29 @@ export const isWSXListedAsCollateral = createAsyncThunk('wsxCollateral/update', 
     }
 });
 
+export const isWSXEnabled = createAsyncThunk('wsxCollateral/enabled', async () => {
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return false;
+    }
+
+    const walletAddress = wallet.accounts[0].address;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
+
+    try {
+        const allowance = await WSX.allowance(walletAddress, testnet_addresses.degenWSX); // Get the allowance of the 
+        if (allowance > 0)
+            return true
+        else 
+            return false
+    } catch (error) {
+        console.log(`[Console] an error occured on thunk 'isWSXEnabled': ${error}`);
+        return false;
+    }
+})
+
 
 export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () => {
 
@@ -107,7 +136,7 @@ export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () =
 
 });
 
-export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', async () => {
+export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', async () => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -117,19 +146,26 @@ export const updateSupplyBalance = createAsyncThunk('wsxSupplyBalance/update', a
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-
+    const decimals = await degenWSX.decimals();
     const walletAddress = wallet.accounts[0].address;
-    // This code is currently incomplete
     try {
-        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`)
-        return 0;
+
+        let balance = await degenWSX.balanceOf(walletAddress);
+        let exchangeRateMantissa = await degenWSX.exchangeRateStored(); // Current exchange rate
+        const degenTokenBalance = formatUnits(balance, decimals);
+        const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals); // convert to readable format
+
+        const degenWSXBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
+
+        console.log(`[Console] successfully called on thunk 'updateWSXSupplyBalance'`)
+        return Number(degenWSXBalance);
     } catch(error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateWSXSupplyBalance': ${error}`)
         return 0;
     }
     });
 
-export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', async () => {
+export const updateWSXBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -142,17 +178,17 @@ export const updateBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', a
     const walletAddress = wallet.accounts[0].address;
 
     try {
-        const borrowBalanceMantissa = await degenWSX.borrowBalanceCurrent(walletAddress);
+        const borrowBalanceMantissa = await degenWSX.borrowBalanceStored(walletAddress);
         const decimals = await degenWSX.decimals();
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
-        console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
+        console.log(`[Console] successfully called on thunk 'updateWSXBorrowBalance'`);
         // return borrowBalance;
 
-        return 0;
+        return Number(borrowBalance);
 
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateWSXBorrowBalance': ${error}`)
         return 0;
     }
 
@@ -162,22 +198,29 @@ export const updateWSXSupplyRate = createAsyncThunk('wsxSupplyRate/update', asyn
 
     const [wallet] = onboard.state.get().wallets;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    
+    const blocksPerYear = 6570 * 365; // ~2,397,050 blocks per year
 
     try {
-        const  supplyRateMantissa = await degenWSX.supplyRatePerBlock();
-        const decimals = await degenWSX.decimals()
-        const supplyRate = formatUnits(supplyRateMantissa, decimals);
+        // Fetch the supply rate per block in mantissa (1e18)
+        const supplyRateMantissa = await degenWSX.supplyRatePerBlock();
+        console.log("Raw Supply Rate Mantissa:", supplyRateMantissa.toString());
+
+        // Calculate the continuously compounded APY
+        const supplyAPY = Math.exp(Number(supplyRateMantissa) / 1e18 * blocksPerYear) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return Number(supplyRate);
+        // Return the APY as a percentage
+        return Number(supplyAPY * 100); // Convert to percentage
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateSupplyRate': ${error}`);
         return 0;
     }
 
@@ -187,26 +230,66 @@ export const updateWSXBorrowRate = createAsyncThunk('wsxBorrowRate/update', asyn
 
     const [wallet] = onboard.state.get().wallets;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    
+    const blocksPerYear = 6570 * 365; // ~2,397,050 blocks per year
 
     try {
-        const  borrowRateMantissa = await degenWSX.borrowRatePerBlock();
-        const decimals = await degenWSX.decimals();
-        const borrowRate = formatUnits(borrowRateMantissa, decimals);
+        // Fetch the borrow rate per block in mantissa (1e18)
+        const borrowRateMantissa = await degenWSX.borrowRatePerBlock();
+        console.log("Raw Borrow Rate Mantissa:", borrowRateMantissa.toString());
+
+        // Calculate the continuously compounded APY
+        const borrowAPY = Math.exp(Number(borrowRateMantissa) / 1e18 * blocksPerYear) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        return Number(borrowRate);
+        // Return the APY as a percentage
+        return Number(borrowAPY * 100); // Convert to percentage
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateBorrowRate': ${error}`);
         return 0;
     }
 
 });
+
+export const updateWSXLiquidityInUSD = createAsyncThunk('wsxLiquidity/update', async () => {
+    
+        const [wallet] = onboard.state.get().wallets;
+    
+        if (!wallet) {
+            return 0;
+        }
+    
+        const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+        const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+        const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
+    
+        try {
+            const exchangeRateMantissa = await degenWSX.exchangeRateStored();
+            const cash = await degenWSX.getCash();
+            const decimals = await degenWSX.decimals();
+            const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+    
+            const wsxPrice = formatUnits(wsxPriceMantissa, decimals);
+            const exchangeRate = formatUnits(exchangeRateMantissa, decimals);
+    
+            const wsxLiquidityInUSD = Number(wsxPrice) * Number(exchangeRate);
+    
+            console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD'`);
+    
+            return Number(wsxLiquidityInUSD);
+        } catch (error) {
+            console.log(`[Console] an error occurred on thunk 'updateLiquidityInUSD': ${error}`);
+            return 0;
+        }
+})
+
 
 export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', async () => {
     
@@ -247,13 +330,20 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
 
     console.log(`[Console] initiating thunk, 'approveWSX' ...`);
 
-   
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-    const WSXContract = new Contract( testnet_addresses.degenWSX,ERC20.abi, signer );
 
     try {
-        WSXContract.approve();
+           
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
+    const WSXContract = new Contract(testnet_addresses.WSX,ERC20.abi, signer );
+    const spender = testnet_addresses.degenWSX;
+
+    console.log(`[Console] approve details loaded, attempting to execute now`);
+        const txn = await WSXContract.approve(spender, parseUnits("100000"));
+        console.log(`[Console] calling txn: ${txn}`);
+        await txn.wait();
+        console.log(`[Console] successfully called on thunk 'approveWSX'`);
+
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'approveWSX' : ${error}`)
     }
@@ -261,25 +351,27 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
 })
 
 ///////////  Supply Market Thunks
-export const supplyWSX = createAsyncThunk('wsx/supply', async () => {
+export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
     if (wallet === undefined) {
         return 0;
     }
+    console.log(`[Console] initiating thunk, 'supplyWSX' ...`);
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
-    const supplyAmount = 1 * 1e18;
+    console.log(`[Console] signer & provider setup properly`);
 
-    console.log(`[Console] initiating thunk, 'supplyWSX' ...`);
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${supplyAmount}`);
+    console.log(`[Console] attempting to mint now...`);
 
 
     try {
-        const tx = await degenWSX.mint(supplyAmount);
-        tx.wait();
+        const tx = await degenWSX.mint(amount);
+        await tx.wait();
         console.log(`[Console] successfully called on thunk 'supplyWSX'`);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'supplyWSX': ${error} `)
@@ -287,7 +379,7 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async () => {
     }
 })
 
-export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {
+export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -299,10 +391,23 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async () => {
     
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${withdrawAmount}`);
+    console.log(`[Console] attempting to withdraw now...`);
+
+    try {
+        const tx = await degenWSX.redeemUnderlying(amount);
+        await tx.wait();
+        console.log(`[Console] successfully called on thunk 'withdrawWSX'`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'withdrawWSX': ${error} `)
+
+    }
+
 })
 
 ///////////  Borrow Market Thunks
-export const repayWSX = createAsyncThunk('wsx/repay', async () => {
+export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -315,9 +420,20 @@ export const repayWSX = createAsyncThunk('wsx/repay', async () => {
     
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-})
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${repayAmount}`);
+    console.log(`[Console] attempting to repay borrow now...`);
 
-export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
+    try {
+        const tx = await degenWSX.repayBorrow(amount);
+        await tx.wait();
+        console.log(`[Console] successfully called on thunk 'repayWSX'`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'repayWSX': ${error} `)
+
+    }})
+
+export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -330,7 +446,18 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async () => {
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${borrowAmount}`);
+    console.log(`[Console] attempting to borrow now...`);
 
+    try {
+        const tx = await degenWSX.borrow(amount);
+        await tx.wait();
+        console.log(`[Console] successfully called on thunk 'borrowWSX'`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'borrowWSX': ${error} `)
+
+    }
     
 })
 
@@ -418,36 +545,36 @@ export const WSXSlice = createSlice({
 
         // Borrow Balance
 
-        builder.addCase(updateBorrowBalance.pending, (state, action) => {
+        builder.addCase(updateWSXBorrowBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateBorrowBalance.rejected, (state, action) => {
+        builder.addCase(updateWSXBorrowBalance.rejected, (state, action) => {
             state.status = "failed";
             state.borrowBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateBorrowBalance.fulfilled, (state, action) => {
+        builder.addCase(updateWSXBorrowBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.borrowBalance = action.payload;
         })
 
         // Supply Balance
         
-        builder.addCase(updateSupplyBalance.pending, (state, action) => {
+        builder.addCase(updateWSXSupplyBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateSupplyBalance.rejected, (state, action) => {
+        builder.addCase(updateWSXSupplyBalance.rejected, (state, action) => {
             state.status = "failed";
             state.supplyBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
+        builder.addCase(updateWSXSupplyBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyBalance = action.payload;
         })
@@ -466,6 +593,19 @@ export const WSXSlice = createSlice({
         builder.addCase(isWSXListedAsCollateral.fulfilled, (state, action) => {
             state.status = "completed";
             state.isCollateral = action.payload;
+        })
+
+        builder.addCase(isWSXEnabled.pending, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isWSXEnabled.rejected, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isWSXEnabled.fulfilled, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = action.payload;
         })
         
         
@@ -505,11 +645,19 @@ export const WSXSlice = createSlice({
 
         // Approve Wrapped SX
 
-        builder.addCase(approveWSX.pending, (state, action) => {});
+        builder.addCase(approveWSX.pending, (state, action) => {
+            state.loading = true;
+        });
 
-        builder.addCase(approveWSX.rejected, (state, action) => {});
+        builder.addCase(approveWSX.rejected, (state, action) => {
+            state.loading = false;
+            state.isEnabled = false;
+        });
 
-        builder.addCase(approveWSX.fulfilled, (state, action) => {});
+        builder.addCase(approveWSX.fulfilled, (state, action) => {
+            state.loading = false;
+            state.isEnabled = true;
+        });
     }
 });
 

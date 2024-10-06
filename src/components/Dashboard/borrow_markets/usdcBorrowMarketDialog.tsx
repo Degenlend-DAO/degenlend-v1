@@ -12,7 +12,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 // Token Information
 import usdcTokenLogo from "../../../assets/img/usdc_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
-import USDCBorrowDetails from "../widgets/usdcBorrow";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +22,7 @@ import EnableWarning from "../widgets/enableWarning";
 // Action Items
 import {
   updateUSDCBalance,
-  updateBorrowBalance,
+  updateUSDCBorrowBalance,
   borrowUSDC,
   repayUSDC,
   updateUSDCBorrowRate,
@@ -32,6 +31,7 @@ import { useEffect } from "react";
 import { AppDispatch } from "../../../app/Store";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
+import BorrowMarketsHeader from "../widgets/borrow/borrowMarketsHeader";
 
 interface BorrowMarketDialogProps {
   open: boolean;
@@ -42,6 +42,10 @@ interface BorrowMarketDialogProps {
 function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const [value, setValue] = React.useState("0");
   const dispatch = useDispatch<AppDispatch>();
+
+  const isUSDCEnabled = useSelector(
+    (state: RootState) => state.usdc.isEnabled
+  );
 
   const usdcBorrowAPY = useSelector(
     (state: RootState) => state.usdc.borrowRate
@@ -61,10 +65,11 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
 
   // When the dialog is opened, update information
   useEffect(() => {
-    dispatch(updateBorrowBalance());
+    dispatch(updateUSDCBorrowBalance());
     dispatch(updateUSDCBorrowRate());
     dispatch(updateBorrowLimit());
     dispatch(updateBorrowLimit());
+
   });
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -108,16 +113,17 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
         </DialogTitle>
         <DialogContent>
           <TabContext value={value}>
-            {/* Details above the tab list */}
+            {/* Header Details above the tab list */}
 
             <TabPanel value="0">
-              <USDCBorrowDetails type={"USDC"} />
+              <BorrowMarketsHeader type={"usdc"} input={true}/>
             </TabPanel>
             <TabPanel value="1">
-              <EnableWarning type={"usdc"} />
+              <BorrowMarketsHeader type={"usdc"} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
+
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
                   centered
@@ -130,6 +136,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   <Tab label="Repay" value="1" />
                 </TabList>
               </Box>
+
               <TabPanel value="0">
                 <BorrowDetails
                   type={"usdc"}
@@ -144,6 +151,7 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   type={"usdc"}
                   borrowAPY={usdcBorrowAPY}
                   borrowBalance={usdcBorrowBalance}
+                  isRepayingEnabled={isUSDCEnabled}
                 />
               </TabPanel>
             </Box>

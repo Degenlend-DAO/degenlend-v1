@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ethers, Contract, formatUnits } from 'ethers';
+import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
 
@@ -17,27 +17,11 @@ interface USDCState {
     supplyBalance: number,
     supplyRate: number,
     isCollateral: boolean,
+    isEnabled: boolean,
     oraclePrice: number,
+    liquidityInUSD: number,
 }
 
-
-interface approveUSDCParams {
-    amount: number,
-    addressToApprove: string,
-}
-
-interface supplyUSDCParams {
-    amount: number,
-    addressToApprove: string,
-}
-
-interface withdrawUSDCParams {
-    amount: number,
-}
-
-interface borrowUSDCParams {
-    borrowAddress: string,
-}
 
 const initialState: USDCState = {
     loading: false,
@@ -49,7 +33,9 @@ const initialState: USDCState = {
     supplyBalance: 0.00,
     supplyRate: 0.00,
     isCollateral: false,
+    isEnabled: false,
     oraclePrice: 1.000,
+    liquidityInUSD: 0.00,
 }
 
 // Views
@@ -82,6 +68,30 @@ export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', 
     }
 
 })
+
+export const isUSDCEnabled = createAsyncThunk('usdcCollateral/enabled', async () => {
+    const [wallet] = onboard.state.get().wallets;
+
+    if (wallet === undefined) {
+        return false;
+    }
+
+    const walletAddress = wallet.accounts[0].address;
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const USDC = new Contract(testnet_addresses.USDC, ERC20Immutable.abi, ethersProvider);
+
+    try {
+        const allowance = await USDC.allowance(walletAddress, testnet_addresses.degenUSDC); // Get the allowance of the 
+        if (allowance > 0)
+            return true
+        else 
+            return false
+    } catch (error) {
+        console.log(`[Console] an error occured on thunk 'isUSDCEnabled': ${error}`);
+        return false;
+    }
+})
+
 
 export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
@@ -119,7 +129,7 @@ export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', 
     return 1.00;
 })
 
-export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
+export const updateUSDCSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -129,20 +139,25 @@ export const updateSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', 
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+    const decimals = await degenUSDC.decimals();
 
     const walletAddress = wallet.accounts[0].address;
     // This code is currently incomplete
     try {
-        console.log(`[Console] successfully called on thunk 'updateSupplyBalance -- but nothing was executed!'`);
-        const supplyBalance = "0";
-        return Number(supplyBalance);
+        console.log(`[Console] successfully called on thunk 'updateUSDCSupplyBalance -- but nothing was executed!'`);
+        let balance = await degenUSDC.balanceOf(walletAddress);
+        let exchangeRateMantissa = await degenUSDC.exchangeRateStored();
+        const degenTokenBalance = formatUnits(balance, decimals);
+        const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals);
+        const degenUSDCBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
+        return Number(degenUSDCBalance);
     } catch(error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateUSDCSupplyBalance': ${error}`)
         return 0;
     }
     });
 
-export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
+export const updateUSDCBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
 
@@ -155,15 +170,15 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
     const walletAddress = wallet.accounts[0].address;
 
     try {
-        const borrowBalanceMantissa = await degenUSDC.borrowBalanceCurrent(walletAddress);
+        const borrowBalanceMantissa = await degenUSDC.borrowBalanceStored(walletAddress);
         const decimals = await degenUSDC.decimals();
         const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
 
-        console.log(`[Console] successfully called on thunk 'updateBorrowBalance'`);
+        console.log(`[Console] successfully called on thunk 'updateUSDCBorrowBalance'`);
         return Number(borrowBalance);
 
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowBalance': ${error}`)
+        console.log(`[Console] an error occured on thunk 'updateUSDCBorrowBalance': ${error}`)
         return 0;
     }
 
@@ -172,56 +187,75 @@ export const updateBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', 
 export const updateUSDCSupplyRate = createAsyncThunk('usdcSupplyRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
+    const blocksPerDay = 6570; // ~13.15 seconds per block
+    const daysPerYear = 365;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
     try {
-        const  supplyRateMantissa = await degenUSDC.supplyRatePerBlock();
-        const decimals = await degenUSDC.decimals()
-        const supplyRate = formatUnits(supplyRateMantissa, decimals);
+        // Fetch the supply rate per block (always in 1e18 scale)
+        const supplyRateMantissa = await degenUSDC.supplyRatePerBlock();
+        console.log("Raw Supply Rate Mantissa:", supplyRateMantissa.toString());
+        
+        // Calculate the supply APY using compound interest formula
+        const supplyAPY = ((1 + Number(supplyRateMantissa) / 1e18) ** (blocksPerDay * daysPerYear)) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
 
-        return Number(supplyRate);
+        // Return the APY as a percentage
+        return Number(supplyAPY * 100);
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateSupplyRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateSupplyRate': ${error}`);
         return 0;
     }
-
 });
 
 export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', async () => {
 
     const [wallet] = onboard.state.get().wallets;
+    const blocksPerDay = 6570; // ~13.15 seconds per block
+    const daysPerYear = 365;
 
-    if (wallet === undefined) {
+    if (!wallet) {
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
 
     try {
-        const  borrowRateMantissa = await degenUSDC.borrowRatePerBlock();
-        const decimals = await degenUSDC.decimals()
-        const borrowRate = formatUnits(borrowRateMantissa, decimals);
+        // Fetch the borrow rate per block (always in 1e18 scale)
+        const borrowRateMantissa = await degenUSDC.borrowRatePerBlock();
+        console.log("Raw Borrow Rate Mantissa:", borrowRateMantissa.toString());
+
+        // Calculate the borrow APY using compound interest formula
+        const borrowAPY = ((1 + Number(borrowRateMantissa) / 1e18) ** (blocksPerDay * daysPerYear)) - 1;
+
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        return Number(borrowRate);
+        // Return the APY as a percentage
+        return Number(borrowAPY * 100);
     } catch (error) {
-        console.log(`[Console] an error occured on thunk 'updateBorrowRate': ${error}`)
+        console.log(`[Console] an error occurred on thunk 'updateBorrowRate': ${error}`);
         return 0;
     }
 });
 
+export const updateUSDCLiquidity = createAsyncThunk('usdcLiquidity/update', async () => { 
+
+    
+
+})
+
 // Activities
 
 ///////////  Misc Market Thunks
-export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, addressToApprove }: { amount: number, addressToApprove: string }) => {
+export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectWithValue }) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -237,18 +271,19 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ({ amount, add
     const USDC = new Contract(testnet_addresses.USDC, ERC20.abi, signer);
     const spender = testnet_addresses.degenUSDC;
     try {
-        let tx = await USDC.approve(spender, amount);
+        let tx = await USDC.approve(spender, parseUnits(`100000`));
         await tx.wait();
         console.log(`[Console] successfully called on thunk 'approveUSDC'`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'approveUSDC': ${error} `)
+        return rejectWithValue(error.message);
     }
 
 })
 
 ///////////  Supply Market Thunks
 
-export const supplyUSDC = createAsyncThunk('usdc/Supply', async () => {
+export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: number) => {
     console.log(`[Console] initiating thunk, 'supplyUSDC' ...`);
 
     const [wallet] = onboard.state.get().wallets;
@@ -264,10 +299,10 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async () => {
     const signer = await ethersProvider.getSigner();
 
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-    const supplyAmount = 1 * 1e18;
+    const amount = parseUnits(`${supplyAmount}`);
 
     try {
-        const tx = await degenUSDC.mint(supplyAmount);
+        const tx = await degenUSDC.mint(amount);
         tx.wait();
         console.log(`[Console] successfully called on thunk 'supplyUSDC'`);
     } catch (error) {
@@ -276,7 +311,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async () => {
     }
 })
 
-export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
+export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -289,11 +324,12 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
-
+    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
+    const amount = parseUnits(`${withdrawAmount}`);
     try {
 
-        degenUSDC.redeemUnderlying(1)
+        const tx = await degenUSDC.redeemUnderlying(amount);
+        await tx.wait(1);
         console.log(`[Console] successfully called on thunk 'withdrawUSDC'`);
     
     } catch (error) {
@@ -304,7 +340,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async () => {
 
 ///////////  Borrow Market Thunks
 
-export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
+export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -318,8 +354,11 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
+    const amount = parseUnits(`${borrowAmount}`);
 
     try {
+        const tx = await degenUSDC.borrow(amount);
+        await tx.wait(1);
         console.log(`[Console] successfully called on thunk 'borrowUSDC'`);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'borrowUSDC': ${error} `)
@@ -327,7 +366,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async () => {
     }
 })
 
-export const repayUSDC = createAsyncThunk('usdc/repay', async () => {
+export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -341,8 +380,12 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async () => {
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const signer = await ethersProvider.getSigner();
     const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
+    const amount = parseUnits(`${repayAmount}`);
+    console.log(`[Console] attempting to repay borrow now...`);
 
     try {
+        const tx = await degenUSDC.redeemUnderlying(amount);
+        await tx.wait(1);
         console.log(`[Console] successfully called on thunk 'repayUSDC'`);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'repayUSDC': ${error} `)
@@ -411,7 +454,7 @@ export const USDCSlice = createSlice({
             state.supplyRate = action.payload;
         })
 
-        // WSX Balance
+        // USDC Balance
 
         builder.addCase(updateUSDCBalance.pending, (state, action) => {
             state.status = "loading";
@@ -431,36 +474,36 @@ export const USDCSlice = createSlice({
 
         // Borrow Balance
 
-        builder.addCase(updateBorrowBalance.pending, (state, action) => {
+        builder.addCase(updateUSDCBorrowBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateBorrowBalance.rejected, (state, action) => {
+        builder.addCase(updateUSDCBorrowBalance.rejected, (state, action) => {
             state.status = "failed";
             state.borrowBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateBorrowBalance.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCBorrowBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.borrowBalance = action.payload;
         })
 
         // Supply Balance
         
-        builder.addCase(updateSupplyBalance.pending, (state, action) => {
+        builder.addCase(updateUSDCSupplyBalance.pending, (state, action) => {
             state.status = "loading";
             state.loading = true;
         });
 
-        builder.addCase(updateSupplyBalance.rejected, (state, action) => {
+        builder.addCase(updateUSDCSupplyBalance.rejected, (state, action) => {
             state.status = "failed";
             state.supplyBalance = 0;
             state.error = `${action.error}`;
         })
 
-        builder.addCase(updateSupplyBalance.fulfilled, (state, action) => {
+        builder.addCase(updateUSDCSupplyBalance.fulfilled, (state, action) => {
             state.status = "completed";
             state.supplyBalance = action.payload;
         })
@@ -478,6 +521,20 @@ export const USDCSlice = createSlice({
         builder.addCase(isUSDCListedAsCollateral.fulfilled, (state, action) => {
             state.status = "completed";
             state.isCollateral = action.payload;
+        })
+
+
+        builder.addCase(isUSDCEnabled.pending, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isUSDCEnabled.rejected, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = false;
+        })
+        builder.addCase(isUSDCEnabled.fulfilled, (state, action) => {
+            state.status = "loading";
+            state.isEnabled = action.payload;
         })
         
         
@@ -517,11 +574,19 @@ export const USDCSlice = createSlice({
 
         // Approve USDC
 
-        builder.addCase(approveUSDC.pending, (state, action) => {});
+        builder.addCase(approveUSDC.pending, (state, action) => {
+            state.loading = true
+        });
 
-        builder.addCase(approveUSDC.rejected, (state, action) => {});
+        builder.addCase(approveUSDC.rejected, (state, action) => {
+            state.loading = false;
+            state.isEnabled = false;
+        });
 
-        builder.addCase(approveUSDC.fulfilled, (state, action) => {});
+        builder.addCase(approveUSDC.fulfilled, (state, action) => {
+            state.loading = false;
+            state.isEnabled = true;
+        });
 
     }
 });

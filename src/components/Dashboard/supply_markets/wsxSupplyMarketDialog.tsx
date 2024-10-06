@@ -12,18 +12,15 @@ import DialogTitle from "@mui/material/DialogTitle";
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
 import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import SXBorrowDetails from "../widgets/wsxBorrow";
 import WithdrawDetails from "../widgets/withdraw/withdrawDetails";
 import SupplyDetails from "../widgets/supply/supplyDetails";
 
 // Action Items
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
-import EnableWarning from "../widgets/enableWarning";
 import { useEffect } from "react";
-import { updateSupplyBalance, updateWSXSupplyRate, updateWSXBalance } from "../../../features/dashboard/WSXMarketSlice";
-import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
+import SupplyMarketsHeader from "../widgets/supply/supplyMarketsHeader";
 
 interface SupplyMarketDialogProps {
   open: boolean;
@@ -38,6 +35,10 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
     setValue(newValue);
   };
   
+  // Views
+
+  const isWSXTokenEnabled: boolean = useSelector((state: RootState) => state.wsx.isEnabled);
+
   const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
   const wsxSupplyBalance = useSelector(
     (state: RootState) => state.wsx.supplyBalance
@@ -53,10 +54,6 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   );
 
   useEffect( () => {
-    dispatch(updateWSXBalance());
-    dispatch(updateSupplyBalance());
-    dispatch(updateWSXSupplyRate());
-    dispatch(updateBorrowLimit());
   });
 
   return (
@@ -98,11 +95,13 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
         <DialogContent>
           <TabContext value={value}>
             <TabPanel value="0">
-              <EnableWarning type={"sx"} />
+              {/* Supply Tab */}
+              <SupplyMarketsHeader type={"sx"} isInput={isWSXTokenEnabled} />
             </TabPanel>
 
             <TabPanel value="1">
-              <SXBorrowDetails type={"SX"} />
+              {/* Withdraw Tab */}
+            <SupplyMarketsHeader type={"sx"} isInput={true} />
             </TabPanel>
 
             <Box sx={{ width: "100%", typography: "body1" }}>
@@ -121,7 +120,8 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
                 <SupplyDetails
                   type={"sx"}
                   supplyAPY={wsxSupplyAPY}
-                  supplyBalance={wsxSupplyBalance}
+                  supplyBalance={wsxWalletBalance}
+                  isSupplyingEnabled={isWSXTokenEnabled}
                 />
               </TabPanel>
               <TabPanel value="1">

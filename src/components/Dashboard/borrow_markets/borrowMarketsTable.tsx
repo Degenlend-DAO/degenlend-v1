@@ -18,6 +18,7 @@ import WSXBorrowMarketDialog from "./wsxBorrowMarketDialog";
 import USDCBorrowMarketDialog from "./usdcBorrowMarketDialog";
 import { updateUSDCBalance, updateUSDCBorrowRate, updateUSDCOraclePrice } from "../../../features/dashboard/USDCMarketSlice";
 import { updateWSXBalance, updateWSXBorrowRate, updateWSXOraclePrice } from "../../../features/dashboard/WSXMarketSlice";
+import { formatNumber } from "../../../utils/constant";
 
 export default function BorrowMarkets() {
   const [borrowSXDialogOpen, setBorrowSXDialogOpen] = React.useState(false);
@@ -29,18 +30,18 @@ export default function BorrowMarkets() {
     (state: RootState) => state.usdc.borrowRate
   );
   const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.balance
+    (state: RootState) => state.usdc.borrowBalance
   );
-  const usdcOraclePrice = useSelector(
-    (state: RootState) => state.usdc.oraclePrice
+  const usdcLiquidity = useSelector(
+    (state: RootState) => state.usdc.liquidityInUSD
   );
 
   const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
   const wsxWalletBalance = useSelector(
-    (state: RootState) => state.wsx.balance
+    (state: RootState) => state.wsx.borrowBalance
   );
-  const wsxOraclePrice = useSelector(
-    (state: RootState) => state.wsx.oraclePrice
+  const wsxLiquidity = useSelector(
+    (state: RootState) => state.wsx.liquidityInUSD
   );
 
   function handleSXRowClick(event: React.MouseEvent) {
@@ -53,7 +54,6 @@ export default function BorrowMarkets() {
 
   useEffect( () => {
     // update borrow apys, wallet balances, and oracle prices
-    
     dispatch(updateUSDCBorrowRate());
     dispatch(updateWSXBorrowRate());
 
@@ -62,6 +62,8 @@ export default function BorrowMarkets() {
     
     dispatch(updateUSDCOraclePrice());
     dispatch(updateWSXOraclePrice());
+
+    
   });
 
   return (
@@ -114,9 +116,9 @@ export default function BorrowMarkets() {
                   <Typography variant="body1">Wrapped SX</Typography>
                 </Box>
               </TableCell>
-              <TableCell>{wsxBorrowAPY}%</TableCell>
-              <TableCell>{wsxWalletBalance} WSX</TableCell>
-              <TableCell>{wsxOraclePrice}</TableCell>
+              <TableCell>{formatNumber(wsxBorrowAPY)}%</TableCell>
+              <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
+              <TableCell>${formatNumber(wsxLiquidity)}</TableCell>
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
@@ -137,9 +139,9 @@ export default function BorrowMarkets() {
                   <Typography variant="body1">USD Coin</Typography>
                 </Box>
               </TableCell>
-              <TableCell>{usdcBorrowAPY}%</TableCell>
-              <TableCell>{usdcWalletBalance} USDC</TableCell>
-              <TableCell>{usdcOraclePrice}</TableCell>
+              <TableCell>{formatNumber(usdcBorrowAPY)}%</TableCell>
+              <TableCell>{formatNumber(usdcWalletBalance)} USDC</TableCell>
+              <TableCell>${formatNumber(usdcLiquidity)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

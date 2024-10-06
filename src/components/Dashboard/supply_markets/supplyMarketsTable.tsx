@@ -28,8 +28,10 @@ import {
   updateWSXSupplyRate,
   updateWSXOraclePrice,
   updateWSXBalance,
+  updateWSXSupplyBalance,
 } from "../../../features/dashboard/WSXMarketSlice";
 import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
+import { formatNumber } from "../../../utils/constant";
 
 export default function SupplyMarkets() {
   const [enableSXDialogOpen, setEnableSXDialogOpen] = useState(false);
@@ -51,14 +53,14 @@ export default function SupplyMarkets() {
     (state: RootState) => state.usdc.supplyRate
   );
   const usdcWalletBalance = useSelector(
-    (state: RootState) => state.usdc.balance
+    (state: RootState) => state.usdc.supplyBalance
   );
   const usdcOraclePrice = useSelector(
     (state: RootState) => state.usdc.oraclePrice
   );
 
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
-  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.balance);
+  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.supplyBalance);
   const wsxOraclePrice = useSelector(
     (state: RootState) => state.wsx.oraclePrice
   );
@@ -91,20 +93,7 @@ export default function SupplyMarkets() {
 
   useEffect(() => {
     // update collateral, supply apys, wallet balances, and oracle prices
-
-    dispatch(isWSXListedAsCollateral());
-    dispatch(isUSDCListedAsCollateral());
-
-    dispatch(updateUSDCSupplyRate());
-    dispatch(updateWSXSupplyRate());
-
-    dispatch(updateWSXBalance());
-    dispatch(updateUSDCBalance());
-
-    dispatch(updateUSDCOraclePrice());
-    dispatch(updateWSXOraclePrice());
-
-    dispatch(updateBorrowLimit());
+    dispatch(updateWSXSupplyBalance())
   });
 
   return (
@@ -158,8 +147,8 @@ export default function SupplyMarkets() {
                   <Typography variant="body1">Wrapped SX</Typography>
                 </Box>
               </TableCell>
-              <TableCell>{wsxSupplyAPY}%</TableCell>
-              <TableCell>{wsxWalletBalance} WSX</TableCell>
+              <TableCell>{formatNumber(wsxSupplyAPY)}%</TableCell>
+              <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
               <TableCell>
                 <Switch
                   onClick={(event) => {
@@ -168,7 +157,7 @@ export default function SupplyMarkets() {
                   checked={isWSXCollateral}
                 />
               </TableCell>
-              <TableCell>{wsxOraclePrice}</TableCell>
+              <TableCell>${formatNumber(wsxOraclePrice)}</TableCell>
             </TableRow>
             {/* USDC Market Details */}
             <TableRow
@@ -189,8 +178,8 @@ export default function SupplyMarkets() {
                   <Typography variant="body1">USD Coin</Typography>
                 </Box>
               </TableCell>
-              <TableCell>{usdcSupplyAPY}%</TableCell>
-              <TableCell>{usdcWalletBalance} USDC</TableCell>
+              <TableCell>{formatNumber(usdcSupplyAPY)}%</TableCell>
+              <TableCell>{formatNumber(usdcWalletBalance)} USDC</TableCell>
               <TableCell>
                 <Switch
                   onClick={(event) => {
@@ -199,7 +188,7 @@ export default function SupplyMarkets() {
                   checked={isUSDCCollateral}
                 />
               </TableCell>
-              <TableCell>{usdcOraclePrice}</TableCell>
+              <TableCell>${formatNumber(usdcOraclePrice)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
