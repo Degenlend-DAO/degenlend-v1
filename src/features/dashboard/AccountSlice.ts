@@ -168,46 +168,62 @@ export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async ()
     const [wallet] = onboard.state.get().wallets;
 
     if (!wallet) {
-        return 0;
+        return {
+            liquidity: 0,
+            borrowBalanceInUSD: 0,
+            borrowLimitUsed: 0
+        }
     }
 
+    const walletAddress = wallet.accounts[0].address;
     const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-
-    const comptroller = getContract(testnet_addresses.comptroller, Comptroller.abi, signer);
-    const wsxContract = getContract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
-    const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-    const priceOracle = getContract(testnet_addresses.price_oracle, SimplePriceOracle.abi, signer);
+    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
+    const wsxContract = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
+    const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
 
     try {
-        // Fetch liquidity (collateral value)
-        const [liquidity] = await comptroller.getAccountLiquidity(wallet.accounts[0].address);
-        const formattedLiquidity = parseFloat(formatUnits(liquidity, 18));
+        // Fetch liquidity and shortfall
+        const [error, liquidity, shortfall] = await comptroller.getAccountLiquidity(walletAddress);
 
-        // Fetch borrow balances and their USD prices
-        const [wsxBorrowBalance, usdcBorrowBalance, wsxPrice, usdcPrice] = await Promise.all([
-            wsxContract.borrowBalanceStored(wallet.accounts[0].address),
-            usdcContract.borrowBalanceStored(wallet.accounts[0].address),
-            priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX),
-            priceOracle.getUnderlyingPrice(testnet_addresses.degenUSDC),
-        ]);
+        if (error !== 0 || !shortfall.isZero()) {
+            console.error("Comptroller.getAccountLiquidity failed:", error);
+            return { liquidity: 0, shortfall: 0, borrowLimitUsed: 0 };
+        }
 
-        // Convert borrow balances to USD
-        const wsxBorrowBalanceUSD = parseFloat(formatUnits(wsxBorrowBalance, 18)) * parseFloat(formatUnits(wsxPrice, 18));
-        const usdcBorrowBalanceUSD = parseFloat(formatUnits(usdcBorrowBalance, 6)) * parseFloat(formatUnits(usdcPrice, 18)); // Convert USDC borrow balance using its price
+        // Fetch current borrow balance in WSX
+        const borrowBalanceMantissa = await wsxContract.borrowBalanceStored(walletAddress);
+        const formattedBorrowBalance = parseFloat(formatUnits(borrowBalanceMantissa, 18));
 
-        const totalBorrowBalanceUSD = wsxBorrowBalanceUSD + usdcBorrowBalanceUSD;
+        // Fetch WSX price from the price oracle
+        const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+        const wsxPrice = parseFloat(formatUnits(wsxPriceMantissa, 18));
 
-        // Calculate borrow limit as a percentage (borrowed / liquidity * 100)
-        const borrowLimit = formattedLiquidity > 0 ? (totalBorrowBalanceUSD / formattedLiquidity) * 100 : 0;
+        // Calculate borrow balance in USD
+        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;
 
-        return borrowLimit;
+        // Format liquidity in USD
+        const formattedLiquidityInUSD = parseFloat(formatUnits(liquidity, 18));
+
+        // Calculate Borrow Limit Usage as a percentage
+        const borrowLimitUsed = (borrowBalanceInUSD / formattedLiquidityInUSD) * 100;
+
+        console.log(`[Console] Borrow Limit Used: ${borrowLimitUsed}%`);
+
+        return {
+            liquidity: formattedLiquidityInUSD,
+            borrowBalanceInUSD,
+            borrowLimitUsed: Number(borrowLimitUsed.toFixed(2)) // return as a percentage with 2 decimal places
+        };
+
     } catch (error) {
-        console.error("Error calculating borrow limit:", error);
-        throw new Error('Failed to update borrow limit');
+        console.log(`[Console] an error occurred on thunk 'updateBorrowLimit': ${error}`);
+        return {
+            liquidity: 0,
+            borrowBalanceInUSD: 0,
+            borrowLimitUsed: 0
+        };
     }
 });
-
 
 
 
@@ -225,6 +241,7 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
     const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
 
     try {
+        // Fetch supply and borrow balances for WSX and USDC
         const [wsxSupplyRate, wsxBorrowRate, usdcSupplyRate, usdcBorrowRate] = await Promise.all([
             wsxContract.supplyRatePerBlock(),
             wsxContract.borrowRatePerBlock(),
@@ -232,19 +249,67 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
             usdcContract.borrowRatePerBlock(),
         ]);
 
-        // Convert supply and borrow rates to APY format
-        const totalSupplyAPY = parseFloat(formatUnits(wsxSupplyRate, 18)) + parseFloat(formatUnits(usdcSupplyRate, 18));
-        const totalBorrowAPY = parseFloat(formatUnits(wsxBorrowRate, 18)) + parseFloat(formatUnits(usdcBorrowRate, 18));
+        const [wsxSuppliedAmount, usdcSuppliedAmount] = await Promise.all([
+            wsxContract.balanceOf(wallet.accounts[0].address),
+            usdcContract.balanceOf(wallet.accounts[0].address)
+        ]);
 
-        // Calculate net APY as supply APY minus borrow APY
-        const netAPY = totalSupplyAPY - totalBorrowAPY;
+        const [wsxBorrowedAmount, usdcBorrowedAmount] = await Promise.all([
+            wsxContract.borrowBalanceStored(wallet.accounts[0].address),
+            usdcContract.borrowBalanceStored(wallet.accounts[0].address)
+        ]);
 
-        return netAPY;
+        const wsxSupplyRateDecimal = parseFloat(formatUnits(wsxSupplyRate, 18));
+        const wsxBorrowRateDecimal = parseFloat(formatUnits(wsxBorrowRate, 18));
+        const usdcSupplyRateDecimal = parseFloat(formatUnits(usdcSupplyRate, 18));
+        const usdcBorrowRateDecimal = parseFloat(formatUnits(usdcBorrowRate, 18));
+
+        const wsxSupplied = parseFloat(formatUnits(wsxSuppliedAmount, 18));
+        const usdcSupplied = parseFloat(formatUnits(usdcSuppliedAmount, 6));
+        const wsxBorrowed = parseFloat(formatUnits(wsxBorrowedAmount, 18));
+        const usdcBorrowed = parseFloat(formatUnits(usdcBorrowedAmount, 6));
+
+        // Dummy values for testing
+            // const wsxSupplyRateDecimal = 0.00001; // Dummy supply rate for WSX (0.001%)
+            // const wsxBorrowRateDecimal = 0.00002; // Dummy borrow rate for WSX (0.002%)
+            // const usdcSupplyRateDecimal = 0.00003; // Dummy supply rate for USDC (0.003%)
+            // const usdcBorrowRateDecimal = 0.00004; // Dummy borrow rate for USDC (0.004%)
+
+            // const wsxSupplied = 1000; // Dummy supply amount (1000 WSX)
+            // const usdcSupplied = 500;  // Dummy supply amount (500 USDC)
+            // const wsxBorrowed = 300;   // Dummy borrow amount (300 WSX)
+            // const usdcBorrowed = 200;  // Dummy borrow amount (200 USDC)
+
+
+        // Calculate the total supply contribution (supplyAPY * suppliedAmount)
+        const totalSupplyContribution = (wsxSupplyRateDecimal * wsxSupplied) + (usdcSupplyRateDecimal * usdcSupplied);
+
+        // Calculate the total borrow contribution (borrowAPY * borrowedAmount)
+        const totalBorrowContribution = (wsxBorrowRateDecimal * wsxBorrowed) + (usdcBorrowRateDecimal * usdcBorrowed);
+
+        // Calculate net APY
+        const netContribution = totalSupplyContribution - totalBorrowContribution;
+
+        // Get total supplied and borrowed values
+        const totalSuppliedValue = wsxSupplied + usdcSupplied;
+        const totalBorrowedValue = wsxBorrowed + usdcBorrowed;
+
+        let netAPY = 0;
+        if (netContribution > 0 && totalSuppliedValue > 0) {
+            netAPY = (netContribution / totalSuppliedValue) * 100;
+        } else if (netContribution < 0 && totalBorrowedValue > 0) {
+            netAPY = (netContribution / totalBorrowedValue) * 100;
+        }
+
+        console.log(`[Console] Net APY: ${netAPY}`);
+        return netAPY * 100;
     } catch (error) {
         console.error("Error fetching APY rates:", error);
         throw new Error('Failed to update net APY');
     }
 });
+
+
 
 
 
@@ -395,7 +460,7 @@ export const AccountSlice = createSlice({
     });
     builder.addCase(updateBorrowLimit.fulfilled, (state, action) => {
         state.loading = false;
-        state.borrowLimit = action.payload;
+        state.borrowLimit = action.payload.borrowLimitUsed;
     });
     builder.addCase(updateBorrowLimit.rejected, (state, action) => {
         state.loading = false;
