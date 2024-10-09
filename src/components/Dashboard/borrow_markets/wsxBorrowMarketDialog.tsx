@@ -126,7 +126,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </Box>
               <TabPanel value="0">
                 <BorrowDetails
-                  type={"SX"}
+                  type={"sx"}
                   borrowAPY={wsxBorrowAPY}
                   borrowBalance={wsxBorrowBalance}
                   borrowLimit={borrowLimit}
@@ -135,7 +135,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
               </TabPanel>
               <TabPanel value="1">
                 <RepayDetails
-                  type={"SX"}
+                  type={"sx"}
                   borrowAPY={wsxBorrowAPY}
                   borrowBalance={wsxBorrowBalance}
                   isRepayingEnabled={isWSXEnabled}
