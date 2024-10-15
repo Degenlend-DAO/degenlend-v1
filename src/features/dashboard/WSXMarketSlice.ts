@@ -271,17 +271,17 @@ export const updateWSXLiquidityInUSD = createAsyncThunk('wsxLiquidity/update', a
         const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
     
         try {
-            const exchangeRateMantissa = await degenWSX.exchangeRateStored();
             const cash = await degenWSX.getCash();
             const decimals = await degenWSX.decimals();
             const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
-    
+            
+
+            const liquidityInCash = formatUnits(cash, decimals);
             const wsxPrice = formatUnits(wsxPriceMantissa, decimals);
-            const exchangeRate = formatUnits(exchangeRateMantissa, decimals);
     
-            const wsxLiquidityInUSD = Number(wsxPrice) * Number(exchangeRate);
+            const wsxLiquidityInUSD = Number(wsxPrice) * Number(liquidityInCash);
     
-            console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD'`);
+            console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD' ${wsxLiquidityInUSD}`);
     
             return Number(wsxLiquidityInUSD);
         } catch (error) {
@@ -454,10 +454,15 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
         const tx = await degenWSX.borrow(amount);
         await tx.wait();
         console.log(`[Console] successfully called on thunk 'borrowWSX'`);
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'borrowWSX': ${error} `)
-
-    }
+    } catch (error: any) {
+        if (error?.reason) {
+            console.error(`[Console] Borrow failed with reason: ${error.reason}`);
+        } else if (error?.data) {
+            console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
+        } else {
+            console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
+        }
+    }    
     
 })
 
@@ -606,6 +611,11 @@ export const WSXSlice = createSlice({
         builder.addCase(isWSXEnabled.fulfilled, (state, action) => {
             state.status = "loading";
             state.isEnabled = action.payload;
+        })
+
+        builder.addCase(updateWSXLiquidityInUSD.fulfilled, (state, action) => {
+            state.status = "completed"
+            state.liquidityInUSD = action.payload;
         })
         
         

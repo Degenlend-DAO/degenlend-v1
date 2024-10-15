@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
 import WSXBorrowMarketDialog from "./wsxBorrowMarketDialog";
 import USDCBorrowMarketDialog from "./usdcBorrowMarketDialog";
-import { updateUSDCBalance, updateUSDCBorrowRate, updateUSDCOraclePrice } from "../../../features/dashboard/USDCMarketSlice";
-import { updateWSXBalance, updateWSXBorrowRate, updateWSXOraclePrice } from "../../../features/dashboard/WSXMarketSlice";
+import { updateUSDCBalance, updateUSDCBorrowRate, updateUSDCOraclePrice,  } from "../../../features/dashboard/USDCMarketSlice";
+import { updateWSXBalance, updateWSXBorrowRate, updateWSXOraclePrice, updateWSXLiquidityInUSD } from "../../../features/dashboard/WSXMarketSlice";
 import { formatNumber } from "../../../utils/constant";
 
 export default function BorrowMarkets() {
@@ -63,6 +63,7 @@ export default function BorrowMarkets() {
     dispatch(updateUSDCOraclePrice());
     dispatch(updateWSXOraclePrice());
 
+    dispatch(updateWSXLiquidityInUSD());
     
   });
 
