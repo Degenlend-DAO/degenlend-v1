@@ -10,10 +10,13 @@ import TopNavigationBar from '../Header/TopNavigationBar';
 import Markets from '../Dashboard/markets';
 import Proposals from '../Governance/Proposals';
 import ErrorPage from '../Error/ErrorPage';
+import SwitchNetworkSnackbar from '../../features/network/SwitchNetworkSnackbar';
 
 const RoutesComponent = () => {
     return (
         <>
+              <SwitchNetworkSnackbar />
+
             <TopNavigationBar />
             <Routes>
                 <Route path='/' element={<Markets />} />
