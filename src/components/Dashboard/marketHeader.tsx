@@ -10,7 +10,6 @@ function MarketHeader() {
   const borrowBalance = useSelector((state: RootState) => state.account.netBorrowBalance);
   const netAPY = useSelector((state: RootState) => state.account.netAPY);
   const borrowLimit = useSelector((state: RootState) => state.account.borrowLimit);
-  const loading = useSelector((state: RootState) => state.account.loading);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -32,7 +31,7 @@ function MarketHeader() {
               Supply Balance (in USD)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {loading ? <Skeleton width={100} height={30} /> : `$${formatNumber(supplyBalance)}`}
+              {`$${formatNumber(supplyBalance)}`}
             </Typography>
           </Grid>
 
@@ -42,7 +41,7 @@ function MarketHeader() {
               Net APY
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {loading ? <Skeleton width={100} height={30} /> : `${formatNumber(netAPY)}%`}
+              {`${formatNumber(netAPY)}%`}
             </Typography>
           </Grid>
 
@@ -52,7 +51,7 @@ function MarketHeader() {
               Borrow Balance (in USD)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {loading ? <Skeleton width={100} height={30} /> : `$${formatNumber(borrowBalance)}`}
+              {`$${formatNumber(borrowBalance)}`}
             </Typography>
           </Grid>
         </Grid>
@@ -69,7 +68,7 @@ function MarketHeader() {
               sx={{ height: 8, borderRadius: 5 }}
             />
             <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold', color: 'primary.main' }}>
-              {loading ? <Skeleton width={50} height={20} /> : `${formatNumber(borrowLimit)}%`}
+              {`${formatNumber(borrowLimit)}%`}
             </Typography>
           </Box>
         </Box>
