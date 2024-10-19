@@ -2,9 +2,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
-
+// ABIs
 import Comptroller from '../../abis/Comptroller.json';
 import ERC20Immutable from '../../abis/Erc20Immutable.json'
+import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
 import ERC20 from '../../abis/ERC20.json'
 
 interface USDCState {
@@ -246,9 +247,36 @@ export const updateUSDCBorrowRate = createAsyncThunk('usdcBorrowRate/update', as
     }
 });
 
-export const updateUSDCLiquidity = createAsyncThunk('usdcLiquidity/update', async () => { 
-
+export const updateUSDCLiquidityInUSD = createAsyncThunk('usdcLiquidity/update', async () => { 
     
+    const [wallet] = onboard.state.get().wallets;
+    
+    if (!wallet) {
+        return 0;
+    }    
+
+    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+    const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
+
+    try {
+        // Fetch Cash & Decimals for degenUSDC
+        const cash = await degenUSDC.getCash();
+        const decimals = await degenUSDC.decimals();
+
+        // Fetch USDC price from the price oracle
+        const usdcPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenUSDC);
+        const usdcPrice = parseFloat(formatUnits(usdcPriceMantissa, decimals));
+
+        // Calculate liquidity in USD
+        const usdcLiquidityInUSD = Number(usdcPrice) * Number(formatUnits(cash, decimals));
+        
+        return Number(usdcLiquidityInUSD);
+    }
+    catch (error) { 
+        console.log(`[Console] an error occurred on thunk 'updateUSDCLiquidityInUSD': ${error}`);
+        return 0;
+    }
 
 })
 
@@ -535,6 +563,11 @@ export const USDCSlice = createSlice({
         builder.addCase(isUSDCEnabled.fulfilled, (state, action) => {
             state.status = "loading";
             state.isEnabled = action.payload;
+        })
+
+        builder.addCase(updateUSDCLiquidityInUSD.fulfilled, (state, action) => {
+            state.status = "completed"
+            state.liquidityInUSD = action.payload;
         })
         
         
