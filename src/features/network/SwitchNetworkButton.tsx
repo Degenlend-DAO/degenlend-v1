@@ -71,12 +71,15 @@ const SwitchNetworkButton = () => {
           onClick={handleClick}
           variant="contained"
           sx={{
-            backgroundColor: '#1976D2', // Custom background color
+            backgroundColor: '#1976D2', // Switch Network color
             '&:hover': {
-              backgroundColor: '#1565C0', // Darker hover effect
+              backgroundColor: '#1565C0',
             },
             fontWeight: 'bold',
-            marginRight: '10px', // Space out the button from the others
+            borderRadius: '8px', // Softer corners
+            padding: '6px 12px', // Adjusted padding
+            marginRight: '15px', // Increase space between buttons
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow
           }}
         >
           Switch Network
