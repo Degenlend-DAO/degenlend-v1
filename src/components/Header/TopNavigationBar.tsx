@@ -6,6 +6,7 @@ import ToggleColorMode from '../../utils/ToggleColorMode';
 import ConnectWallet from '../../utils/ConnectWallet';
 import degenlendLogo from '../../assets/img/degenlend-variation2.png';
 import { ColorModeContext } from '../../utils/useMode';
+import SwitchNetworkButton from '../../features/network/SwitchNetworkButton';
 
 const TopNavigationBar = () => {
     const theme = useTheme();
@@ -95,6 +96,8 @@ const TopNavigationBar = () => {
                             </MenuItem>
                         </Box>
                     )}
+
+                        <SwitchNetworkButton />
                     <Box sx={{ display: isSmallScreen ? 'none' : 'flex', flexDirection: 'row', alignItems: 'end' }}>
                         <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
                         <ConnectWallet />
