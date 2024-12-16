@@ -674,5 +674,3 @@ export const WSXSlice = createSlice({
 
 
 export default WSXSlice.reducer;
-
-// Note for devs: Please don't forget to implement supply & borrow balances
