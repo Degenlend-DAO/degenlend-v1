@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { onboard, testnet_addresses } from '../../utils/web3';
+import { API_URL } from '../../utils/constant';
 import { ethers, Contract, formatUnits } from 'ethers'
 
 // ABIs
@@ -45,52 +46,16 @@ const getContract = (address: string, abi: any, signer: any) => {
 
 export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
-
     if (!wallet) {
         return 0;
     }
 
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-
-    const wsxAddress = testnet_addresses.degenWSX;
-    const usdcAddress = testnet_addresses.degenUSDC;
-    const oracleAddress = testnet_addresses.price_oracle;
-
-    if (!wsxAddress || !usdcAddress || !oracleAddress) {
-        throw new Error("Missing contract addresses. Check testnet_addresses.");
-    }
-
-    const priceOracle = getContract(oracleAddress, SimplePriceOracle.abi, signer);
-    const degenWSX = getContract(wsxAddress, ERC20Immutable.abi, signer);
-    const degenUSDC = getContract(usdcAddress, ERC20Immutable.abi, signer);
-
     try {
-        const [wsxDecimals, usdcDecimals, wsxPrice, usdcPrice, wsxBalance, usdcBalance, wsxExchangeRateMantissa, usdcExchangeRateMantissa ] = await Promise.all([
-            degenWSX.decimals(),
-            degenUSDC.decimals(),
-            priceOracle.getUnderlyingPrice(wsxAddress),
-            priceOracle.getUnderlyingPrice(usdcAddress),
-            degenWSX.balanceOf(wallet.accounts[0].address),
-            degenUSDC.balanceOf(wallet.accounts[0].address),
-            degenWSX.exchangeRateStored(),
-            degenUSDC.exchangeRateStored(),
-        ]);
 
-        const rawDegenWSXBalance = formatUnits(wsxBalance, wsxDecimals);
-        const rawDegenUSDCBalance = formatUnits(usdcBalance, usdcDecimals);
-        const formattedWSXExchangeRate = formatUnits(wsxExchangeRateMantissa, wsxDecimals);
-        const formattedUSDCExchangeRate = formatUnits(usdcExchangeRateMantissa, usdcDecimals);
-        const formattedWSXPrice = formatUnits(wsxPrice, wsxDecimals);
-        const formattedUSDCPrice = formatUnits(usdcPrice, usdcDecimals);
-        const DegenWSXBalance = Number(rawDegenWSXBalance) * Number(formattedWSXExchangeRate);
-        const DegenUSDCBalance = Number(rawDegenUSDCBalance) * Number(formattedUSDCExchangeRate);   
-        // Proper formatting and calculation of net supply balance
+        const usdcDegenUSDCBalance = await fetch(`${API_URL}/api/account/supplyBalance/${wallet.accounts[0].address}`).then((response) => { return response.json()});
 
-        const usdDegenUSDCBalance = Number(formattedUSDCPrice) * Number(DegenUSDCBalance);
-        const usdDegenWSXBalance = Number(formattedWSXPrice) * Number(DegenWSXBalance);
-        const netSupplyBalance = usdDegenUSDCBalance + usdDegenWSXBalance;
-
+        const netSupplyBalance = usdcDegenUSDCBalance.data.supplyBalance;
+        console.log(`[Console] successfully called on thunk 'updateNetSupplyBalance'.  Values: usdcDegenUSDCBalance: ${usdcDegenUSDCBalance}, netSupplyBalance: ${netSupplyBalance}`);
         return Number(netSupplyBalance);
     } catch (error) {
         console.error("Error fetching net supply balance:", error);
@@ -105,23 +70,11 @@ export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update'
     if (!wallet) {
         return 0;
     }
-
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-
-    const wsxContract = getContract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
-    const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-
     try {
-        const [wsxBorrowBalance, usdcBorrowBalance] = await Promise.all([
-            wsxContract.borrowBalanceStored(wallet.accounts[0].address),
-            usdcContract.borrowBalanceStored(wallet.accounts[0].address),
-        ]);
-
-        // Convert borrow balances to readable format
-        const totalBorrowBalance = parseFloat(formatUnits(wsxBorrowBalance, 18)) + parseFloat(formatUnits(usdcBorrowBalance, 6)); // USDC is 6 decimals
-
-        return totalBorrowBalance;
+        const usdcDegenUSDCBalance = await fetch(`${API_URL}/api/account/borrowBalance/${wallet.accounts[0].address}`).then((response) => {return response.json()});
+        const netBorrowBalance = usdcDegenUSDCBalance.data.borrowBalance;
+        console.log(`[Console] successfully called on thunk 'updateNetBorrowBalance'.  Values: usdcDegenUSDCBalance: ${usdcDegenUSDCBalance}, netBorrowBalance: ${netBorrowBalance}`);
+        return netBorrowBalance;
     } catch (error) {
         console.error("Error fetching borrow balances:", error);
         throw new Error('Failed to update net borrow balance');
@@ -234,75 +187,11 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
         return 0;
     }
 
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-
-    const wsxContract = getContract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
-    const usdcContract = getContract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-
     try {
-        // Fetch supply and borrow balances for WSX and USDC
-        const [wsxSupplyRate, wsxBorrowRate, usdcSupplyRate, usdcBorrowRate] = await Promise.all([
-            wsxContract.supplyRatePerBlock(),
-            wsxContract.borrowRatePerBlock(),
-            usdcContract.supplyRatePerBlock(),
-            usdcContract.borrowRatePerBlock(),
-        ]);
-
-        const [wsxSuppliedAmount, usdcSuppliedAmount] = await Promise.all([
-            wsxContract.balanceOf(wallet.accounts[0].address),
-            usdcContract.balanceOf(wallet.accounts[0].address)
-        ]);
-
-        const [wsxBorrowedAmount, usdcBorrowedAmount] = await Promise.all([
-            wsxContract.borrowBalanceStored(wallet.accounts[0].address),
-            usdcContract.borrowBalanceStored(wallet.accounts[0].address)
-        ]);
-
-        const wsxSupplyRateDecimal = parseFloat(formatUnits(wsxSupplyRate, 18));
-        const wsxBorrowRateDecimal = parseFloat(formatUnits(wsxBorrowRate, 18));
-        const usdcSupplyRateDecimal = parseFloat(formatUnits(usdcSupplyRate, 18));
-        const usdcBorrowRateDecimal = parseFloat(formatUnits(usdcBorrowRate, 18));
-
-        const wsxSupplied = parseFloat(formatUnits(wsxSuppliedAmount, 18));
-        const usdcSupplied = parseFloat(formatUnits(usdcSuppliedAmount, 6));
-        const wsxBorrowed = parseFloat(formatUnits(wsxBorrowedAmount, 18));
-        const usdcBorrowed = parseFloat(formatUnits(usdcBorrowedAmount, 6));
-
-        // Dummy values for testing
-            // const wsxSupplyRateDecimal = 0.00001; // Dummy supply rate for WSX (0.001%)
-            // const wsxBorrowRateDecimal = 0.00002; // Dummy borrow rate for WSX (0.002%)
-            // const usdcSupplyRateDecimal = 0.00003; // Dummy supply rate for USDC (0.003%)
-            // const usdcBorrowRateDecimal = 0.00004; // Dummy borrow rate for USDC (0.004%)
-
-            // const wsxSupplied = 1000; // Dummy supply amount (1000 WSX)
-            // const usdcSupplied = 500;  // Dummy supply amount (500 USDC)
-            // const wsxBorrowed = 300;   // Dummy borrow amount (300 WSX)
-            // const usdcBorrowed = 200;  // Dummy borrow amount (200 USDC)
-
-
-        // Calculate the total supply contribution (supplyAPY * suppliedAmount)
-        const totalSupplyContribution = (wsxSupplyRateDecimal * wsxSupplied) + (usdcSupplyRateDecimal * usdcSupplied);
-
-        // Calculate the total borrow contribution (borrowAPY * borrowedAmount)
-        const totalBorrowContribution = (wsxBorrowRateDecimal * wsxBorrowed) + (usdcBorrowRateDecimal * usdcBorrowed);
-
-        // Calculate net APY
-        const netContribution = totalSupplyContribution - totalBorrowContribution;
-
-        // Get total supplied and borrowed values
-        const totalSuppliedValue = wsxSupplied + usdcSupplied;
-        const totalBorrowedValue = wsxBorrowed + usdcBorrowed;
-
-        let netAPY = 0;
-        if (netContribution > 0 && totalSuppliedValue > 0) {
-            netAPY = (netContribution / totalSuppliedValue) * 100;
-        } else if (netContribution < 0 && totalBorrowedValue > 0) {
-            netAPY = (netContribution / totalBorrowedValue) * 100;
-        }
-
-        console.log(`[Console] Net APY: ${netAPY}`);
-        return netAPY * 100;
+        const apy = await fetch(`${API_URL}/api/account/apy/${wallet.accounts[0].address}`).then((response) => { return response.json() });
+        const netAPY = apy.data.netApy;
+        console.log(`[Console] successfully called on thunk 'updateNetAPY'.  Values: apy: ${apy}, netAPY: ${netAPY}`);
+        return netAPY;
     } catch (error) {
         console.error("Error fetching APY rates:", error);
         throw new Error('Failed to update net APY');
