@@ -37,11 +37,6 @@ const initialState: AccountState = {
     netSupplyBalance: 0
 }
 
-// Helper to get contract instances
-const getContract = (address: string, abi: any, signer: any) => {
-    return new ethers.Contract(address, abi, signer);
-};
-
 // Views
 
 export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', async () => {
@@ -89,17 +84,12 @@ export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async
         return 0;
     }
 
-    const walletAddress = wallet.accounts[0].address;
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
-
     try {
-        const [liquidity] = await comptroller.getAccountLiquidity(walletAddress);  // Get the liquidity (first item in the response array)
 
-        const formattedLiquidity = parseFloat(formatUnits(liquidity, 18));  // Format liquidity from 1e18
+        const formattedLiquidityInUSD = await fetch(`${API_URL}/api/account/liquidity/${wallet.accounts[0].address}`).then((response) => { return response.json() });   
         console.log(`[Console] successfully called on thunk 'updateAccountLiquidity'`);
 
-        return formattedLiquidity;
+        return formattedLiquidityInUSD.data.liquidity;
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'updateAccountLiquidity': ${error}`);
         return 0;
@@ -183,9 +173,9 @@ export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async ()
 export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
     const [wallet] = onboard.state.get().wallets;
 
-    if (!wallet) {
-        return 0;
-    }
+    // if (!wallet) {
+    //     return 0;
+    // }
 
     try {
         const apy = await fetch(`${API_URL}/api/account/apy/${wallet.accounts[0].address}`).then((response) => { return response.json() });
@@ -197,9 +187,6 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
         throw new Error('Failed to update net APY');
     }
 });
-
-
-
 
 
 

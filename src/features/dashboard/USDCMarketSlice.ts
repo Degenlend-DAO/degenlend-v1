@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
+import { API_URL } from '../../../src/utils/constant';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
 // ABIs
@@ -54,18 +55,20 @@ export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', 
     const theComptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
 
     try {
-        const walletAddress = wallet.accounts[0].address;
-        const collateralMarkets = await theComptroller.getAssetsIn(walletAddress);
-        let isCollateral = false;
-        console.log(`\n\n Collateral Markets: ${collateralMarkets} \n\n`);
-        if (collateralMarkets.includes(testnet_addresses.degenUSDC))
-        {
-            isCollateral = true;
-        }
-        return isCollateral;
+        // const walletAddress = wallet.accounts[0].address;
+        // const collateralMarkets = await theComptroller.getAssetsIn(walletAddress);
+        // let isCollateral = false;
+        // console.log(`\n\n Collateral Markets: ${collateralMarkets} \n\n`);
+        // if (collateralMarkets.includes(testnet_addresses.degenUSDC))
+        // {
+        //     isCollateral = true;
+        // }
+        
+        const isCollateral = await fetch(`${API_URL}/isUSDCListedAsCollateral`).then((response) => {return response.json()});
+        return isCollateral.data.isCollateral;
     } catch (error) {
         console.log(`[Console] unable to confirm USDC is listed as this wallet's collateral! \n ${error}`);
-    return false;
+        return false;
     }
 
 })
