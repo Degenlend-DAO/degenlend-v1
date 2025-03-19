@@ -49,7 +49,7 @@ export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update'
 
         const usdcDegenUSDCBalance = await fetch(`${API_URL}/api/account/supplyBalance/${wallet.accounts[0].address}`).then((response) => { return response.json()});
 
-        const netSupplyBalance = usdcDegenUSDCBalance.data.supplyBalance;
+        const netSupplyBalance = usdcDegenUSDCBalance.supplyBalance;
         console.log(`[Console] successfully called on thunk 'updateNetSupplyBalance'.  Values: usdcDegenUSDCBalance: ${usdcDegenUSDCBalance}, netSupplyBalance: ${netSupplyBalance}`);
         return Number(netSupplyBalance);
     } catch (error) {
@@ -67,7 +67,7 @@ export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update'
     }
     try {
         const usdcDegenUSDCBalance = await fetch(`${API_URL}/api/account/borrowBalance/${wallet.accounts[0].address}`).then((response) => {return response.json()});
-        const netBorrowBalance = usdcDegenUSDCBalance.data.borrowBalance;
+        const netBorrowBalance = usdcDegenUSDCBalance.borrowBalance;
         console.log(`[Console] successfully called on thunk 'updateNetBorrowBalance'.  Values: usdcDegenUSDCBalance: ${usdcDegenUSDCBalance}, netBorrowBalance: ${netBorrowBalance}`);
         return netBorrowBalance;
     } catch (error) {
@@ -89,7 +89,7 @@ export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async
         const formattedLiquidityInUSD = await fetch(`${API_URL}/api/account/liquidity/${wallet.accounts[0].address}`).then((response) => { return response.json() });   
         console.log(`[Console] successfully called on thunk 'updateAccountLiquidity'`);
 
-        return formattedLiquidityInUSD.data.liquidity;
+        return formattedLiquidityInUSD.liquidity;
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'updateAccountLiquidity': ${error}`);
         return 0;
@@ -142,7 +142,7 @@ export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async ()
         const wsxPrice = parseFloat(formatUnits(wsxPriceMantissa, 18));
 
         // Calculate borrow balance in USD
-        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;
+        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;``
 
         // Format liquidity in USD
         const formattedLiquidityInUSD = parseFloat(formatUnits(liquidity, 18));
@@ -179,7 +179,7 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
 
     try {
         const apy = await fetch(`${API_URL}/api/account/apy/${wallet.accounts[0].address}`).then((response) => { return response.json() });
-        const netAPY = apy.data.netApy;
+        const netAPY = apy.netApy;
         console.log(`[Console] successfully called on thunk 'updateNetAPY'.  Values: apy: ${apy}, netAPY: ${netAPY}`);
         return netAPY;
     } catch (error) {

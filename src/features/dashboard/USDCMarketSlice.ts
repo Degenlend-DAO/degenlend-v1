@@ -52,8 +52,6 @@ export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', 
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
 
-    const theComptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
-
     try {
         // const walletAddress = wallet.accounts[0].address;
         // const collateralMarkets = await theComptroller.getAssetsIn(walletAddress);
@@ -81,7 +79,7 @@ export const isUSDCEnabled = createAsyncThunk('usdcCollateral/enabled', async ()
     }
 
     const walletAddress = wallet.accounts[0].address;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const USDC = new Contract(testnet_addresses.USDC, ERC20Immutable.abi, ethersProvider);
 
     try {
@@ -130,6 +128,21 @@ export const updateUSDCBalance = createAsyncThunk('usdcBalance/update', async ()
 });
 
 export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', async () => {
+    const [wallet] = onboard.state.get().wallets
+    
+    // Get the oracle price
+
+    if ( wallet === undefined ) {
+        return 0;
+    }
+
+    try {
+
+        console.log(`[Console] Successfully called `)
+    } catch {
+
+    }
+
     return 1.00;
 })
 

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { onboard, testnet_addresses } from '../../utils/web3';
-import { ethers, Contract, formatUnits, parseUnits } from 'ethers'
+import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
+
 
 // ABIs
 import Comptroller from '../../abis/Comptroller.json';
@@ -69,15 +70,6 @@ export const isWSXListedAsCollateral = createAsyncThunk('wsxCollateral/update', 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
     const theComptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
     try { 
-        // const walletAddress = wallet.accounts[0].address;
-        // const collateralMarkets = await theComptroller.getAssetsIn(walletAddress);
-        // let isCollateral = false;
-        // console.log(`\n\n Collateral Markets: ${collateralMarkets} \n\n`);
-        // if (collateralMarkets.includes(testnet_addresses.degenWSX)) {
-        //     isCollateral = true;
-        // } else {
-        //     isCollateral = false;
-        // }
 
         const isCollateral = await fetch(`${API_URL}/isWSXListedAsCollateral`).then((response) => {return response.json()});
         return isCollateral;
@@ -127,7 +119,7 @@ export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () =
     try {
 
         let wsxBalance = await WSX.balanceOf(walletAddress);
-        const balance = formatUnits(wsxBalance, decimals)
+        const balance = formatUnits(wsxBalance, decimals);
         console.log(`[Console] successfully called on thunk 'updateWSXBalance'`);
 
         return Number(balance);
@@ -252,7 +244,7 @@ export const updateWSXBorrowRate = createAsyncThunk('wsxBorrowRate/update', asyn
 
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        const borrowAPYPercentage = await fetch(`${API_URL}/borrowAPY`);
+        const borrowAPYPercentage = await fetch(`${API_URL}/api/markets/wsx/borrowAPY`);
         // Return the APY as a percentage
         return Number(borrowAPY * 100); // Convert to percentage
     } catch (error) {
@@ -446,6 +438,12 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
         return 0;
     }
 
+    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+    const signer = await ethersProvider.getSigner();
+
+    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, signer);
+
+    const amount = parseUnits(`${borrowAmount}`);
 
     try {
         const tx = await degenWSX.borrow(amount);
