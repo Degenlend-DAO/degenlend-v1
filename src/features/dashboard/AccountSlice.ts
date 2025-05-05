@@ -86,7 +86,7 @@ export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async
 
     try {
 
-        const formattedLiquidityInUSD = await fetch(`${API_URL}/api/account/liquidity/${wallet.accounts[0].address}`).then((response) => { return response.json() });   
+            const formattedLiquidityInUSD = await fetch(`${API_URL}/api/account/liquidity/${wallet.accounts[0].address}`).then((response) => { return response.json() });   
         console.log(`[Console] successfully called on thunk 'updateAccountLiquidity'`);
 
         return formattedLiquidityInUSD.liquidity;
@@ -142,7 +142,7 @@ export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async ()
         const wsxPrice = parseFloat(formatUnits(wsxPriceMantissa, 18));
 
         // Calculate borrow balance in USD
-        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;``
+        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;
 
         // Format liquidity in USD
         const formattedLiquidityInUSD = parseFloat(formatUnits(liquidity, 18));
