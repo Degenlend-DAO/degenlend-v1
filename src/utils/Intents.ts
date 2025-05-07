@@ -21,18 +21,24 @@ const types = {
         { name: "nonce", type: "uint" },
         { name: "deadline", type: "uint" },
     ],
-    RedeemIntent: [
+    "RedeemIntent": [
         { name: "user", type: "address" },
         { name: "amount", type: "uint" },
         { name: "nonce", type: "uint" },
         { name: "deadline", type: "uint" },
-        ],
-    BorrowIntent: [
+    ],
+    "BorrowIntent": [
       { name: "user", type: "address" },
       { name: "amount", type: "uint" },
       { name: "nonce", type: "uint" },
       { name: "deadline", type: "uint" },
       { name: "interestRate", type: "uint" },
+    ],
+    "RepayIntent": [
+        { name: "user", type: "address" },
+        { name: "amount", type: "uint" },
+        { name: "nonce", type: "uint" },
+        { name: "deadline", type: "uint" },
     ]
 }
 
@@ -45,7 +51,7 @@ export async function signMintIntent(
         deadline: number;
     }
     ): Promise<string> {
-    const signature = await signer.signTypedData(domain, types.MintIntent, mintIntent);
+    const signature = await signer.signTypedData(domain, {MintIntent: types.MintIntent}, mintIntent);
     return signature;
     }
 
@@ -58,7 +64,7 @@ export async function signRedeemIntent(
         deadline: number;
     }
     ): Promise<string> {
-    const signature = await signer.signTypedData(domain, types.RedeemIntent, redeemIntent);
+    const signature = await signer.signTypedData(domain, {RedeemIntent: types.RedeemIntent}, redeemIntent);
     return signature;
 }
 export async function signBorrowIntent(
@@ -71,12 +77,19 @@ export async function signBorrowIntent(
         interestRate: number;
     }
 ): Promise<string> {
-    const signature = await signer.signTypedData(domain, types.BorrowIntent, borrowIntent);
+    const signature = await signer.signTypedData(domain, {BorrowIntent: types.BorrowIntent}, borrowIntent);
     return signature;
 }
-export async function signRedeemIntent(
+
+export async function signRepayIntent(
     signer: ethers.Signer,
-    redeemIntent: {
+    repayIntent: {
         user: string;
         amount: string;
         nonce: number;
+        deadline: number;
+    }
+): Promise<string> {
+    const signature = await signer.signTypedData(domain, {RepayIntent: types.RepayIntent}, repayIntent);
+    return signature;
+}
