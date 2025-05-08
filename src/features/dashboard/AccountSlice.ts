@@ -39,6 +39,11 @@ const initialState: AccountState = {
 
 // Views
 
+/**
+ * Updates the net supply balance from a person's account.
+ * @remarks
+ * This function does not take in params
+ */
 export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
     if (!wallet) {
@@ -47,10 +52,10 @@ export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update'
 
     try {
 
-        const usdcDegenUSDCBalance = await fetch(`${API_URL}/api/account/supplyBalance/${wallet.accounts[0].address}`).then((response) => { return response.json()});
+        const getNetSupplyBalance = await fetch(`${API_URL}/api/account/supplyBalance/${wallet.accounts[0].address}`).then((response) => { return response.json()});
 
-        const netSupplyBalance = usdcDegenUSDCBalance.supplyBalance;
-        console.log(`[Console] successfully called on thunk 'updateNetSupplyBalance'.  Values: usdcDegenUSDCBalance: ${usdcDegenUSDCBalance}, netSupplyBalance: ${netSupplyBalance}`);
+        const netSupplyBalance = getNetSupplyBalance.supplyBalance;
+        console.log(`[Console] successfully called on thunk 'updateNetSupplyBalance`);
         return Number(netSupplyBalance);
     } catch (error) {
         console.error("Error fetching net supply balance:", error);
@@ -58,7 +63,11 @@ export const updateNetSupplyBalance = createAsyncThunk('netSupplyBalance/update'
     }
 });
 
-
+/**
+ * Updates the net borrow balance from a person's account.
+ * @remarks
+ * This function does not take in params
+ */
 export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update', async () => {
     const [wallet] = onboard.state.get().wallets;
 
@@ -66,9 +75,9 @@ export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update'
         return 0;
     }
     try {
-        const usdcDegenUSDCBalance = await fetch(`${API_URL}/api/account/borrowBalance/${wallet.accounts[0].address}`).then((response) => {return response.json()});
-        const netBorrowBalance = usdcDegenUSDCBalance.borrowBalance;
-        console.log(`[Console] successfully called on thunk 'updateNetBorrowBalance'.  Values: usdcDegenUSDCBalance: ${usdcDegenUSDCBalance}, netBorrowBalance: ${netBorrowBalance}`);
+        const getNetBorrowBalance = await fetch(`${API_URL}/api/account/borrowBalance/${wallet.accounts[0].address}`).then((response) => {return response.json()});
+        const netBorrowBalance = getNetBorrowBalance.borrowBalance;
+        console.log(`[Console] successfully called on thunk 'updateNetBorrowBalance'`);
         return netBorrowBalance;
     } catch (error) {
         console.error("Error fetching borrow balances:", error);
@@ -76,7 +85,11 @@ export const updateNetBorrowBalance = createAsyncThunk('netBorrowBalance/update'
     }
 });
 
-
+/**
+ * Updates the account liquidity from a person's account.
+ * @remarks
+ * This function does not take in params
+ */
 export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async () => {
     const [wallet] = onboard.state.get().wallets;
 
@@ -97,7 +110,11 @@ export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async
 });
 
 
-
+/**
+ * Updates the amount placeholder in the UI
+ * @remarks
+ * this function takes the params `amountToUpdate` which is a number
+ */
 export const updateAmount = createAsyncThunk('account/updateAmount', async (amountToUpdate: number) =>{
     return amountToUpdate;
 });
