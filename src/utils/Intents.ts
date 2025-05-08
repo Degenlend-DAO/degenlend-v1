@@ -1,95 +1,112 @@
 import { ethers } from "ethers";
 
-const domain = {
-  name: "DegenLendRelayer",
-  version: "1",
-  chainId: 5, // Replace with actual chain ID
-  verifyingContract: "0xRelayerContractAddress" // Replace with deployed relayer address
+// Dynamic domain setup
+export function getDomain(chainId: number, relayerAddress: string) {
+  return {
+    name: "DegenLendRelayer",
+    version: "1",
+    chainId,
+    verifyingContract: relayerAddress
+  };
+}
+
+// Unified types matching your contract
+const types = {
+  MintIntent: [
+    { name: "user", type: "address" },
+    { name: "cToken", type: "address" },
+    { name: "amount", type: "uint256" },
+    { name: "nonce", type: "uint256" },
+    { name: "deadline", type: "uint256" }
+  ],
+  RedeemIntent: [
+    { name: "user", type: "address" },
+    { name: "cToken", type: "address" },
+    { name: "amount", type: "uint256" },
+    { name: "nonce", type: "uint256" },
+    { name: "deadline", type: "uint256" }
+  ],
+  BorrowIntent: [
+    { name: "user", type: "address" },
+    { name: "cToken", type: "address" },
+    { name: "amount", type: "uint256" },
+    { name: "nonce", type: "uint256" },
+    { name: "deadline", type: "uint256" }
+  ],
+  RepayIntent: [
+    { name: "user", type: "address" },
+    { name: "cToken", type: "address" },
+    { name: "amount", type: "uint256" },
+    { name: "nonce", type: "uint256" },
+    { name: "deadline", type: "uint256" }
+  ]
 };
 
-const types = {
-    Order: [
-        { name: "orderId", type: "string" },
-        { name: "user", type: "address" },
-        { name: "amount", type: "uint256" },
-        { name: "token", type: "address" },
-        { name: "signature", type: "bytes" },
-    ],
-    "MintIntent": [
-        { name: "user", type: "address" },
-        { name: "amount", type: "uint" },
-        { name: "nonce", type: "uint" },
-        { name: "deadline", type: "uint" },
-    ],
-    "RedeemIntent": [
-        { name: "user", type: "address" },
-        { name: "amount", type: "uint" },
-        { name: "nonce", type: "uint" },
-        { name: "deadline", type: "uint" },
-    ],
-    "BorrowIntent": [
-      { name: "user", type: "address" },
-      { name: "amount", type: "uint" },
-      { name: "nonce", type: "uint" },
-      { name: "deadline", type: "uint" },
-      { name: "interestRate", type: "uint" },
-    ],
-    "RepayIntent": [
-        { name: "user", type: "address" },
-        { name: "amount", type: "uint" },
-        { name: "nonce", type: "uint" },
-        { name: "deadline", type: "uint" },
-    ]
-}
-
-export async function signMintIntent(
-    signer: ethers.Signer,
-    mintIntent: {
-        user: string;
-        amount: string;
-        nonce: number;
-        deadline: number;
-    }
-    ): Promise<string> {
-    const signature = await signer.signTypedData(domain, {MintIntent: types.MintIntent}, mintIntent);
-    return signature;
-    }
-
-export async function signRedeemIntent(
-    signer: ethers.Signer,
-    redeemIntent: {
-        user: string;
-        amount: string;
-        nonce: number;
-        deadline: number;
-    }
-    ): Promise<string> {
-    const signature = await signer.signTypedData(domain, {RedeemIntent: types.RedeemIntent}, redeemIntent);
-    return signature;
-}
-export async function signBorrowIntent(
-    signer: ethers.Signer,
-    borrowIntent: {
-        user: string;
-        amount: string;
-        nonce: number;
-        deadline: number;
-        interestRate: number;
-    }
+// Generic signing function
+async function signIntent(
+  signer: ethers.Signer,
+  domain: any,
+  intentType: keyof typeof types,
+  intentData: {
+    user: string;
+    cToken: string;
+    amount: ethers.BigNumberish;
+    nonce: number;
+    deadline: number;
+  }
 ): Promise<string> {
-    const signature = await signer.signTypedData(domain, {BorrowIntent: types.BorrowIntent}, borrowIntent);
-    return signature;
+  return signer.signTypedData(domain, { [intentType]: types[intentType] }, intentData);
 }
 
-export async function signRepayIntent(
-    signer: ethers.Signer,
-    repayIntent: {
-        user: string;
-        amount: string;
-        nonce: number;
-        deadline: number;
-    }
-): Promise<string> {
-    const signature = await signer.signTypedData(domain, {RepayIntent: types.RepayIntent}, repayIntent);
-    return signature;
-}
+// Specific intent functions
+export const signMintIntent = (
+  signer: ethers.Signer,
+  chainId: number,
+  relayerAddress: string,
+  intentData: {
+    user: string;
+    cToken: string;
+    amount: ethers.BigNumberish;
+    nonce: number;
+    deadline: number;
+  }
+) => signIntent(signer, getDomain(chainId, relayerAddress), "MintIntent", intentData);
+
+export const signRedeemIntent = (
+  signer: ethers.Signer,
+  chainId: number,
+  relayerAddress: string,
+  intentData: {
+    user: string;
+    cToken: string;
+    amount: ethers.BigNumberish;
+    nonce: number;
+    deadline: number;
+  }
+) => signIntent(signer, getDomain(chainId, relayerAddress), "RedeemIntent", intentData);
+
+export const signBorrowIntent = (
+  signer: ethers.Signer,
+  chainId: number,
+  relayerAddress: string,
+  intentData: {
+    user: string;
+    cToken: string;
+    amount: ethers.BigNumberish;
+    nonce: number;
+    deadline: number;
+  }
+) => signIntent(signer, getDomain(chainId, relayerAddress), "BorrowIntent", intentData);
+
+export const signRepayIntent = (
+  signer: ethers.Signer,
+  chainId: number,
+  relayerAddress: string,
+  intentData: {
+    user: string;
+    cToken: string;
+    amount: ethers.BigNumberish;
+    nonce: number;
+    deadline: number;
+  }
+) => signIntent(signer, getDomain(chainId, relayerAddress), "RepayIntent", intentData);
