@@ -3,11 +3,6 @@ import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
 import { API_URL } from '../../../src/utils/constant';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
-// ABIs
-import Comptroller from '../../abis/Comptroller.json';
-import ERC20Immutable from '../../abis/Erc20Immutable.json'
-import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
-import ERC20 from '../../abis/ERC20.json'
 
 interface USDCState {
     loading: boolean;

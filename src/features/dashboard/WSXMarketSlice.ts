@@ -3,11 +3,7 @@ import { onboard, testnet_addresses } from '../../utils/web3';
 import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
 
 
-// ABIs
-import Comptroller from '../../abis/Comptroller.json';
-import ERC20Immutable from '../../abis/Erc20Immutable.json';
-import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
-import ERC20 from '../../abis/ERC20.json';
+
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/Store';
 import { API_URL } from '../../utils/constant';
