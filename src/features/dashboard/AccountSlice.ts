@@ -137,38 +137,14 @@ export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async ()
 
     const walletAddress = wallet.accounts[0].address;
     const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
-    const wsxContract = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
+
 
     try {
-        // Fetch liquidity and shortfall
-        const [error, liquidity, shortfall] = await comptroller.getAccountLiquidity(walletAddress);
 
-        if (error !== 0 || !shortfall.isZero()) {
-            console.error("Comptroller.getAccountLiquidity failed:", error);
-            return { liquidity: 0, shortfall: 0, borrowLimitUsed: 0 };
-        }
-
-        // Fetch current borrow balance in WSX
-        const borrowBalanceMantissa = await wsxContract.borrowBalanceStored(walletAddress);
-        const formattedBorrowBalance = parseFloat(formatUnits(borrowBalanceMantissa, 18));
-
-        // Fetch WSX price from the price oracle
-        const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
-        const wsxPrice = parseFloat(formatUnits(wsxPriceMantissa, 18));
-
-        // Calculate borrow balance in USD
-        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;
-
-        // Format liquidity in USD
-        const formattedLiquidityInUSD = parseFloat(formatUnits(liquidity, 18));
-
-        // Calculate Borrow Limit Usage as a percentage
-        const borrowLimitUsed = (borrowBalanceInUSD / formattedLiquidityInUSD) * 100;
-
+        const { formattedLiquidityInUSD, borrowBalanceInUSD, borrowLimitUsed } = await fetch(`${API_URL}/api/account/borrowLimit/${walletAddress}`).then((response) => { return response.json() });
+        
         console.log(`[Console] Borrow Limit Used: ${borrowLimitUsed}%`);
-
+        
         return {
             liquidity: formattedLiquidityInUSD,
             borrowBalanceInUSD,
@@ -214,17 +190,14 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
  */
 export const enterWSXMarket = createAsyncThunk('account/enterWSXMarket', async (_, { rejectWithValue }) => {
     const [wallet] = onboard.state.get().wallets;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, signer);
 
     let marketsToEnter = [testnet_addresses.degenWSX];
 
     try {
-        let txn = await comptroller.enterMarkets(marketsToEnter);
-        await txn.wait();
-        console.log(`[Console] Successfully entered the account into the WSX Market. txn hash: ${txn}`);
-        return txn.hash
+
+
+        console.log(`[Console] Successfully entered the account into the WSX Market.`);
+        // return txn.hash
     } catch (error) {
         console.log(`something went wrong: ${error}`)
         return rejectWithValue(error);
@@ -236,17 +209,14 @@ export const enterWSXMarket = createAsyncThunk('account/enterWSXMarket', async (
  */
 export const enterUSDCMarket = createAsyncThunk('account/enterUSDCMarket', async (_, { rejectWithValue }) => {
     const [wallet] = onboard.state.get().wallets;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, signer);
+
 
     let marketsToEnter = [testnet_addresses.degenUSDC];
 
     try {
-        let txn = await comptroller.enterMarkets(marketsToEnter);
-        await txn.wait();
-        console.log(`[Console] Successfully entered the account into the USDC Market. txn hash: ${txn.hash}, txn deails: \n \n ${txn}`);
-        return txn.hash
+
+        console.log(`[Console] Successfully entered the account into the USDC Market.`);
+        // return txn.hash
     } catch (error) {
         console.log(`something went wrong: ${error}`)
         return rejectWithValue(error);
@@ -259,17 +229,13 @@ export const enterUSDCMarket = createAsyncThunk('account/enterUSDCMarket', async
  */
 export const exitWSXMarket = createAsyncThunk('account/exitWSXMarket', async () => {
     const [wallet] = onboard.state.get().wallets;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, signer);
 
     let marketToExit = testnet_addresses.degenWSX;
 
     try {
-        let txn = await comptroller.exitMarket(marketToExit);
-        await txn.wait();
-        console.log(`[Console] Successfully exited the WSX Market with account.  txn hash: ${txn}.  txn details: \n\n ${txn}`)
-        return txn.hash
+
+        console.log(`[Console] Successfully exited the WSX Market with account.`)
+        // return txn.hash
     } catch (error) {
         console.log(`something went wrong: ${error}`)
     }
@@ -284,18 +250,14 @@ export const exitWSXMarket = createAsyncThunk('account/exitWSXMarket', async () 
 export const exitUSDCMarket = createAsyncThunk('account/exitUSDCMarket', async () => {
 
     const [wallet] = onboard.state.get().wallets;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
 
-    const signer = await ethersProvider.getSigner();
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, signer);
 
     let marketToExit = testnet_addresses.degenUSDC;
 
     try {
-        let txn = await comptroller.exitMarket(marketToExit);
-        await txn.wait();
-        console.log(`[Console] Successfully exited the USDC Market with account.  txn hash: ${txn}.  txn details: \n\n ${txn}`)
-        return txn.hash
+        
+        console.log(`[Console] Successfully exited the USDC Market with account.`)
+        // return txn.hash
     } catch (error) {
         console.log(`[Console] Something went wrong! \n ${error}`);
     }
@@ -375,7 +337,7 @@ export const AccountSlice = createSlice({
         });
         builder.addCase(enterWSXMarket.fulfilled, (state, action) => {
             state.loading = false;
-            state.transactionHash = action.payload;
+            // state.transactionHash = action.payload;
         });
         builder.addCase(enterWSXMarket.rejected, (state, action) => {
             state.loading = false;
@@ -389,7 +351,7 @@ export const AccountSlice = createSlice({
         });
         builder.addCase(enterUSDCMarket.fulfilled, (state, action) => {
             state.loading = false;
-            state.transactionHash = action.payload;
+            // state.transactionHash = action.payload;
         });
         builder.addCase(enterUSDCMarket.rejected, (state, action) => {
             state.loading = false;
@@ -403,7 +365,7 @@ export const AccountSlice = createSlice({
         });
         builder.addCase(exitWSXMarket.fulfilled, (state, action) => {
             state.loading = false;
-            state.transactionHash = action.payload;
+            // state.transactionHash = action.payload;
         });
         builder.addCase(exitWSXMarket.rejected, (state, action) => {
             state.loading = false;
@@ -417,7 +379,7 @@ export const AccountSlice = createSlice({
         });
         builder.addCase(exitUSDCMarket.fulfilled, (state, action) => {
             state.loading = false;
-            state.transactionHash = action.payload;
+            // state.transactionHash = action.payload;
         });
         builder.addCase(exitUSDCMarket.rejected, (state, action) => {
             state.loading = false;
