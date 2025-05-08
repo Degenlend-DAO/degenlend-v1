@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { onboard, testnet_addresses } from '../../utils/web3';
 import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
-
+import { API_URL } from "../../../src/utils/constant";
 
 // ABIs
 import Comptroller from '../../abis/Comptroller.json';
@@ -10,7 +10,7 @@ import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
 import ERC20 from '../../abis/ERC20.json';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/Store';
-import { API_URL } from '../../utils/constant';
+
 
 interface WSXState {
     loading: boolean;
