@@ -1,3 +1,4 @@
+import { API_URL } from './../../utils/constant';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { onboard, testnet_addresses } from '../../utils/web3';
 import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
@@ -83,12 +84,10 @@ export const isWSXEnabled = createAsyncThunk('wsxCollateral/enabled', async () =
     }
 
     const walletAddress = wallet.accounts[0].address;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
 
     try {
-        const allowance = await WSX.allowance(walletAddress, testnet_addresses.degenWSX); // Get the allowance of the 
-        if (allowance > 0)
+        const allowance = await fetch(`${API_URL}/isWSXEnabled`); // Get the allowance of the wallet's WSX address
+        if (allowance.allowance > 0)
             return true
         else 
             return false
