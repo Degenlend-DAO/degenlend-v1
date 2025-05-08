@@ -148,30 +148,30 @@ export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', 
 
 export const updateUSDCSupplyBalance = createAsyncThunk('usdcSupplyBalance/update', async () => {
     
-    const [wallet] = onboard.state.get().wallets;
+        const [wallet] = onboard.state.get().wallets;
 
-    if (wallet === undefined) {
-        return 0;
-    }
+        if (wallet === undefined) {
+            return 0;
+        }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
-    const decimals = await degenUSDC.decimals();
+        let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
+        const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
+        const decimals = await degenUSDC.decimals();
 
-    const walletAddress = wallet.accounts[0].address;
-    // This code is currently incomplete
-    try {
-        console.log(`[Console] successfully called on thunk 'updateUSDCSupplyBalance -- but nothing was executed!'`);
-        let balance = await degenUSDC.balanceOf(walletAddress);
-        let exchangeRateMantissa = await degenUSDC.exchangeRateStored();
-        const degenTokenBalance = formatUnits(balance, decimals);
-        const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals);
-        const degenUSDCBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
-        return Number(degenUSDCBalance);
-    } catch(error) {
-        console.log(`[Console] an error occured on thunk 'updateUSDCSupplyBalance': ${error}`)
-        return 0;
-    }
+        const walletAddress = wallet.accounts[0].address;
+        // This code is currently incomplete
+        try {
+            console.log(`[Console] successfully called on thunk 'updateUSDCSupplyBalance -- but nothing was executed!'`);
+            let balance = await degenUSDC.balanceOf(walletAddress);
+            let exchangeRateMantissa = await degenUSDC.exchangeRateStored();
+            const degenTokenBalance = formatUnits(balance, decimals);
+            const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals);
+            const degenUSDCBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
+            return Number(degenUSDCBalance);
+        } catch(error) {
+            console.log(`[Console] an error occured on thunk 'updateUSDCSupplyBalance': ${error}`)
+            return 0;
+        }
     });
 
 export const updateUSDCBorrowBalance = createAsyncThunk('usdcBorrowBalance/update', async () => {
