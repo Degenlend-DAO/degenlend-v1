@@ -50,9 +50,11 @@ export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', 
         return false;
     }
 
+    const accountAddress = wallet.accounts[0].address;
+
     try {
 
-        const getCollateral = await fetch(`${API_URL}/api/markets/usdc/isCollateral`).then((response) => {return response.json()});
+        const getCollateral = await fetch(`${API_URL}/api/markets/usdc/isCollateral/${accountAddress}`).then((response) => {return response.json()});
         return getCollateral.isCollateral;
     } catch (error) {
         console.log(`[Console] unable to confirm USDC is listed as this wallet's collateral! \n ${error}`);
