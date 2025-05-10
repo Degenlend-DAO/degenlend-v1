@@ -38,37 +38,36 @@ const ConnectWallet = () => {
         dispatch(disconnectWallet());
     }
 
-    useEffect( () => {
-        // update collateral, supply apys, wallet balances, and oracle prices
-        
-        dispatch(isWSXListedAsCollateral());
-        dispatch(isUSDCListedAsCollateral());
-    
-        dispatch(updateUSDCSupplyRate());
-        dispatch(updateWSXSupplyRate());
-
-        dispatch(updateUSDCBorrowRate());
-        dispatch(updateWSXBorrowRate());
-    
-        dispatch(updateWSXBalance());
-        dispatch(updateUSDCBalance());
-
-        dispatch(updateUSDCSupplyBalance());
-        dispatch(updateWSXSupplyBalance());
-
-        dispatch(updateUSDCBorrowBalance());
-        dispatch(updateWSXBorrowBalance());
-        
-        dispatch(updateUSDCOraclePrice());
-        dispatch(updateWSXOraclePrice());
-
-        dispatch(updateBorrowLimit());
-
-        dispatch(updateNetSupplyBalance());
-        dispatch(updateNetBorrowBalance());
-        dispatch(updateBorrowLimit());
-        dispatch(updateNetAPY());
-      });
+    useEffect(() => {
+        if (isWalletConnected) {
+          dispatch(isWSXListedAsCollateral());
+          dispatch(isUSDCListedAsCollateral());
+      
+          dispatch(updateUSDCSupplyRate());
+          dispatch(updateWSXSupplyRate());
+      
+          dispatch(updateUSDCBorrowRate());
+          dispatch(updateWSXBorrowRate());
+      
+          dispatch(updateWSXBalance());
+          dispatch(updateUSDCBalance());
+      
+          dispatch(updateUSDCSupplyBalance());
+          dispatch(updateWSXSupplyBalance());
+      
+          dispatch(updateUSDCBorrowBalance());
+          dispatch(updateWSXBorrowBalance());
+      
+          dispatch(updateUSDCOraclePrice());
+          dispatch(updateWSXOraclePrice());
+      
+          dispatch(updateBorrowLimit());
+          dispatch(updateNetSupplyBalance());
+          dispatch(updateNetBorrowBalance());
+          dispatch(updateNetAPY());
+        }
+      }, [dispatch, isWalletConnected]);
+      
 
     return (
         <Box sx={{ maxWidth: '200px' }}>
