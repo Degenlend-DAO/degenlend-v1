@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { borrowUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 import { borrowWSX } from "../../../../features/dashboard/WSXMarketSlice";
 import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
+import { formatNumber } from "../../../../utils/constant";
 
 interface BorrowButtonProps {
   type: String;
@@ -70,7 +71,7 @@ function BorrowButton(props: BorrowButtonProps) {
         <Typography> Currently Borrowing </Typography>
         {/* Borrow Balance in that unit of currency */}
         <Typography>
-          {BorrowBalance} {type.toUpperCase()}
+          {formatNumber(BorrowBalance)} {type.toUpperCase()}
         </Typography>
       </Stack>
 
