@@ -67,12 +67,13 @@ export const isWSXListedAsCollateral = createAsyncThunk('wsxCollateral/update', 
         return false;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const theComptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
+    const accountAddress = wallet.accounts[0].address;
+
     try { 
 
-        const isCollateral = await fetch(`${API_URL}/isWSXListedAsCollateral`).then((response) => {return response.json()});
-        return isCollateral;
+        const getCollateral = await fetch(`${API_URL}/api/markets/wsx/isCollateral/${accountAddress}`).then((response) => {return response.json()});
+        console.log(`[Console] successfully called on thunk 'isWSXListedAsCollateral' `)
+        return getCollateral.isCollateral;
     } catch (error) {
         console.log(`[Console] unable to confirm WSX is listed as this wallet's collateral! \n ${error}`);
         return false;
@@ -86,16 +87,12 @@ export const isWSXEnabled = createAsyncThunk('wsxCollateral/enabled', async () =
         return false;
     }
 
-    const walletAddress = wallet.accounts[0].address;
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
+    let accountAddress = wallet.accounts[0].address;
 
     try {
-        const allowance = await WSX.allowance(walletAddress, testnet_addresses.degenWSX); // Get the allowance of the 
-        if (allowance > 0)
-            return true
-        else 
-            return false
+        const allowance = await fetch(`${API_URL}/api/markets/wsx/isEnabled/${accountAddress}`).then((res) => {return res.json()});
+        console.log(`[Console] successfully called on thunk 'isWSXEnabled' `)
+        return allowance.isEnabled;
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'isWSXEnabled': ${error}`);
         return false;
@@ -111,18 +108,14 @@ export const updateWSXBalance = createAsyncThunk('wsxBalance/update', async () =
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const WSX = new Contract(testnet_addresses.WSX, ERC20Immutable.abi, ethersProvider);
-    const decimals = await WSX.decimals();
-    const walletAddress = wallet.accounts[0].address;
+    const accountAddress = wallet.accounts[0].address;
 
     try {
 
-        let wsxBalance = await WSX.balanceOf(walletAddress);
-        const balance = formatUnits(wsxBalance, decimals);
+        let wsxBalance = await fetch(`${API_URL}/api/markets/wsx/balance/${accountAddress}`).then((res) => {return res.json()})
         console.log(`[Console] successfully called on thunk 'updateWSXBalance'`);
 
-        return Number(balance);
+        return wsxBalance.balance;
     } catch (error) {
 
         console.log(`[Console] an error occured on thunk 'updateWSXBalance': ${error}`)
@@ -139,26 +132,18 @@ export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update'
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    const decimals = await degenWSX.decimals();
-    const walletAddress = wallet.accounts[0].address;
+    const accountAddress = wallet.accounts[0].address;
     try {
 
-        let balance = await degenWSX.balanceOf(walletAddress);
-        let exchangeRateMantissa = await degenWSX.exchangeRateStored(); // Current exchange rate
-        const degenTokenBalance = formatUnits(balance, decimals);
-        const formattedExchangeRate = formatUnits(exchangeRateMantissa, decimals); // convert to readable format
-
-        const degenWSXBalance = Number(degenTokenBalance) * Number(formattedExchangeRate);
+        const degenWSXBalance = await fetch(`${API_URL}/api/markets/wsx/supplyBalance/${accountAddress}`).then((res) => {return res.json()});
 
         console.log(`[Console] successfully called on thunk 'updateWSXSupplyBalance'`)
-        return Number(degenWSXBalance);
+        return degenWSXBalance.supplyBalance;
     } catch(error) {
         console.log(`[Console] an error occured on thunk 'updateWSXSupplyBalance': ${error}`)
         return 0;
     }
-    });
+});
 
 export const updateWSXBorrowBalance = createAsyncThunk('wsxBorrowBalance/update', async () => {
 
@@ -168,19 +153,15 @@ export const updateWSXBorrowBalance = createAsyncThunk('wsxBorrowBalance/update'
         return 0;
     }
 
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    const walletAddress = wallet.accounts[0].address;
+    const accountAddress = wallet.accounts[0].address;
 
     try {
-        const borrowBalanceMantissa = await degenWSX.borrowBalanceStored(walletAddress);
-        const decimals = await degenWSX.decimals();
-        const borrowBalance = formatUnits(borrowBalanceMantissa, decimals);
+        const borrowBalance = await fetch(`${API_URL}/api/markets/wsx/borrowBalance/${accountAddress}`).then((res)=> { return res.json()});
 
         console.log(`[Console] successfully called on thunk 'updateWSXBorrowBalance'`);
         // return borrowBalance;
 
-        return Number(borrowBalance);
+        return borrowBalance.borrowBalance;
 
     } catch (error) {
         console.log(`[Console] an error occured on thunk 'updateWSXBorrowBalance': ${error}`)
@@ -197,23 +178,12 @@ export const updateWSXSupplyRate = createAsyncThunk('wsxSupplyRate/update', asyn
         return 0;
     }
 
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    
-    const blocksPerYear = 6570 * 365; // ~2,397,050 blocks per year
-
     try {
-        // Fetch the supply rate per block in mantissa (1e18)
-        const supplyRateMantissa = await degenWSX.supplyRatePerBlock();
-        console.log("Raw Supply Rate Mantissa:", supplyRateMantissa.toString());
 
-        // Calculate the continuously compounded APY
-        const supplyAPY = Math.exp(Number(supplyRateMantissa) / 1e18 * blocksPerYear) - 1;
-
-        console.log(`[Console] successfully called on thunk 'updateSupplyRate'`);
+        const supplyRate: any = await fetch(`${API_URL}/api/markets/wsx/supplyAPY`).then((res) => {res.json()});
 
         // Return the APY as a percentage
-        return Number(supplyAPY * 100); // Convert to percentage
+        return Number(supplyRate.apy); // Convert to percentage
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'updateSupplyRate': ${error}`);
         return 0;
@@ -229,24 +199,12 @@ export const updateWSXBorrowRate = createAsyncThunk('wsxBorrowRate/update', asyn
         return 0;
     }
 
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    
-    const blocksPerYear = 6570 * 365; // ~2,397,050 blocks per year
-
     try {
-        // Fetch the borrow rate per block in mantissa (1e18)
-        const borrowRateMantissa = await degenWSX.borrowRatePerBlock();
-        console.log("Raw Borrow Rate Mantissa:", borrowRateMantissa.toString());
-
-        // Calculate the continuously compounded APY
-        const borrowAPY = Math.exp(Number(borrowRateMantissa) / 1e18 * blocksPerYear) - 1;
-
         console.log(`[Console] successfully called on thunk 'updateBorrowRate'`);
 
-        const borrowAPYPercentage = await fetch(`${API_URL}/api/markets/wsx/borrowAPY`);
+        const borrowRate = await fetch(`${API_URL}/api/markets/wsx/borrowAPY`).then((res) => { return res.json()});
         // Return the APY as a percentage
-        return Number(borrowAPY * 100); // Convert to percentage
+        return Number(borrowRate.apy); // Convert to percentage
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'updateBorrowRate': ${error}`);
         return 0;
@@ -262,24 +220,12 @@ export const updateWSXLiquidityInUSD = createAsyncThunk('wsxLiquidity/update', a
             return 0;
         }
     
-        const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-        const degenWSX = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-        const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
-    
         try {
-            const cash = await degenWSX.getCash();
-            const decimals = await degenWSX.decimals();
-            const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
+            const getLiquidity = await fetch(`${API_URL}/api/markets/wsx/marketLiquidity`).then((res) => {return res.json()})
             
-
-            const liquidityInCash = formatUnits(cash, decimals);
-            const wsxPrice = formatUnits(wsxPriceMantissa, decimals);
+            console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD' ${getLiquidity.wsxLiquidityInUSD}`);
     
-            const wsxLiquidityInUSD = Number(wsxPrice) * Number(liquidityInCash);
-    
-            console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD' ${wsxLiquidityInUSD}`);
-    
-            return Number(wsxLiquidityInUSD);
+            return getLiquidity.wsxLiquidityInUSD;
         } catch (error) {
             console.log(`[Console] an error occurred on thunk 'updateLiquidityInUSD': ${error}`);
             return 0;
@@ -460,8 +406,6 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
     }    
     
 })
-
-
 
 
 /// Exporting the Slice
@@ -666,8 +610,4 @@ export const WSXSlice = createSlice({
     }
 });
 
-
-
 export default WSXSlice.reducer;
-
-// Note for devs: Please don't forget to implement supply & borrow balances
