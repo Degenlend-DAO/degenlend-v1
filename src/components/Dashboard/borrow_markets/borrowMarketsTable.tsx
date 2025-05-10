@@ -37,7 +37,7 @@ export default function BorrowMarkets() {
   );
 
   const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
-  const wsxWalletBalance = useSelector(
+  const wsxBorrowBalance = useSelector(
     (state: RootState) => state.wsx.borrowBalance
   );
   const wsxLiquidity = useSelector(
@@ -118,7 +118,7 @@ export default function BorrowMarkets() {
                 </Box>
               </TableCell>
               <TableCell>{formatNumber(wsxBorrowAPY)}%</TableCell>
-              <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
+              <TableCell>{formatNumber(wsxBorrowBalance)} WSX</TableCell>
               <TableCell>${formatNumber(wsxLiquidity)}</TableCell>
             </TableRow>
             {/* USDC Market Details */}

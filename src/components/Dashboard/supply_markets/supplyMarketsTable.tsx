@@ -52,7 +52,7 @@ export default function SupplyMarkets() {
   const usdcSupplyAPY = useSelector(
     (state: RootState) => state.usdc.supplyRate
   );
-  const usdcWalletBalance = useSelector(
+  const usdcSupplyBalance = useSelector(
     (state: RootState) => state.usdc.supplyBalance
   );
   const usdcOraclePrice = useSelector(
@@ -60,7 +60,7 @@ export default function SupplyMarkets() {
   );
 
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
-  const wsxWalletBalance = useSelector((state: RootState) => state.wsx.supplyBalance);
+  const wsxSupplyBalance = useSelector((state: RootState) => state.wsx.supplyBalance);
   const wsxOraclePrice = useSelector(
     (state: RootState) => state.wsx.oraclePrice
   );
@@ -148,7 +148,7 @@ export default function SupplyMarkets() {
                 </Box>
               </TableCell>
               <TableCell>{formatNumber(wsxSupplyAPY)}%</TableCell>
-              <TableCell>{formatNumber(wsxWalletBalance)} WSX</TableCell>
+              <TableCell>{formatNumber(wsxSupplyBalance)} WSX</TableCell>
               <TableCell>
                 <Switch
                   onClick={(event) => {
@@ -179,7 +179,7 @@ export default function SupplyMarkets() {
                 </Box>
               </TableCell>
               <TableCell>{formatNumber(usdcSupplyAPY)}%</TableCell>
-              <TableCell>{formatNumber(usdcWalletBalance)} USDC</TableCell>
+              <TableCell>{formatNumber(usdcSupplyBalance)} USDC</TableCell>
               <TableCell>
                 <Switch
                   onClick={(event) => {
