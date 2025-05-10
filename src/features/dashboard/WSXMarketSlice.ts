@@ -136,9 +136,9 @@ export const updateWSXSupplyBalance = createAsyncThunk('wsxSupplyBalance/update'
     try {
 
         const degenWSXBalance = await fetch(`${API_URL}/api/markets/wsx/supplyBalance/${accountAddress}`).then((res) => {return res.json()});
-
-        console.log(`[Console] successfully called on thunk 'updateWSXSupplyBalance'`)
-        return degenWSXBalance.supplyBalance;
+        
+        console.log(`[Console] successfully called on thunk 'updateWSXSupplyBalance'.  value: ${degenWSXBalance.supplyBalance}`)
+        return Number(degenWSXBalance.supplyBalance);
     } catch(error) {
         console.log(`[Console] an error occured on thunk 'updateWSXSupplyBalance': ${error}`)
         return 0;
