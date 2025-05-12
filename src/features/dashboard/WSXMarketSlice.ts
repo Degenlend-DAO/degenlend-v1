@@ -42,6 +42,7 @@ const initialState: WSXState = {
     liquidityInUSD: 0.00,
 }
 
+// Developer Note: these params may become obsolete with the new intent system put into place
 interface approveWSXParams {
     amount: number,
     addressToApprove: string,
@@ -54,6 +55,12 @@ interface supplyWSXParams {
 
 interface withdrawWSXParams {
     amount: number,
+}
+
+interface IntentParams {
+    cToken: string;
+    amount: number;
+    deadline: number;
 }
 
 
@@ -405,6 +412,37 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
         }
     }    
     
+})
+
+///////////  Intent Thunks
+
+export const mintIntent = createAsyncThunk('wsx/intent/mint', async ({ cToken, amount, deadline }: IntentParams) => {
+
+    const [wallet] = onboard.state.get().wallets;
+    if (!wallet) throw new Error('Wallet not connected');
+
+    const body = JSON.stringify({
+      user: wallet.accounts[0].address,   // EIP‑712 signer
+      cToken,
+      amount,
+      deadline
+    });
+
+    try {
+        const res = await fetch(`${API_URL}/intent/mint`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+          if (!res.ok) throw new Error(await res.text());
+          return await res.json();
+    } catch( err: any ) {
+        if (err?.reason) {
+            console.error(`[Console] Borrow failed with reason ${err.reason}`)
+        } else if (err?.data) {
+            console.error(`[Console] Borrow failed with data: ${JSON.stringify(err.data)}`)
+        }
+    }
 })
 
 
