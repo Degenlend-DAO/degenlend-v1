@@ -8,11 +8,13 @@ import usdcReducer from '../features/dashboard/USDCMarketSlice'
 import wsxReducer from '../features/dashboard/WSXMarketSlice'
 import accountReducer from '../features/dashboard/AccountSlice'
 import transactionsReducer from '../features/dashboard/transactionSlice'
+import intentsReducer from '../features/dashboard/IntentSlice'
 
 export const store = configureStore({
     reducer: {
         transactions: transactionsReducer,
         account: accountReducer,
+        intent: intentsReducer,
         wallet: walletReducer,
         usdc: usdcReducer,
         wsx: wsxReducer,
