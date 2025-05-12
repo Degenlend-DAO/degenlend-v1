@@ -16,8 +16,9 @@ interface AccountState {
     transactionHash: string,
     amount: number,
     liquidity: number,
-    borrowLimit: number,
-    borrowLimitUsed: number,
+    borrowLimitUsd: number,      // Σ collateralValue × collateralFactor
+    borrowedUsd:    number,      // Σ borrowBalance × price
+    borrowUtil:     number,      // borrowedUsd / borrowLimitUsd   (0‑1)
     netAPY: number,
     netBorrowBalance: number,
     netSupplyBalance: number,
@@ -30,8 +31,9 @@ const initialState: AccountState = {
     transactionHash: "0x00000000000000000000000000000000000000000",
     amount: 0,
     liquidity: 0e18,
-    borrowLimit: 0,
-    borrowLimitUsed: 0,
+    borrowLimitUsd: 0,      // Σ collateralValue × collateralFactor
+    borrowedUsd:    0,      // Σ borrowBalance × price
+    borrowUtil:     0,      // borrowedUsd / borrowLimitUsd   (0‑1)
     netAPY: 0,
     netBorrowBalance: 0,
     netSupplyBalance: 0
