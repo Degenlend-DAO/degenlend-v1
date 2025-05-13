@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 
 // Reducers
 import walletReducer from '../features/wallet/walletSlice'
+import marketsReducer from '../features/dashboard/MarketsSlice'
 import usdcReducer from '../features/dashboard/USDCMarketSlice'
 import wsxReducer from '../features/dashboard/WSXMarketSlice'
 import accountReducer from '../features/dashboard/AccountSlice'
@@ -15,6 +16,7 @@ export const store = configureStore({
     reducer: {
         transactions: transactionsReducer,
         borrowLimit: borrowLimitReducer,
+        market: marketsReducer,
         account: accountReducer,
         intent: intentsReducer,
         wallet: walletReducer,
