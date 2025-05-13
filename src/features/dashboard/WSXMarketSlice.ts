@@ -290,7 +290,7 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
 })
 
 ///////////  Supply Market Thunks
-export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: number) => {
+export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: number, { rejectWithValue }) => {
     
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
@@ -323,13 +323,14 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
 
           let tx = await res.json();
         console.log(`[Console] successfully called on thunk 'supplyWSX' hash: ${tx.hash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'supplyWSX': ${error} `)
+        return rejectWithValue(error.message);
 
     }
 })
 
-export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmount: number) => {
+export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmount: number, { rejectWithValue }) => {
     
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
@@ -361,15 +362,16 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
 
           let tx = await res.json();
         console.log(`[Console] successfully called on thunk 'withdrawWSX' ${tx.txHash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'withdrawWSX': ${error} `)
+        return rejectWithValue(error.message);
 
     }
 
 })
 
 ///////////  Borrow Market Thunks
-export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number) => {
+export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number, { rejectWithValue }) => {
     
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
@@ -401,13 +403,15 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
 
           let tx = await res.json();
         console.log(`[Console] successfully called on thunk 'repayWSX' ${tx.txHash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'repayWSX': ${error} `)
+        return rejectWithValue(error.message);
+
     }
 
 })
 
-export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: number) => {
+export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: number, { rejectWithValue }) => {
     
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
@@ -446,6 +450,7 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
             console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
         } else {
             console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
+            return rejectWithValue(error.message);
         }
     }    
     
@@ -604,7 +609,10 @@ export const WSXSlice = createSlice({
 
         // Borrow Wrapped SX
 
-        builder.addCase(borrowWSX.pending, (state, action) => {});
+        builder.addCase(borrowWSX.pending, (state, action) => {
+            state.loading = true;
+
+        });
 
         builder.addCase(borrowWSX.rejected, (state, action) => {});
 
@@ -612,7 +620,10 @@ export const WSXSlice = createSlice({
 
         // Repay Wrapped SX
 
-        builder.addCase(repayWSX.pending, (state, action) => {});
+        builder.addCase(repayWSX.pending, (state, action) => {
+            state.loading = true;
+
+        });
 
         builder.addCase(repayWSX.rejected, (state, action) => {});
 
@@ -620,7 +631,10 @@ export const WSXSlice = createSlice({
 
         // Supply Wrapped SX
 
-        builder.addCase(supplyWSX.pending, (state, action) => {});
+        builder.addCase(supplyWSX.pending, (state, action) => {
+            state.loading = true;
+
+        });
 
         builder.addCase(supplyWSX.rejected, (state, action) => {});
 
@@ -628,7 +642,10 @@ export const WSXSlice = createSlice({
 
         // Withdraw Wrapped SX
 
-        builder.addCase(withdrawWSX.pending, (state, action) => {});
+        builder.addCase(withdrawWSX.pending, (state, action) => {
+            state.loading = true;
+
+        });
 
         builder.addCase(withdrawWSX.rejected, (state, action) => {});
 

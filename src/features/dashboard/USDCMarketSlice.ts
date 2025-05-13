@@ -239,7 +239,7 @@ export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', 
 // Activities
 
 ///////////  Misc Market Thunks
-export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectWithValue }) => {
+export const approveUSDC = createAsyncThunk('usdc/Approve', async (_, { rejectWithValue }) => {
     
     const [wallet] = onboard.state.get().wallets;
 
@@ -268,7 +268,7 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectW
 
 ///////////  Supply Market Thunks
 
-export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: number) => {
+export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: number, { rejectWithValue }) => {
     console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
 
     const chainId = 647;
@@ -308,7 +308,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
     }
 })
 
-export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number) => {
+export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number, { rejectWithValue }) => {
     console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
 
     const chainId = 647;
@@ -350,7 +350,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
 
 ///////////  Borrow Market Thunks
 
-export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number) => {
+export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number, { rejectWithValue }) => {
     console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
 
     const chainId = 647;
@@ -390,7 +390,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
     }
 })
 
-export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number) => {
+export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number, { rejectWithValue }) => {
     console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
 
     const chainId = 647;
@@ -645,7 +645,3 @@ export const USDCSlice = createSlice({
 });
 
 export default USDCSlice.reducer;
-
-function rejectWithValue(message: any): any {
-    throw new Error('Function not implemented.');
-}
