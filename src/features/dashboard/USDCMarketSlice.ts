@@ -1,12 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
-import { API_URL } from '../../../src/utils/constant';
+import { API_URL, ORACLE_URL } from '../../../src/utils/constant';
 import { onboard, testnet_addresses } from '../../utils/web3';
 
 // ABIs
-import Comptroller from '../../abis/Comptroller.json';
-import ERC20Immutable from '../../abis/Erc20Immutable.json'
-import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
+
 import ERC20 from '../../abis/ERC20.json'
 
 interface USDCState {
@@ -138,7 +136,6 @@ export const updateUSDCBorrowBalance = createAsyncThunk('usdcBorrowBalance/updat
     }
 
     let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, ethersProvider);
     const accountAddress = wallet.accounts[0].address;
 
     try {
@@ -228,9 +225,13 @@ export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', 
 
     try {
 
-        console.log(`[Console] Successfully called `)
-    } catch {
-
+     const req = await fetch(`${ORACLE_URL}/api/prices`)
+     const usdcPrice = await req.json();
+     console.log(`[Console] successfully called on thunk 'updateUSDCOraclePrice' with values ${usdcPrice}`)
+     return Number(usdcPrice.prices.USDC);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'updatePriceOracle': ${error} `)
+        return 0;
     }
 
     return 1.00;
@@ -263,118 +264,6 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectW
         return rejectWithValue(error.message);
     }
 
-})
-
-///////////  Supply Market Thunks
-
-export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: number) => {
-    console.log(`[Console] initiating thunk, 'supplyUSDC' ...`);
-
-    const [wallet] = onboard.state.get().wallets;
-
-    if (wallet === undefined) {
-        return 0;
-    }
-
-    console.log(`[Console] initiating thunk, 'supplyUSDC' ...`);
-
-    
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-    const amount = parseUnits(`${supplyAmount}`);
-
-    try {
-        const tx = await degenUSDC.mint(amount);
-        tx.wait();
-        console.log(`[Console] successfully called on thunk 'supplyUSDC'`);
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
-
-    }
-})
-
-export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number) => {
-    
-    const [wallet] = onboard.state.get().wallets;
-
-    if (wallet === undefined) {
-        return 0;
-    }
-    
-    console.log(`[Console] initiating thunk, 'withdrawUSDC' ...`);
-
-
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20Immutable.abi, signer);
-    const amount = parseUnits(`${withdrawAmount}`);
-    try {
-
-        const tx = await degenUSDC.redeemUnderlying(amount);
-        await tx.wait(1);
-        console.log(`[Console] successfully called on thunk 'withdrawUSDC'`);
-    
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'withdrawUSDC': ${error} `)
-
-    }
-})
-
-///////////  Borrow Market Thunks
-
-export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number) => {
-    
-    const [wallet] = onboard.state.get().wallets;
-
-    if (wallet === undefined) {
-        return 0;
-    }
-
-    console.log(`[Console] initiating thunk, 'borrowUSDC' ...`);
-
-    
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
-    const amount = parseUnits(`${borrowAmount}`);
-
-    try {
-        const tx = await degenUSDC.borrow(amount);
-        await tx.wait(1);
-        console.log(`[Console] successfully called on thunk 'borrowUSDC'`);
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'borrowUSDC': ${error} `)
-
-    }
-})
-
-export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number) => {
-    
-    const [wallet] = onboard.state.get().wallets;
-
-    if (wallet === undefined) {
-        return 0;
-    }
-
-    console.log(`[Console] initiating thunk, 'repayUSDC' ...`);
-
-    
-    let ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const signer = await ethersProvider.getSigner();
-    const degenUSDC = new Contract(testnet_addresses.degenUSDC, ERC20.abi, signer);
-    const amount = parseUnits(`${repayAmount}`);
-    console.log(`[Console] attempting to repay borrow now...`);
-
-    try {
-        const tx = await degenUSDC.redeemUnderlying(amount);
-        await tx.wait(1);
-        console.log(`[Console] successfully called on thunk 'repayUSDC'`);
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'repayUSDC': ${error} `)
-
-    }
 })
 
 /// Exporting the Slice
@@ -528,38 +417,6 @@ export const USDCSlice = createSlice({
         
         
         ///////////  Activities
-
-        // Borrow Wrapped USDC
-
-        builder.addCase(borrowUSDC.pending, (state, action) => {});
-
-        builder.addCase(borrowUSDC.rejected, (state, action) => {});
-
-        builder.addCase(borrowUSDC.fulfilled, (state, action) => {});
-
-        // Repay Wrapped USDC
-
-        builder.addCase(repayUSDC.pending, (state, action) => {});
-
-        builder.addCase(repayUSDC.rejected, (state, action) => {});
-
-        builder.addCase(repayUSDC.fulfilled, (state, action) => {});
-
-        // Supply Wrapped USDC
-
-        builder.addCase(supplyUSDC.pending, (state, action) => {});
-
-        builder.addCase(supplyUSDC.rejected, (state, action) => {});
-
-        builder.addCase(supplyUSDC.fulfilled, (state, action) => {});
-
-        // Withdraw Wrapped USDC
-
-        builder.addCase(withdrawUSDC.pending, (state, action) => {});
-
-        builder.addCase(withdrawUSDC.rejected, (state, action) => {});
-
-        builder.addCase(withdrawUSDC.fulfilled, (state, action) => {});
 
         // Approve USDC
 
