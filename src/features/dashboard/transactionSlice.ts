@@ -1,60 +1,86 @@
-// transactionsSlice.ts
-import { createSlice, createAsyncThunk, AsyncThunkAction } from "@reduxjs/toolkit";
+// ─────────────────────────────────────────────────────────────
+//  transactionSlice.ts  ▸  Centralised async‑tx status tracker
+//
+//  Pattern: `handleTransaction` thunk wraps any async function that
+//  returns a promise (e.g., dispatching an intent thunk) and updates
+//  global status so UI can show a spinner / toast regardless of source.
+// ─────────────────────────────────────────────────────────────
 
-interface TransactionState {
-    status: string,
-    error: any,
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../../app/Store';
+
+export type TxPhase = 'idle' | 'pending' | 'success' | 'error' | 'rejected';
+
+interface TxState {
+  phase: TxPhase;
+  hash?: string;
+  error?: string;
 }
 
-const initialState: TransactionState = {
-    status: "idle", // "idle" | "pending" | "success" | "failed"
-    error: null,
+const initialState: TxState = {
+  phase: 'idle'
+};
+
+/* -------------------------------------------------------------------------- */
+/*                          Generic transaction wrapper                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Wrap any async function (e.g. borrowIntent thunk) to update tx status.
+ * @example dispatch(handleTransaction(() => dispatch(borrowIntent(args))))
+ */
+export const handleTransaction = createAsyncThunk<
+  string | void,
+  () => Promise<{ txHash?: string } | void>
+>('tx/handle', async (fn, { dispatch, rejectWithValue }) => {
+  try {
+    const result: any = await fn();
+    // If the wrapped fn returns a txHash, pass it through
+    return result?.txHash ?? '';
+  } catch (err: any) {
+    return rejectWithValue(err.message || 'Transaction failed');
   }
-
-// A reusable function for handling asynchronous blockchain transactions
-export const handleTransaction = createAsyncThunk(
-    "transactions/handleTransaction",
-    async (transactionFn: () => AsyncThunkAction<any, any, any>, { dispatch }) => {
-      try {
-        dispatch(setTransactionStatus("pending"));
-        console.log("Pending transaction started.");
-  
-        // Dispatch the thunk and await the action itself to resolve
-        const result = await dispatch(transactionFn());
-  
-        // Ensure result is handled correctly
-        if (result.meta.requestStatus === 'fulfilled') {
-          console.log("Transaction successful:", result);
-          dispatch(setTransactionStatus("success"));
-        } else if (result.meta.requestStatus === 'rejected') {
-          throw result.meta.rejectedWithValue || new Error("Transaction rejected or failed");
-        }
-      } catch (error: any) {
-        console.error("Caught transaction failure. Error:", error);
-  
-        if (error?.code === 4001) {  // Handle MetaMask user rejection
-          dispatch(setTransactionStatus("rejected"));
-        } else {
-          dispatch(setTransactionStatus("failed"));
-        }
-      }
-    }
-  );
-  
-  
-
-export const transactionsSlice = createSlice({
-  name: "transactions",
-  initialState,
-  reducers: {
-    setTransactionStatus(state, action) {
-      state.status = action.payload;
-    },
-  },
-  extraReducers: (builder) => {
-    // Add extra reducers for specific transaction actions if needed
-  },
 });
 
-export const { setTransactionStatus } = transactionsSlice.actions;
-export default transactionsSlice.reducer;
+/* -------------------------------------------------------------------------- */
+/*                                   Slice                                    */
+/* -------------------------------------------------------------------------- */
+
+const txSlice = createSlice({
+  name: 'transaction',
+  initialState,
+  reducers: {
+    resetTx(state) {
+      state.phase = 'idle';
+      state.hash  = undefined;
+      state.error = undefined;
+    }
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(handleTransaction.pending,  state => {
+        state.phase = 'pending';
+        state.error = undefined;
+        state.hash  = undefined;
+      })
+      .addCase(handleTransaction.fulfilled,(state, action: PayloadAction<string|void>) => {
+        state.phase = 'success';
+        if (action.payload) state.hash = action.payload;
+      })
+      .addCase(handleTransaction.rejected, (state, action) => {
+        state.phase = 'error';
+        state.error = String(action.payload || action.error.message);
+      });
+  }
+});
+
+export const { resetTx } = txSlice.actions;
+export default txSlice.reducer;
+
+/* -------------------------------------------------------------------------- */
+/*                                Selectors                                   */
+/* -------------------------------------------------------------------------- */
+
+export const selectTxPhase = (s: RootState) => s.transactions.phase;
+export const selectTxHash  = (s: RootState) => s.transactions.hash;
+export const selectTxError = (s: RootState) => s.transactions.error;
