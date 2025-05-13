@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { isUSDCListedAsCollateral, updateUSDCSupplyRate, updateUSDCBalance, updateUSDCOraclePrice, updateUSDCBorrowBalance, updateUSDCSupplyBalance, updateUSDCBorrowRate } from '../features/dashboard/USDCMarketSlice';
 import { isWSXListedAsCollateral, updateWSXSupplyRate, updateWSXBalance, updateWSXOraclePrice, updateWSXBorrowBalance, updateWSXSupplyBalance, updateWSXBorrowRate } from '../features/dashboard/WSXMarketSlice';
-import { updateBorrowLimit, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../features/dashboard/AccountSlice';
+import { updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../features/dashboard/AccountSlice';
 
 const ConnectWallet = () => {
     const [anchorElement, setAnchorElement] = useState<EventTarget & HTMLButtonElement | null>(null)
@@ -61,7 +61,6 @@ const ConnectWallet = () => {
           dispatch(updateUSDCOraclePrice());
           dispatch(updateWSXOraclePrice());
       
-          dispatch(updateBorrowLimit());
           dispatch(updateNetSupplyBalance());
           dispatch(updateNetBorrowBalance());
           dispatch(updateNetAPY());
