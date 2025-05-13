@@ -1,3 +1,5 @@
+/// Developers note: THIS FILE IS PROBABLY USELESS, AND ADDS UNNECESSARY COMPLEXITY (It looks very clean though)  CONSIDER DEPRICATING
+
 // ─────────────────────────────────────────────────────────────
 //  IntentSlice.ts  ▸  Redux Toolkit slice for relayer "intents"
 //                   (mint / redeem / borrow / repay) targeting the
@@ -42,7 +44,7 @@ interface IntentBody {
   cToken: string;
   amount: string;   // raw wei string
   deadline: number; // unix timestamp seconds
-  signature?: string; // if client‑side signing is implemented
+  signature: string; // if client‑side signing is implemented
 }
 
 interface IntentResponse {
@@ -72,7 +74,8 @@ function buildIntentThunk(
         user: wallet.accounts[0].address,
         cToken: market.cToken,
         amount,
-        deadline: Math.floor(Date.now() / 1000) + 300, // 5‑minute ttl
+        deadline: Math.floor(Date.now() / 1000) + 300,
+        signature: ''
       };
 
       const res = await fetch(`${API_URL}/api/intent/${action}`, {
