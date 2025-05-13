@@ -64,6 +64,16 @@ const ConnectWallet = () => {
           dispatch(updateNetSupplyBalance());
           dispatch(updateNetBorrowBalance());
           dispatch(updateNetAPY());
+
+          const priceInterval = setInterval(() => {
+            dispatch(updateUSDCOraclePrice());
+            dispatch(updateWSXOraclePrice());
+          }, 15_000);
+        
+          return () => {
+            clearInterval(priceInterval);
+          };
+
         }
       }, [dispatch, isWalletConnected]);
       
