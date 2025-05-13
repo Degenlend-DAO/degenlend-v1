@@ -4,11 +4,8 @@ import { ethers, Contract, formatUnits, parseUnits } from 'ethers';
 import { API_URL, ORACLE_URL } from "../../../src/utils/constant";
 
 // ABIs
-import ERC20 from '../../abis/ERC20.json'
-
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/Store';
-
+import ERC20 from '../../abis/ERC20.json';
+import { signBorrowIntent, signMintIntent, signRedeemIntent, signRepayIntent } from '../../utils/Intents';
 
 interface WSXState {
     loading: boolean;
@@ -292,7 +289,167 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
 
 })
 
+///////////  Supply Market Thunks
+export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: number) => {
+    
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
 
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenWSX;
+    const amount = BigInt(supplyAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+
+    try {
+        const signature = signMintIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/mint`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+        console.log(`[Console] successfully called on thunk 'supplyWSX' hash: ${tx.hash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'supplyWSX': ${error} `)
+
+    }
+})
+
+export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmount: number) => {
+    
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenWSX;
+    const amount = BigInt(withdrawAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signRedeemIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/redeem`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+        console.log(`[Console] successfully called on thunk 'withdrawWSX' ${tx.txHash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'withdrawWSX': ${error} `)
+
+    }
+
+})
+
+///////////  Borrow Market Thunks
+export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number) => {
+    
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenWSX;
+    const amount = BigInt(repayAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signRepayIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/borrow`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+        console.log(`[Console] successfully called on thunk 'repayWSX' ${tx.txHash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'repayWSX': ${error} `)
+    }
+
+})
+
+export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: number) => {
+    
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenWSX;
+    const amount = BigInt(borrowAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/repay`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+        console.log(`[Console] successfully called on thunk 'borrowWSX' ${tx.txHash}`);
+    } catch (error: any) {
+        if (error?.reason) {
+            console.error(`[Console] Borrow failed with reason: ${error.reason}`);
+        } else if (error?.data) {
+            console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
+        } else {
+            console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
+        }
+    }    
+    
+})
 
 /// Exporting the Slice
 export const WSXSlice = createSlice({
@@ -443,6 +600,39 @@ export const WSXSlice = createSlice({
             state.liquidityInUSD = action.payload;
         })
         
+                ///////////  Activities
+
+        // Borrow Wrapped SX
+
+        builder.addCase(borrowWSX.pending, (state, action) => {});
+
+        builder.addCase(borrowWSX.rejected, (state, action) => {});
+
+        builder.addCase(borrowWSX.fulfilled, (state, action) => {});
+
+        // Repay Wrapped SX
+
+        builder.addCase(repayWSX.pending, (state, action) => {});
+
+        builder.addCase(repayWSX.rejected, (state, action) => {});
+
+        builder.addCase(repayWSX.fulfilled, (state, action) => {});
+
+        // Supply Wrapped SX
+
+        builder.addCase(supplyWSX.pending, (state, action) => {});
+
+        builder.addCase(supplyWSX.rejected, (state, action) => {});
+
+        builder.addCase(supplyWSX.fulfilled, (state, action) => {});
+
+        // Withdraw Wrapped SX
+
+        builder.addCase(withdrawWSX.pending, (state, action) => {});
+
+        builder.addCase(withdrawWSX.rejected, (state, action) => {});
+
+        builder.addCase(withdrawWSX.fulfilled, (state, action) => {});
 
         // Approve Wrapped SX
 

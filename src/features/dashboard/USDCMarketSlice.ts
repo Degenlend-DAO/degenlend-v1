@@ -6,6 +6,7 @@ import { onboard, testnet_addresses } from '../../utils/web3';
 // ABIs
 
 import ERC20 from '../../abis/ERC20.json'
+import { signBorrowIntent, signMintIntent, signRedeemIntent, signRepayIntent } from '../../utils/Intents';
 
 interface USDCState {
     loading: boolean;
@@ -233,8 +234,6 @@ export const updateUSDCOraclePrice = createAsyncThunk('usdcOraclePrice/update', 
         console.log(`[Console] an error occurred on thunk 'updatePriceOracle': ${error} `)
         return 0;
     }
-
-    return 1.00;
 })
 
 // Activities
@@ -265,6 +264,168 @@ export const approveUSDC = createAsyncThunk('usdc/Approve', async ( _, { rejectW
     }
 
 })
+
+
+///////////  Supply Market Thunks
+
+export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: number) => {
+    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenUSDC;
+    const amount = BigInt(supplyAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signMintIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/mint`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+
+        console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+    }
+})
+
+export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number) => {
+    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenUSDC;
+    const amount = BigInt(withdrawAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signRedeemIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/withdraw`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+
+        console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+    }
+})
+
+///////////  Borrow Market Thunks
+
+export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number) => {
+    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenUSDC;
+    const amount = BigInt(borrowAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/borrow`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+
+        console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+    }
+})
+
+export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number) => {
+    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+
+    const chainId = 647;
+    const relayerAddress = testnet_addresses.degenlendRelayer;
+
+    const [wallet] = onboard.state.get().wallets;
+    const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
+    const user = wallet.accounts[0].address;
+    const cToken = testnet_addresses.degenUSDC;
+    const amount = BigInt(repayAmount);
+    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const nonce = 0;
+    const intentData = { user, cToken, amount, nonce, deadline };
+
+    try {
+        const signature = signRepayIntent(signer, chainId, relayerAddress, intentData);
+        const body = JSON.stringify({
+            user: wallet.accounts[0].address,   // EIP‑712 signer
+            cToken,
+            amount,
+            deadline,
+            signature
+          });
+      
+          const res = await fetch(`${API_URL}/api/intent/repay`, {
+            method: 'POST',
+            headers: { 'Content‑Type': 'application/json' },
+            body
+          });
+
+          let tx = await res.json();
+
+        console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
+    } catch (error) {
+        console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+    }
+})
+
 
 /// Exporting the Slice
 export const USDCSlice = createSlice({
