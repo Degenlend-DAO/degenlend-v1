@@ -39,6 +39,11 @@ const initialState: USDCState = {
     liquidityInUSD: 0.00,
 }
 
+// Helpers
+
+export const toWei = (value: string|number, decimals = 18) =>
+    parseUnits(value.toString(), decimals);
+
 // Views
 
 export const isUSDCListedAsCollateral = createAsyncThunk('usdcCollateral/view', async () => {
@@ -278,7 +283,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenUSDC;
-    const amount = BigInt(supplyAmount);
+    const amount = toWei(supplyAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -318,7 +323,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenUSDC;
-    const amount = BigInt(withdrawAmount);
+    const amount = toWei(withdrawAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -360,7 +365,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenUSDC;
-    const amount = BigInt(borrowAmount);
+    const amount = toWei(borrowAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -400,7 +405,7 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: numb
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenUSDC;
-    const amount = BigInt(repayAmount);
+    const amount = toWei(repayAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };

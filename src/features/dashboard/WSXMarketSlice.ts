@@ -37,27 +37,9 @@ const initialState: WSXState = {
     liquidityInUSD: 0.00,
 }
 
-// Developer Note: these params may become obsolete with the new intent system put into place
-interface approveWSXParams {
-    amount: number,
-    addressToApprove: string,
-}
-
-interface supplyWSXParams {
-    amount: number,
-    addressToApprove: string,
-}
-
-interface withdrawWSXParams {
-    amount: number,
-}
-
-interface IntentParams {
-    cToken: string;
-    amount: number;
-    deadline: number;
-}
-
+// Helpers
+export const toWei = (value: string|number, decimals = 18) =>
+    parseUnits(value.toString(), decimals);
 
 // Views
 
@@ -299,7 +281,7 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenWSX;
-    const amount = BigInt(supplyAmount);
+    const amount = toWei(supplyAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -339,7 +321,7 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenWSX;
-    const amount = BigInt(withdrawAmount);
+    const amount = toWei(withdrawAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -380,7 +362,7 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenWSX;
-    const amount = BigInt(repayAmount);
+    const amount = toWei(repayAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -395,7 +377,7 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
             signature
           });
       
-          const res = await fetch(`${API_URL}/api/intent/borrow`, {
+          const res = await fetch(`${API_URL}/api/intent/repay`, {
             method: 'POST',
             headers: { 'Content‑Type': 'application/json' },
             body
@@ -420,7 +402,7 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
     const signer = await new ethers.BrowserProvider(wallet.provider).getSigner();
     const user = wallet.accounts[0].address;
     const cToken = testnet_addresses.degenWSX;
-    const amount = BigInt(borrowAmount);
+    const amount = toWei(borrowAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = 0;
     const intentData = { user, cToken, amount, nonce, deadline };
@@ -435,7 +417,7 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
             signature
           });
       
-          const res = await fetch(`${API_URL}/api/intent/repay`, {
+          const res = await fetch(`${API_URL}/api/intent/borrow`, {
             method: 'POST',
             headers: { 'Content‑Type': 'application/json' },
             body
