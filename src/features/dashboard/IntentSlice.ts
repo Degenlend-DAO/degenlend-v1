@@ -75,7 +75,7 @@ function buildIntentThunk(
         deadline: Math.floor(Date.now() / 1000) + 300, // 5‑minute ttl
       };
 
-      const res = await fetch(`${API_URL}/intent/${action}`, {
+      const res = await fetch(`${API_URL}/api/intent/${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
