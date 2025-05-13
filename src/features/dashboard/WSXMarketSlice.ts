@@ -250,6 +250,7 @@ export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', as
 
      const req = await fetch(`${ORACLE_URL}/api/prices`)
      const wsxPrice = await req.json();
+     console.log(`[Console] successfully called on thunk 'updateUSDCOraclePrice' with values ${wsxPrice}`)
      return Number(wsxPrice.prices.SX);
     } catch (error) {
         console.log(`[Console] an error occurred on thunk 'updatePriceOracle': ${error} `)
