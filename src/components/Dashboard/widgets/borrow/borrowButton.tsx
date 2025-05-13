@@ -44,6 +44,8 @@ function BorrowButton(props: BorrowButtonProps) {
   }
 
   function borrowAssets() {
+    setConfirmTransactionOpen(true);
+
     switch (type) {
       case "sx":
         dispatch(handleTransaction(() => dispatch(borrowWSX(amount)).unwrap()));
@@ -53,7 +55,6 @@ function BorrowButton(props: BorrowButtonProps) {
         dispatch(handleTransaction(() => dispatch(borrowUSDC(amount)).unwrap()));
         break;
     }
-    setConfirmTransactionOpen(true);
   }
 
   return (

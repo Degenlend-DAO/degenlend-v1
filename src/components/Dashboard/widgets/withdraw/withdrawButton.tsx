@@ -42,6 +42,8 @@ function WithdrawButton(props: WithdrawButtonProps) {
   }
 
   function withdrawAssets() {
+    setConfirmTransactionOpen(true);
+
     switch (type) {
       case "sx":
         dispatch(handleTransaction(() => dispatch(withdrawWSX(amount)).unwrap()));
@@ -52,7 +54,6 @@ function WithdrawButton(props: WithdrawButtonProps) {
         break;
     }
 
-    setConfirmTransactionOpen(true);
   }
 
   return (

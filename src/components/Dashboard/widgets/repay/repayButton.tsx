@@ -49,6 +49,8 @@ function RepayButton(props: RepayButtonProps) {
     // Button Effects
 
     function repayAssets() {
+      setConfirmTransactionOpen(true);
+
     switch (type) {
       case "sx":
         dispatch(handleTransaction(() => dispatch(repayWSX(amount)).unwrap()));
@@ -59,11 +61,11 @@ function RepayButton(props: RepayButtonProps) {
         break;
     }
         
-        setConfirmTransactionOpen(true);
     }
 
 // When called, you 'approve'
   function enableAssets() {
+    setConfirmTransactionOpen(true);
     if (type === "sx") {
       dispatch(approveWSX());
     }
@@ -71,7 +73,6 @@ function RepayButton(props: RepayButtonProps) {
       dispatch(approveUSDC());
     }
 
-    setConfirmTransactionOpen(true);
   }
 
 

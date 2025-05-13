@@ -72,6 +72,8 @@ function SupplyButton(props: SupplyButtonProps) {
 
   // When called, you 'supply'
   function supplyAssets() {
+    setConfirmTransactionOpen(true);
+
     switch (type) {
       case "sx":
         dispatch(handleTransaction(() => dispatch(supplyWSX(amount)).unwrap()));
@@ -82,11 +84,12 @@ function SupplyButton(props: SupplyButtonProps) {
         break;
     }
 
-    setConfirmTransactionOpen(true);
   }
 
   // When called, you 'approve'
   function enableAssets() {
+    setConfirmTransactionOpen(true);
+
     if (type === "sx") {
       dispatch(handleTransaction(() => dispatch(approveWSX()).unwrap() as Promise<void | { txHash?: string }>));
     }
@@ -94,7 +97,6 @@ function SupplyButton(props: SupplyButtonProps) {
       dispatch(handleTransaction(() => dispatch(approveUSDC()).unwrap() as Promise<void | { txHash?: string }>));
     }
 
-    setConfirmTransactionOpen(true);
   }
 
   useEffect(() => {

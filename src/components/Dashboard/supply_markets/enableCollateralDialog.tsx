@@ -59,6 +59,8 @@ function EnableMarketDialog(props: EnableMarketsProps) {
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
   const handleClick = () => {
+    setConfirmTransactionOpen(true);
+    
     if (type === "sx") {
       // If wsx is already listed as collateral, exit the market
       if (isWSXCollateral) {
@@ -76,7 +78,6 @@ function EnableMarketDialog(props: EnableMarketsProps) {
         dispatch(enterUSDCMarket());
       }
     }
-    setConfirmTransactionOpen(true);
 
     onClose();
   };
