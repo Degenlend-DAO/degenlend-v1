@@ -7,12 +7,14 @@ import walletReducer from '../features/wallet/walletSlice'
 import usdcReducer from '../features/dashboard/USDCMarketSlice'
 import wsxReducer from '../features/dashboard/WSXMarketSlice'
 import accountReducer from '../features/dashboard/AccountSlice'
+import borrowLimitReducer from '../features/dashboard/BorrowLimitSlice';
 import transactionsReducer from '../features/dashboard/transactionSlice'
 import intentsReducer from '../features/dashboard/IntentSlice'
 
 export const store = configureStore({
     reducer: {
         transactions: transactionsReducer,
+        borrowLimit: borrowLimitReducer,
         account: accountReducer,
         intent: intentsReducer,
         wallet: walletReducer,
