@@ -30,7 +30,7 @@ export interface Position { cToken: string; balance: bigint; }
 
 const selectSupplies   = (s: RootState): Position[]             => s.account.netSupplyBalance;
 const selectBorrows    = (s: RootState): Position[]             => s.account.netBorrowBalance;
-const selectMarketMeta = (s: RootState): Record<string,MarketMeta> => s.market.meta;
+const selectMarketMeta = (s: RootState): Record<string,MarketMeta> => s.market;
 
 /* -------------------------------------------------------------------------- */
 /*                            Derived metrics                                 */
