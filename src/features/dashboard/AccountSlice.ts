@@ -3,12 +3,11 @@ import { onboard, testnet_addresses } from '../../utils/web3';
 import { API_URL } from '../../utils/constant';
 import { ethers, Contract, formatUnits } from 'ethers'
 
-// ABIs
-import ERC20Immutable from '../../abis/Erc20Immutable.json'
 import Comptroller from '../../abis/Comptroller.json'
-import SimplePriceOracle from '../../abis/SimplePriceOracle.json';
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/Store";
+
+// ABIs
+
+export interface Position { cToken: string; balance: bigint; }
 interface AccountState {
     loading: boolean;
     error: string;
@@ -16,12 +15,9 @@ interface AccountState {
     transactionHash: string,
     amount: number,
     liquidity: number,
-    borrowLimitUsd: number,      // Σ collateralValue × collateralFactor
-    borrowedUsd:    number,      // Σ borrowBalance × price
-    borrowUtil:     number,      // borrowedUsd / borrowLimitUsd   (0‑1)
     netAPY: number,
-    netBorrowBalance: number,
-    netSupplyBalance: number,
+    netBorrowBalance: Position[],
+    netSupplyBalance: Position[],
 }
 
 const initialState: AccountState = {
@@ -31,12 +27,15 @@ const initialState: AccountState = {
     transactionHash: "0x00000000000000000000000000000000000000000",
     amount: 0,
     liquidity: 0e18,
-    borrowLimitUsd: 0,      // Σ collateralValue × collateralFactor
-    borrowedUsd:    0,      // Σ borrowBalance × price
-    borrowUtil:     0,      // borrowedUsd / borrowLimitUsd   (0‑1)
     netAPY: 0,
-    netBorrowBalance: 0,
-    netSupplyBalance: 0
+    netBorrowBalance:  [
+        { cToken: `${testnet_addresses.degenWSX}`, balance: BigInt(100) },
+        { cToken: `${testnet_addresses.degenUSDC}`, balance: BigInt(1100) }
+      ],
+    netSupplyBalance: [
+        { cToken: `${testnet_addresses.degenWSX}`, balance: BigInt(200) },
+        { cToken: `${testnet_addresses.degenUSDC}`, balance: BigInt(2200) }
+      ],
 }
 
 // Views
@@ -121,71 +120,7 @@ export const updateAmount = createAsyncThunk('account/updateAmount', async (amou
     return amountToUpdate;
 });
 
-/**
- * Updates the available borrow limit & borrow limit used from the smart contract.
- * @remarks
- * this function does not take in params
- */
-export const updateBorrowLimit = createAsyncThunk('borrowLimit/update', async () => {
-    const [wallet] = onboard.state.get().wallets;
 
-    if (!wallet) {
-        return {
-            liquidity: 0,
-            borrowBalanceInUSD: 0,
-            borrowLimitUsed: 0
-        }
-    }
-
-    const walletAddress = wallet.accounts[0].address;
-    const ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-    const comptroller = new Contract(testnet_addresses.comptroller, Comptroller.abi, ethersProvider);
-    const wsxContract = new Contract(testnet_addresses.degenWSX, ERC20Immutable.abi, ethersProvider);
-    const priceOracle = new Contract(testnet_addresses.price_oracle, SimplePriceOracle.abi, ethersProvider);
-
-    try {
-        // Fetch liquidity and shortfall
-        const [error, liquidity, shortfall] = await comptroller.getAccountLiquidity(walletAddress);
-
-        if (error !== 0 || !shortfall.isZero()) {
-            console.error("Comptroller.getAccountLiquidity failed:", error);
-            return { liquidity: 0, shortfall: 0, borrowLimitUsed: 0 };
-        }
-
-        // Fetch current borrow balance in WSX
-        const borrowBalanceMantissa = await wsxContract.borrowBalanceStored(walletAddress);
-        const formattedBorrowBalance = parseFloat(formatUnits(borrowBalanceMantissa, 18));
-
-        // Fetch WSX price from the price oracle
-        const wsxPriceMantissa = await priceOracle.getUnderlyingPrice(testnet_addresses.degenWSX);
-        const wsxPrice = parseFloat(formatUnits(wsxPriceMantissa, 18));
-
-        // Calculate borrow balance in USD
-        const borrowBalanceInUSD = formattedBorrowBalance * wsxPrice;
-
-        // Format liquidity in USD
-        const formattedLiquidityInUSD = parseFloat(formatUnits(liquidity, 18));
-
-        // Calculate Borrow Limit Usage as a percentage
-        const borrowLimitUsed = (borrowBalanceInUSD / formattedLiquidityInUSD) * 100;
-
-        console.log(`[Console] Borrow Limit Used: ${borrowLimitUsed}%`);
-
-        return {
-            liquidity: formattedLiquidityInUSD,
-            borrowBalanceInUSD,
-            borrowLimitUsed: Number(borrowLimitUsed.toFixed(2)) // return as a percentage with 2 decimal places
-        };
-
-    } catch (error) {
-        console.log(`[Console] an error occurred on thunk 'updateBorrowLimit': ${error}`);
-        return {
-            liquidity: 0,
-            borrowBalanceInUSD: 0,
-            borrowLimitUsed: 0
-        };
-    }
-});
 
 
 
@@ -206,6 +141,7 @@ export const updateNetAPY = createAsyncThunk('netAPY/update', async () => {
         throw new Error('Failed to update net APY');
     }
 });
+
 
 
 
@@ -316,7 +252,10 @@ export const AccountSlice = createSlice({
         });
         builder.addCase(updateNetSupplyBalance.fulfilled, (state, action) => {
             state.loading = false;
-            state.netSupplyBalance = action.payload;
+            state.netSupplyBalance = state.netSupplyBalance.map((position) => ({
+                ...position,
+                balance: BigInt(action.payload),
+            }));
         });
         builder.addCase(updateNetSupplyBalance.rejected, (state, action) => {
             state.loading = false;
@@ -329,7 +268,10 @@ export const AccountSlice = createSlice({
     });
     builder.addCase(updateNetBorrowBalance.fulfilled, (state, action) => {
         state.loading = false;
-        state.netBorrowBalance = action.payload;
+        state.netBorrowBalance = state.netBorrowBalance.map((position) => ({
+            ...position,
+            balance: BigInt(action.payload),
+        }));
     });
     builder.addCase(updateNetBorrowBalance.rejected, (state, action) => {
         state.loading = false;
@@ -345,19 +287,6 @@ export const AccountSlice = createSlice({
         state.netAPY = action.payload;
     });
     builder.addCase(updateNetAPY.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message!;
-    });
-
-    // Borrow Limit
-    builder.addCase(updateBorrowLimit.pending, (state) => {
-        state.loading = true;
-    });
-    builder.addCase(updateBorrowLimit.fulfilled, (state, action) => {
-        state.loading = false;
-        state.borrowLimit = action.payload.borrowLimitUsed;
-    });
-    builder.addCase(updateBorrowLimit.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message!;
     });
