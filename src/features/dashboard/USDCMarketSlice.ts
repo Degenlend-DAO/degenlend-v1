@@ -300,10 +300,11 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
           });
 
           let tx = await res.json();
-
+          return tx.txHash;
         console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+        return rejectWithValue(error.message);
     }
 })
 
@@ -341,8 +342,9 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
           let tx = await res.json();
 
         console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+        return rejectWithValue(error.message);
     }
 })
 
@@ -382,8 +384,9 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
           let tx = await res.json();
 
         console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+        return rejectWithValue(error.message);
     }
 })
 
@@ -421,8 +424,9 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: numb
           let tx = await res.json();
 
         console.log(`[Console] successfully called on thunk 'supplyUSDC' hash: ${tx.txHash}`);
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'supplyUSDC': ${error} `)
+        return rejectWithValue(error.message);
     }
 })
 
@@ -579,6 +583,46 @@ export const USDCSlice = createSlice({
         
         ///////////  Activities
 
+        // Borrow Wrapped USDC
+
+        builder.addCase(borrowUSDC.pending, (state, action) => {
+            state.loading = true;
+        });
+
+        builder.addCase(borrowUSDC.rejected, (state, action) => {});
+
+        builder.addCase(borrowUSDC.fulfilled, (state, action) => {});
+
+        // Repay Wrapped USDC
+
+        builder.addCase(repayUSDC.pending, (state, action) => {
+            state.loading = true;
+        });
+
+        builder.addCase(repayUSDC.rejected, (state, action) => {});
+
+        builder.addCase(repayUSDC.fulfilled, (state, action) => {});
+
+        // Supply Wrapped USDC
+
+        builder.addCase(supplyUSDC.pending, (state, action) => {
+            state.loading = true;
+        });
+
+        builder.addCase(supplyUSDC.rejected, (state, action) => {});
+
+        builder.addCase(supplyUSDC.fulfilled, (state, action) => {});
+
+        // Withdraw Wrapped USDC
+
+        builder.addCase(withdrawUSDC.pending, (state, action) => {
+            state.loading = true;
+        });
+
+        builder.addCase(withdrawUSDC.rejected, (state, action) => {});
+
+        builder.addCase(withdrawUSDC.fulfilled, (state, action) => {});
+
         // Approve USDC
 
         builder.addCase(approveUSDC.pending, (state, action) => {
@@ -595,7 +639,13 @@ export const USDCSlice = createSlice({
             state.isEnabled = true;
         });
 
+
+
     }
 });
 
 export default USDCSlice.reducer;
+
+function rejectWithValue(message: any): any {
+    throw new Error('Function not implemented.');
+}
