@@ -70,7 +70,7 @@ export default function SupplyMarkets() {
 
 
   const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
-  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const borrowUtil     = useSelector(selectBorrowUtil) * 100;   // 0‑1
   const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   function handleSXRowClick(event: React.MouseEvent) {

@@ -52,7 +52,7 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
     (state: RootState) => state.wsx.borrowRate
   );
   const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
-  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const borrowUtil     = useSelector(selectBorrowUtil) * 100;   // 0‑1
   const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   // Action Items
