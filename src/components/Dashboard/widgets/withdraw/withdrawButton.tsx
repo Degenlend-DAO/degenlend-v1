@@ -44,11 +44,11 @@ function WithdrawButton(props: WithdrawButtonProps) {
   function withdrawAssets() {
     switch (type) {
       case "sx":
-        dispatch(handleTransaction(() => withdrawWSX(amount)));
+        dispatch(handleTransaction(() => dispatch(withdrawWSX(amount)).unwrap()));
         break;
 
       case "usdc":
-        dispatch(handleTransaction(() => withdrawUSDC(amount)));
+        dispatch(handleTransaction(() => dispatch(withdrawUSDC(amount)).unwrap()));
         break;
     }
 

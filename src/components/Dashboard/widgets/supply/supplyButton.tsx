@@ -72,11 +72,14 @@ function SupplyButton(props: SupplyButtonProps) {
 
   // When called, you 'supply'
   function supplyAssets() {
-    if (type === "sx") {
-      dispatch(handleTransaction(() => supplyWSX(amount)));
-    }
-    if (type === "usdc") {
-      dispatch(handleTransaction(() => supplyUSDC(amount)));
+    switch (type) {
+      case "sx":
+        dispatch(handleTransaction(() => dispatch(supplyWSX(amount)).unwrap()));
+        break;
+
+      case "usdc":
+        dispatch(handleTransaction(() => dispatch(supplyUSDC(amount)).unwrap()));
+        break;
     }
 
     setConfirmTransactionOpen(true);
@@ -85,10 +88,10 @@ function SupplyButton(props: SupplyButtonProps) {
   // When called, you 'approve'
   function enableAssets() {
     if (type === "sx") {
-      dispatch(handleTransaction(() => approveWSX()));
+      dispatch(handleTransaction(() => dispatch(approveWSX()).unwrap() as Promise<void | { txHash?: string }>));
     }
     if (type === "usdc") {
-      dispatch(handleTransaction(() => approveUSDC()));
+      dispatch(handleTransaction(() => dispatch(approveUSDC()).unwrap() as Promise<void | { txHash?: string }>));
     }
 
     setConfirmTransactionOpen(true);

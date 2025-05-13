@@ -23,7 +23,7 @@ function RepayDetails(props: DetailProps) {
             
             {/* Button */}
 
-            <RepayButton type={type} borrowBalance={borrowBalance} />
+            <RepayButton type={type} borrowBalance={borrowBalance} isRepayingEnabled={false} />
 
         </Box>
     );
