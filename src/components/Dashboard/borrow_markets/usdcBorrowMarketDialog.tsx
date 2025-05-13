@@ -23,15 +23,14 @@ import EnableWarning from "../widgets/enableWarning";
 import {
   updateUSDCBalance,
   updateUSDCBorrowBalance,
-  borrowUSDC,
-  repayUSDC,
+
   updateUSDCBorrowRate,
 } from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
 import { AppDispatch } from "../../../app/Store";
-import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
 import BorrowMarketsHeader from "../widgets/borrow/borrowMarketsHeader";
+import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from "../../../features/dashboard/BorrowLimitSlice";
 
 interface BorrowMarketDialogProps {
   open: boolean;
@@ -55,20 +54,14 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
     (state: RootState) => state.usdc.borrowBalance
   );
 
-  const borrowLimit = useSelector(
-    (state: RootState) => state.account.borrowLimit
-  );
-
-  const borrowLimitUsed = useSelector(
-    (state: RootState) => state.account.borrowLimitUsed
-  );
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   // When the dialog is opened, update information
   useEffect(() => {
     dispatch(updateUSDCBorrowBalance());
     dispatch(updateUSDCBorrowRate());
-    dispatch(updateBorrowLimit());
-    dispatch(updateBorrowLimit());
 
   });
 
@@ -142,8 +135,8 @@ function USDCBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   type={"usdc"}
                   borrowAPY={usdcBorrowAPY}
                   borrowBalance={usdcBorrowBalance}
-                  borrowLimit={borrowLimit}
-                  borrowLimitUsed={borrowLimitUsed}
+                  borrowLimit={borrowLimitUsd}
+                  borrowLimitUsed={borrowUtil}
                 />
               </TabPanel>
               <TabPanel value="1">

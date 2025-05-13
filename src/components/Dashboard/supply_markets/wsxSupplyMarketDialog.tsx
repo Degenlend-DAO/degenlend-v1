@@ -21,6 +21,7 @@ import { AppDispatch, RootState } from "../../../app/Store";
 import { useEffect } from "react";
 import { Transition } from "../../../utils/Transition";
 import SupplyMarketsHeader from "../widgets/supply/supplyMarketsHeader";
+import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from "../../../features/dashboard/BorrowLimitSlice";
 
 interface SupplyMarketDialogProps {
   open: boolean;
@@ -45,13 +46,10 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
   );
   const wsxSupplyAPY = useSelector((state: RootState) => state.wsx.supplyRate);
 
-  const borrowLimit = useSelector(
-    (state: RootState) => state.account.borrowLimit
-  );
 
-  const borrowLimitUsed = useSelector(
-    (state: RootState) => state.account.borrowLimitUsed
-  );
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   useEffect( () => {
   });
@@ -129,8 +127,8 @@ function WSXSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   type={"sx"}
                   supplyAPY={wsxSupplyAPY}
                   supplyBalance={wsxSupplyBalance}
-                  borrowLimit={borrowLimit}
-                  borrowLimitUsed={borrowLimitUsed}
+                  borrowLimit={borrowLimitUsd}
+                  borrowLimitUsed={borrowUtil}
                 />
               </TabPanel>
             </Box>

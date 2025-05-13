@@ -30,14 +30,17 @@ import {
   updateWSXBalance,
   updateWSXSupplyBalance,
 } from "../../../features/dashboard/WSXMarketSlice";
-import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { formatNumber } from "../../../utils/constant";
+import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from "../../../features/dashboard/BorrowLimitSlice";
+import borrowLimit from "../widgets/borrow/borrowLimit";
 
 export default function SupplyMarkets() {
   const [enableSXDialogOpen, setEnableSXDialogOpen] = useState(false);
   const [enableUSDCDialogOpen, setEnableUSDCDialogOpen] = useState(false);
   const [supplySXDialogOpen, setSupplySXDialogOpen] = useState(false);
   const [supplyUSDCDialogOpen, setSupplyUSDCDialogOpen] = useState(false);
+
+  
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -65,13 +68,10 @@ export default function SupplyMarkets() {
     (state: RootState) => state.wsx.oraclePrice
   );
 
-  const borrowLimit = useSelector(
-    (state: RootState) => state.account.borrowLimit
-  );
 
-  const borrowLimitUsed = useSelector(
-    (state: RootState) => state.account.borrowLimitUsed
-  );
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   function handleSXRowClick(event: React.MouseEvent) {
     setSupplySXDialogOpen(true);
@@ -202,8 +202,8 @@ export default function SupplyMarkets() {
         onClose={() => {
           setEnableSXDialogOpen(false);
         }}
-        borrowLimit={borrowLimit}
-        borrowLimitUsed={borrowLimitUsed}
+        borrowLimit={borrowLimitUsd}
+        borrowLimitUsed={borrowUtil}
       />
       <EnableMarketDialog
         type="usdc"
@@ -212,8 +212,8 @@ export default function SupplyMarkets() {
         onClose={() => {
           setEnableUSDCDialogOpen(false);
         }}
-        borrowLimit={borrowLimit}
-        borrowLimitUsed={borrowLimitUsed}
+        borrowLimit={borrowLimitUsd}
+        borrowLimitUsed={borrowUtil}
       />
       <WSXSupplyMarketDialog
         open={supplySXDialogOpen}

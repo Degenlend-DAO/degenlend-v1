@@ -23,9 +23,9 @@ import {
   updateWSXBorrowRate,
 } from "../../../features/dashboard/WSXMarketSlice";
 import { useEffect } from "react";
-import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
 import BorrowMarketsHeader from "../widgets/borrow/borrowMarketsHeader";
+import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from "../../../features/dashboard/BorrowLimitSlice";
 
 interface BorrowMarketDialogProps {
   open: boolean;
@@ -51,12 +51,9 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
   const wsxBorrowAPY = useSelector(
     (state: RootState) => state.wsx.borrowRate
   );
-  const borrowLimit = useSelector(
-    (state: RootState) => state.account.borrowLimit
-  );
-  const borrowLimitUsed = useSelector(
-    (state: RootState) => state.account.borrowLimitUsed
-  );
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   // Action Items
 
@@ -129,8 +126,8 @@ function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
                   type={"sx"}
                   borrowAPY={wsxBorrowAPY}
                   borrowBalance={wsxBorrowBalance}
-                  borrowLimit={borrowLimit}
-                  borrowLimitUsed={borrowLimitUsed}
+                  borrowLimit={borrowLimitUsd}
+                  borrowLimitUsed={borrowUtil}
                 />
               </TabPanel>
               <TabPanel value="1">

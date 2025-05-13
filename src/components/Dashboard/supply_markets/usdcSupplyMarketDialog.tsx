@@ -34,9 +34,9 @@ import {
   updateUSDCBalance,
 } from "../../../features/dashboard/USDCMarketSlice";
 import { useEffect } from "react";
-import { updateBorrowLimit } from "../../../features/dashboard/AccountSlice";
 import { Transition } from "../../../utils/Transition";
 import SupplyMarketsHeader from "../widgets/supply/supplyMarketsHeader";
+import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from "../../../features/dashboard/BorrowLimitSlice";
 
 interface SupplyMarketDialogProps {
   open: boolean;
@@ -65,13 +65,9 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
     (state: RootState) => state.usdc.balance
   );
 
-  const borrowLimit = useSelector(
-    (state: RootState) => state.account.borrowLimit
-  );
-
-  const borrowLimitUsed = useSelector(
-    (state: RootState) => state.account.borrowLimitUsed
-  );
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil     = useSelector(selectBorrowUtil);   // 0‑1
+  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   useEffect(() => {
   });
@@ -151,8 +147,8 @@ function USDCSupplyMarketDialog(props: SupplyMarketDialogProps) {
                   type={"usdc"}
                   supplyAPY={usdcSupplyAPY}
                   supplyBalance={usdcSupplyBalance}
-                  borrowLimit={borrowLimit}
-                  borrowLimitUsed={borrowLimitUsed}
+                  borrowLimit={borrowLimitUsd}
+                  borrowLimitUsed={borrowUtil}
                 />
               </TabPanel>
             </Box>
