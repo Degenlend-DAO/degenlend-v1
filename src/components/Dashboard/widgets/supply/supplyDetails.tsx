@@ -3,7 +3,7 @@ import SupplyRates from "./supplyRates";
 import SupplyButton from "./supplyButton";
 
 interface DetailsProps {
-    type: String,
+    type: "usdc" | "sx",
     supplyAPY: number,
     supplyBalance: number,
     isSupplyingEnabled: boolean | undefined,

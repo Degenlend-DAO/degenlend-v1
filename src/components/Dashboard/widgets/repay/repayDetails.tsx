@@ -4,7 +4,7 @@ import RepayButton from "./repayButton";
 
 
 interface DetailProps {
-    type: string,
+    type: "usdc" | "sx",
     borrowAPY: number,
     borrowBalance: number,
     isRepayingEnabled: boolean,
@@ -23,7 +23,7 @@ function RepayDetails(props: DetailProps) {
             
             {/* Button */}
 
-            <RepayButton type={type} borrowBalance={borrowBalance} isRepayingEnabled={enabled} />
+            <RepayButton type={type} borrowBalance={borrowBalance} />
 
         </Box>
     );

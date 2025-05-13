@@ -5,7 +5,7 @@ import WithdrawButton from "./withdrawButton";
 
 
 interface DetailProps {
-    type: String,
+    type: "usdc" | "sx",
     supplyAPY: number,
     borrowLimit: number,
     borrowLimitUsed: number,

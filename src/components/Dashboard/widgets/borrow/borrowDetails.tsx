@@ -4,7 +4,7 @@ import BorrowLimit from "./borrowLimit";
 import BorrowButton from "./borrowButton";
 
 interface DetailsProps {
-    type: string,
+    type: "usdc" | "sx",
     borrowAPY: number,
     borrowBalance: number,
     borrowLimit: number,
