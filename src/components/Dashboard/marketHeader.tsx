@@ -2,21 +2,25 @@ import React, { useEffect } from 'react';
 import { Box, Typography, Grid, Paper, LinearProgress, Skeleton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/Store';
-import { updateBorrowLimit, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
+import { Position, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
 import { formatNumber } from '../../utils/constant';
+import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from '../../features/dashboard/BorrowLimitSlice';
 
 function MarketHeader() {
-  const supplyBalance = useSelector((state: RootState) => state.account.netSupplyBalance);
-  const borrowBalance = useSelector((state: RootState) => state.account.netBorrowBalance);
+  const supplyPositions:Position[] = useSelector((state: RootState) => state.account.netSupplyBalance);
+  const borrowPositions:Position[] = useSelector((state: RootState) => state.account.netBorrowBalance);
+  const supplyBalance = supplyPositions.reduce((s, p) => s + Number(p.balance), 0);
+  const borrowBalance = borrowPositions.reduce((s, p) => s + Number(p.balance), 0);
   const netAPY = useSelector((state: RootState) => state.account.netAPY);
-  const borrowLimit = useSelector((state: RootState) => state.account.borrowLimit);
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil     = useSelector(selectBorrowUtil) * 100;   // 0‑1
+  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
 
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(updateNetSupplyBalance());
     dispatch(updateNetBorrowBalance());
-    dispatch(updateBorrowLimit());
     dispatch(updateNetAPY());
   }, [dispatch]);
 
@@ -64,11 +68,11 @@ function MarketHeader() {
           <Box sx={{ width: '100%' }}>
             <LinearProgress
               variant="determinate"
-              value={borrowLimit}
+              value={borrowUtil}
               sx={{ height: 8, borderRadius: 5 }}
             />
             <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold', color: 'primary.main' }}>
-              {`${formatNumber(borrowLimit)}%`}
+              {`${formatNumber(borrowUtil)}%`}
             </Typography>
           </Box>
         </Box>
