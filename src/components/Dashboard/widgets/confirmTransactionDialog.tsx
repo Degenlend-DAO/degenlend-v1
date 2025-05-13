@@ -24,7 +24,7 @@ interface ConfirmTransactionProps {
 
 function ConfirmTransactionDialog(props: ConfirmTransactionProps) {
   // Fetch transaction state from Redux store
-  const transactionState = useSelector((state: RootState) => state.transactions.status);
+  const transactionState = useSelector((state: RootState) => state.transactions.phase);
 
   let ConfirmTransactionHeaderText = `Confirm Transaction`;
   let ConfirmIcon = <CircularProgress />;
@@ -44,7 +44,7 @@ function ConfirmTransactionDialog(props: ConfirmTransactionProps) {
       ConfirmTransactionDialogText = `You have rejected the transaction.`;
       break;
 
-    case "failed":
+    case "error":
       ConfirmTransactionHeaderText = `Transaction Failed`;
       ConfirmIcon = (
         <NotInterestedIcon fontSize="large" sx={{ color: red[500], fontSize: 60 }} />
