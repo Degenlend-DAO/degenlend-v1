@@ -5,8 +5,8 @@ import { AppDispatch, RootState } from "../../../../app/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { borrowUSDC } from "../../../../features/dashboard/USDCMarketSlice";
 import { borrowWSX } from "../../../../features/dashboard/WSXMarketSlice";
-import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
 import { formatNumber } from "../../../../utils/constant";
+import { resetTx } from "../../../../features/dashboard/transactionSlice";
 
 interface BorrowButtonProps {
   type: String;
@@ -43,16 +43,18 @@ function BorrowButton(props: BorrowButtonProps) {
     );
   }
 
-  function borrowAssets() {
+   function borrowAssets() {
     setConfirmTransactionOpen(true);
 
     switch (type) {
       case "sx":
-        dispatch(handleTransaction(() => dispatch(borrowWSX(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(borrowWSX(amount));
         break;
 
       case "usdc":
-        dispatch(handleTransaction(() => dispatch(borrowUSDC(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(borrowUSDC(amount));
         break;
     }
   }

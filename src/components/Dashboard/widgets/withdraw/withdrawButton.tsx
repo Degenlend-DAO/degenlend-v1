@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "../../../../app/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { withdrawWSX } from "../../../../features/dashboard/WSXMarketSlice";
 import { withdrawUSDC } from "../../../../features/dashboard/USDCMarketSlice";
-import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
+import { resetTx } from "../../../../features/dashboard/transactionSlice";
 
 interface WithdrawButtonProps {
   type: String;
@@ -46,11 +46,13 @@ function WithdrawButton(props: WithdrawButtonProps) {
 
     switch (type) {
       case "sx":
-        dispatch(handleTransaction(() => dispatch(withdrawWSX(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(withdrawWSX(amount));
         break;
 
       case "usdc":
-        dispatch(handleTransaction(() => dispatch(withdrawUSDC(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(withdrawUSDC(amount));
         break;
     }
 

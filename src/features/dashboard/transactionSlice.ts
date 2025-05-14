@@ -6,8 +6,11 @@
 //  global status so UI can show a spinner / toast regardless of source.
 // ─────────────────────────────────────────────────────────────
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, isAnyOf } from '@reduxjs/toolkit';
 import type { RootState } from '../../app/Store';
+import { supplyUSDC, borrowUSDC, withdrawUSDC, repayUSDC, approveUSDC } from './USDCMarketSlice';
+import { supplyWSX, borrowWSX, withdrawWSX, repayWSX, approveWSX } from './WSXMarketSlice';
+import { enterUSDCMarket, enterWSXMarket, exitUSDCMarket, exitWSXMarket } from './AccountSlice';
 
 export type TxPhase = 'idle' | 'pending' | 'success' | 'error' | 'rejected';
 
@@ -21,26 +24,7 @@ const initialState: TxState = {
   phase: 'idle'
 };
 
-/* -------------------------------------------------------------------------- */
-/*                          Generic transaction wrapper                       */
-/* -------------------------------------------------------------------------- */
 
-/**
- * Wrap any async function (e.g. borrowIntent thunk) to update tx status.
- * @example dispatch(handleTransaction(() => dispatch(borrowIntent(args))))
- */
-export const handleTransaction = createAsyncThunk<
-  string | void,
-  () => Promise<{ txHash?: string } | void>
->('tx/handle', async (fn, { dispatch, rejectWithValue }) => {
-  try {
-    const result: any = await fn();
-    // If the wrapped fn returns a txHash, pass it through
-    return result?.txHash ?? '';
-  } catch (err: any) {
-    return rejectWithValue(err.message || 'Transaction failed');
-  }
-});
 
 /* -------------------------------------------------------------------------- */
 /*                                   Slice                                    */
@@ -51,26 +35,80 @@ const txSlice = createSlice({
   initialState,
   reducers: {
     resetTx(state) {
+      console.log(`[CONFIRMATION DIALOG] RESETTING TXN VALUES`)
       state.phase = 'idle';
       state.hash  = undefined;
       state.error = undefined;
     }
+
   },
   extraReducers: builder => {
-    builder
-      .addCase(handleTransaction.pending,  state => {
-        state.phase = 'pending';
-        state.error = undefined;
-        state.hash  = undefined;
-      })
-      .addCase(handleTransaction.fulfilled,(state, action: PayloadAction<string|void>) => {
-        state.phase = 'success';
-        if (action.payload) state.hash = action.payload;
-      })
-      .addCase(handleTransaction.rejected, (state, action) => {
-        state.phase = 'error';
-        state.error = String(action.payload || action.error.message);
-      });
+
+    builder.addMatcher(
+      isAnyOf(
+        approveUSDC.rejected, approveWSX.rejected,
+        supplyUSDC.rejected, supplyWSX.rejected,
+        borrowUSDC.rejected, borrowWSX.rejected,
+        withdrawUSDC.rejected, withdrawWSX.rejected,
+        repayUSDC.rejected, repayWSX.rejected,
+      ),
+      (state, action) => {
+        console.log(`[CONFIRMATION DIALOG] UPDATING PHASE STATE NOW in pending `)
+        state.phase = 'rejected';
+      }
+    );
+
+    builder.addMatcher(
+      isAnyOf(
+        approveUSDC.pending, approveWSX.pending,
+        supplyUSDC.pending, supplyWSX.pending,
+        borrowUSDC.pending, borrowWSX.pending,
+        withdrawUSDC.pending, withdrawWSX.pending,
+        repayUSDC.pending, repayWSX.pending,
+      ),
+      (state) => { 
+      console.log(`[CONFIRMATION DIALOG] UPDATING PHASE STATE NOW in pending `)
+        state.phase = 'pending'; 
+      }
+    );
+
+    builder.addMatcher(
+      isAnyOf(
+        approveUSDC.fulfilled, approveWSX.fulfilled,
+        supplyUSDC.fulfilled, supplyWSX.fulfilled,
+        borrowUSDC.fulfilled, borrowWSX.fulfilled,
+        withdrawUSDC.fulfilled, withdrawWSX.fulfilled,
+        repayUSDC.fulfilled, repayWSX.fulfilled,
+      ),
+      (state) => {
+        console.log(`[CONFIRMATION DIALOG] UPDATING PHASE STATE NOW in pending `)
+        state.phase = 'success'; 
+      }
+    );
+
+    builder.addMatcher(
+      isAnyOf(
+        enterUSDCMarket.pending, enterWSXMarket.pending,
+        exitUSDCMarket.pending, exitWSXMarket.pending
+      ),
+      (state) => { state.phase = 'pending' } 
+    );
+
+    builder.addMatcher(
+      isAnyOf(
+        enterUSDCMarket.fulfilled, enterWSXMarket.fulfilled,
+        exitUSDCMarket.fulfilled, exitWSXMarket.fulfilled
+      ),
+      (state) => { state.phase = 'success' } 
+    );
+
+    builder.addMatcher(
+      isAnyOf(
+        enterUSDCMarket.rejected, enterWSXMarket.rejected,
+        exitUSDCMarket.rejected, exitWSXMarket.rejected
+      ),
+      (state) => { state.phase = 'rejected' } 
+    );
   }
 });
 

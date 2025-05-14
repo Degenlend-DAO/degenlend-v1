@@ -19,9 +19,9 @@ import {
   isUSDCEnabled,
   supplyUSDC,
 } from "../../../../features/dashboard/USDCMarketSlice";
-import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
 import { formatNumber } from "../../../../utils/constant";
 import { updateAmount } from "../../../../features/dashboard/AccountSlice";
+import { resetTx } from "../../../../features/dashboard/transactionSlice";
 
 interface SupplyButtonProps {
   type: String;
@@ -76,11 +76,13 @@ function SupplyButton(props: SupplyButtonProps) {
 
     switch (type) {
       case "sx":
-        dispatch(handleTransaction(() => dispatch(supplyWSX(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(supplyWSX(amount));
         break;
 
       case "usdc":
-        dispatch(handleTransaction(() => dispatch(supplyUSDC(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(supplyUSDC(amount));
         break;
     }
 
@@ -91,10 +93,12 @@ function SupplyButton(props: SupplyButtonProps) {
     setConfirmTransactionOpen(true);
 
     if (type === "sx") {
-      dispatch(handleTransaction(() => dispatch(approveWSX()).unwrap() as Promise<void | { txHash?: string }>));
+      dispatch(resetTx());
+      dispatch(approveWSX());
     }
     if (type === "usdc") {
-      dispatch(handleTransaction(() => dispatch(approveUSDC()).unwrap() as Promise<void | { txHash?: string }>));
+      dispatch(resetTx());
+      dispatch(approveUSDC());
     }
 
   }

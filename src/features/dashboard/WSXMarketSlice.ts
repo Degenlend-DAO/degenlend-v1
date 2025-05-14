@@ -241,7 +241,7 @@ export const updateWSXOraclePrice = createAsyncThunk('wsxOraclePrice/update', as
 // Activities
 
 ///////////  Approve WSX Thunks
-export const approveWSX = createAsyncThunk('wsx/approve', async () => {
+export const approveWSX = createAsyncThunk('wsx/approve', async (_, { rejectWithValue }) => {
    
     const [wallet] = onboard.state.get().wallets;
 
@@ -265,8 +265,9 @@ export const approveWSX = createAsyncThunk('wsx/approve', async () => {
         await txn.wait();
         console.log(`[Console] successfully called on thunk 'approveWSX'`);
 
-    } catch (error) {
+    } catch (error: any) {
         console.log(`[Console] an error occurred on thunk 'approveWSX' : ${error}`)
+        return rejectWithValue(error.message);
     }
 
 })

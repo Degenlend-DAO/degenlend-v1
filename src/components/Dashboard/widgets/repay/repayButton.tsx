@@ -13,7 +13,7 @@ import {
     isUSDCEnabled,
     repayUSDC,
   } from "../../../../features/dashboard/USDCMarketSlice";
-import { handleTransaction } from "../../../../features/dashboard/transactionSlice";
+import { resetTx } from "../../../../features/dashboard/transactionSlice";
 
 interface RepayButtonProps {
     type: String,
@@ -53,11 +53,13 @@ function RepayButton(props: RepayButtonProps) {
 
     switch (type) {
       case "sx":
-        dispatch(handleTransaction(() => dispatch(repayWSX(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(repayWSX(amount));
         break;
 
       case "usdc":
-        dispatch(handleTransaction(() => dispatch(repayUSDC(amount)).unwrap()));
+        dispatch(resetTx());
+        dispatch(repayUSDC(amount));
         break;
     }
         
@@ -67,9 +69,11 @@ function RepayButton(props: RepayButtonProps) {
   function enableAssets() {
     setConfirmTransactionOpen(true);
     if (type === "sx") {
+      dispatch(resetTx());
       dispatch(approveWSX());
     }
     if (type === "usdc") {
+      dispatch(resetTx());
       dispatch(approveUSDC());
     }
 
