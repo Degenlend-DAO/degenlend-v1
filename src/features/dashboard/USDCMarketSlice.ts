@@ -6,7 +6,7 @@ import { onboard, testnet_addresses } from '../../utils/web3';
 // ABIs
 
 import ERC20 from '../../abis/ERC20.json'
-import { signBorrowIntent, signMintIntent, signRedeemIntent, signRepayIntent } from '../../utils/Intents';
+import { getCurrentNonce, signBorrowIntent, signMintIntent, signRedeemIntent, signRepayIntent } from '../../utils/Intents';
 
 interface USDCState {
     loading: boolean;
@@ -285,7 +285,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
     const cToken = testnet_addresses.degenUSDC;
     const amount = toWei(supplyAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
@@ -325,7 +325,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
     const cToken = testnet_addresses.degenUSDC;
     const amount = toWei(withdrawAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
@@ -367,7 +367,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
     const cToken = testnet_addresses.degenUSDC;
     const amount = toWei(borrowAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
@@ -407,7 +407,7 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: numb
     const cToken = testnet_addresses.degenUSDC;
     const amount = toWei(repayAmount, 6);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
