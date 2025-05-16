@@ -314,7 +314,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
 })
 
 export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmount: number, { rejectWithValue }) => {
-    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+    console.log(`[Console] initiating thunk, 'withdrawUSDCIntent' ...`);
 
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
@@ -356,7 +356,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
 ///////////  Borrow Market Thunks
 
 export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: number, { rejectWithValue }) => {
-    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+    console.log(`[Console] initiating thunk, 'borrowUSDCIntent' ...`);
 
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
@@ -369,7 +369,6 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
-
     try {
         const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
@@ -396,7 +395,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
 })
 
 export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: number, { rejectWithValue }) => {
-    console.log(`[Console] initiating thunk, 'supplyUSDCIntent' ...`);
+    console.log(`[Console] initiating thunk, 'repayUSDCIntent' ...`);
 
     const chainId = 647;
     const relayerAddress = testnet_addresses.degenlendRelayer;
