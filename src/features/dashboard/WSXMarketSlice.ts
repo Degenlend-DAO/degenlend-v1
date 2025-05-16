@@ -5,7 +5,7 @@ import { API_URL, ORACLE_URL } from "../../../src/utils/constant";
 
 // ABIs
 import ERC20 from '../../abis/ERC20.json';
-import { signBorrowIntent, signMintIntent, signRedeemIntent, signRepayIntent } from '../../utils/Intents';
+import { getCurrentNonce, signBorrowIntent, signMintIntent, signRedeemIntent, signRepayIntent } from '../../utils/Intents';
 
 interface WSXState {
     loading: boolean;
@@ -284,7 +284,8 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
     const cToken = testnet_addresses.degenWSX;
     const amount = toWei(supplyAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
+    console.log(`all intent data, in order: ${user}, ${cToken}, ${amount}, ${nonce}, ${deadline}`)
     const intentData = { user, cToken, amount, nonce, deadline };
 
 
@@ -324,7 +325,7 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
     const cToken = testnet_addresses.degenWSX;
     const amount = toWei(withdrawAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
@@ -365,7 +366,7 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
     const cToken = testnet_addresses.degenWSX;
     const amount = toWei(repayAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
@@ -405,7 +406,7 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
     const cToken = testnet_addresses.degenWSX;
     const amount = toWei(borrowAmount, 18);
     const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const nonce = 0;
+    const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
