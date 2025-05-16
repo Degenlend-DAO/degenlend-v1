@@ -300,7 +300,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
       
           const res = await fetch(`${API_URL}/api/intent/mint`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
@@ -340,7 +340,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
       
           const res = await fetch(`${API_URL}/api/intent/withdraw`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
@@ -420,7 +420,7 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: numb
       
           const res = await fetch(`${API_URL}/api/intent/repay`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 

@@ -300,7 +300,7 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
       
           const res = await fetch(`${API_URL}/api/intent/mint`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
@@ -339,7 +339,7 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
       
           const res = await fetch(`${API_URL}/api/intent/redeem`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
@@ -380,7 +380,7 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
       
           const res = await fetch(`${API_URL}/api/intent/repay`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
@@ -420,7 +420,7 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
       
           const res = await fetch(`${API_URL}/api/intent/borrow`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
