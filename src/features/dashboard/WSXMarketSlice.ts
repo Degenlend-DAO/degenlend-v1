@@ -163,9 +163,8 @@ export const updateWSXSupplyRate = createAsyncThunk('wsxSupplyRate/update', asyn
     }
 
     try {
-
-        const supplyRate: any = await fetch(`${API_URL}/api/markets/wsx/supplyAPY`).then((res) => {res.json()});
-
+        const supplyRate = await fetch(`${API_URL}/api/markets/wsx/supplyAPY`).then((res) => {return res.json()});
+        console.log(`[Console] successfully called on thunk 'updateWSXSupplyRate`)
         // Return the APY as a percentage
         return Number(supplyRate.apy); // Convert to percentage
     } catch (error) {
