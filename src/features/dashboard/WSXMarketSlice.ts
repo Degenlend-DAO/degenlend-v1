@@ -292,10 +292,10 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
         const signature = signMintIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/mint`, {
@@ -331,10 +331,10 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
         const signature = signRedeemIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/redeem`, {
@@ -372,10 +372,10 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
         const signature = signRepayIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/repay`, {
@@ -412,10 +412,10 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
         const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/borrow`, {

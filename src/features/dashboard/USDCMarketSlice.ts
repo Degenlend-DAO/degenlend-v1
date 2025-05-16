@@ -292,10 +292,10 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
         const signature = signMintIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/mint`, {
@@ -332,10 +332,10 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
         const signature = signRedeemIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/withdraw`, {
@@ -373,15 +373,14 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
         const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
-      
           const res = await fetch(`${API_URL}/api/intent/borrow`, {
             method: 'POST',
-            headers: { 'Content‑Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body
           });
 
@@ -413,10 +412,10 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: numb
         const signature = signRepayIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
-            cToken,
-            amount,
-            deadline,
-            signature
+            cToken: cToken,
+            amount: Number(amount),
+            deadline: deadline,
+            signature: signature
           });
       
           const res = await fetch(`${API_URL}/api/intent/repay`, {
