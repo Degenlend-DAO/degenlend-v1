@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { API_URL } from "./constant";
 
 // Dynamic domain setup
 export function getDomain(chainId: number, relayerAddress: string) {
@@ -8,6 +9,16 @@ export function getDomain(chainId: number, relayerAddress: string) {
     chainId,
     verifyingContract: relayerAddress
   };
+}
+
+// fetch current nonce
+
+export async function getCurrentNonce(userAddress: string) {
+  const res = await fetch(`${API_URL}/api/account/currentNonce/${userAddress}`).then((response) => { return response.json()});
+  let nonce = res.currentNonce;
+  console.log(`[Console] got the on-chain nonce for account ${userAddress}.  The nonce is ${nonce}`);
+
+  return nonce.currentNonce;
 }
 
 // Unified types matching your contract
