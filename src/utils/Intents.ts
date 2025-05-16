@@ -18,7 +18,7 @@ export async function getCurrentNonce(userAddress: string) {
   let nonce = res.currentNonce;
   console.log(`[Console] got the on-chain nonce for account ${userAddress}.  The nonce is ${nonce}`);
 
-  return nonce.currentNonce;
+  return nonce;
 }
 
 // Unified types matching your contract
