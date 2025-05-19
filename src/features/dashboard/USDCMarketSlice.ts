@@ -289,7 +289,7 @@ export const supplyUSDC = createAsyncThunk('usdc/Supply', async (supplyAmount: n
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
-        const signature = signMintIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signMintIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
@@ -329,7 +329,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
-        const signature = signRedeemIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signRedeemIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
@@ -370,7 +370,7 @@ export const borrowUSDC = createAsyncThunk('usdc/borrow', async (borrowAmount: n
     const nonce = await getCurrentNonce(user);
     const intentData = { user, cToken, amount, nonce, deadline };
     try {
-        const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signBorrowIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
@@ -409,7 +409,7 @@ export const repayUSDC = createAsyncThunk('usdc/repay', async (repayAmount: numb
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
-        const signature = signRepayIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signRepayIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,

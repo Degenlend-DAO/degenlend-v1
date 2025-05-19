@@ -289,7 +289,7 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
 
 
     try {
-        const signature = signMintIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signMintIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
@@ -328,7 +328,7 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
-        const signature = signRedeemIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signRedeemIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
@@ -369,7 +369,7 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
-        const signature = signRepayIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signRepayIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
@@ -409,7 +409,7 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
     const intentData = { user, cToken, amount, nonce, deadline };
 
     try {
-        const signature = signBorrowIntent(signer, chainId, relayerAddress, intentData);
+        const signature = await signBorrowIntent(signer, chainId, relayerAddress, intentData);
         const body = JSON.stringify({
             user: wallet.accounts[0].address,   // EIP‑712 signer
             cToken: cToken,
