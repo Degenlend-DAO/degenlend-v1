@@ -1,11 +1,12 @@
-import { ethers } from "ethers";
+import { ethers, Signature } from "ethers";
+
 import { API_URL } from "./constant";
 
 // Dynamic domain setup
 export function getDomain(chainId: number, relayerAddress: string) {
   return {
-    name: "DegenlendRelayer",
-    version: "1",
+    name: "DegenLendRelayer",
+    version: "647",
     chainId,
     verifyingContract: relayerAddress
   };
@@ -19,6 +20,14 @@ export async function getCurrentNonce(userAddress: string) {
   console.log(`[Console] got the on-chain nonce for account ${userAddress}.  The nonce is ${nonce}`);
 
   return nonce;
+}
+
+export function normalizeSignature(signature: string): string {
+  const sig = Signature.from(signature);
+  if (Number(sig.v) < 27) {
+    sig.v = Number(sig.v) + 27;
+  }
+  return sig.serialized;
 }
 
 // Unified types matching your contract
@@ -66,7 +75,7 @@ async function signIntent(
     deadline: number;
   }
 ): Promise<string> {
-  return signer.signTypedData(domain, { [intentType]: types[intentType] }, intentData);
+  return normalizeSignature(await signer.signTypedData(domain, { [intentType]: types[intentType] }, intentData));
 }
 
 // Specific intent functions
