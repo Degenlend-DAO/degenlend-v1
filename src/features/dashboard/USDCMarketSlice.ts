@@ -338,7 +338,7 @@ export const withdrawUSDC = createAsyncThunk('usdc/withdraw', async (withdrawAmo
             signature: signature
           });
       
-          const res = await fetch(`${API_URL}/api/intent/withdraw`, {
+          const res = await fetch(`${API_URL}/api/intent/redeem`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body
