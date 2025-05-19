@@ -4,7 +4,7 @@ import { API_URL } from "./constant";
 // Dynamic domain setup
 export function getDomain(chainId: number, relayerAddress: string) {
   return {
-    name: "DegenLendRelayer",
+    name: "DegenlendRelayer",
     version: "1",
     chainId,
     verifyingContract: relayerAddress
