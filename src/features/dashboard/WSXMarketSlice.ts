@@ -307,9 +307,16 @@ export const supplyWSX = createAsyncThunk('wsx/supply', async (supplyAmount: num
           let tx = await res.json();
         console.log(`[Console] successfully called on thunk 'supplyWSX' hash: ${tx.hash}`);
     } catch (error: any) {
-        console.log(`[Console] an error occurred on thunk 'supplyWSX': ${error} `)
-        return rejectWithValue(error.message);
-
+        if (error?.reason) {
+            console.error(`[Console] Borrow failed with reason: ${error.reason}`);
+            return rejectWithValue(error.message);
+        } else if (error?.data) {
+            console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
+            return rejectWithValue(error.message);
+        } else {
+            console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
+            return rejectWithValue(error.message);
+        }
     }
 })
 
@@ -346,8 +353,16 @@ export const withdrawWSX = createAsyncThunk('wsx/withdraw', async (withdrawAmoun
           let tx = await res.json();
         console.log(`[Console] successfully called on thunk 'withdrawWSX' ${tx.txHash}`);
     } catch (error: any) {
-        console.log(`[Console] an error occurred on thunk 'withdrawWSX': ${error} `)
-        return rejectWithValue(error.message);
+        if (error?.reason) {
+            console.error(`[Console] Borrow failed with reason: ${error.reason}`);
+            return rejectWithValue(error.message);
+        } else if (error?.data) {
+            console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
+            return rejectWithValue(error.message);
+        } else {
+            console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
+            return rejectWithValue(error.message);
+        }
 
     }
 
@@ -387,8 +402,16 @@ export const repayWSX = createAsyncThunk('wsx/repay', async (repayAmount: number
           let tx = await res.json();
         console.log(`[Console] successfully called on thunk 'repayWSX' ${tx.txHash}`);
     } catch (error: any) {
-        console.log(`[Console] an error occurred on thunk 'repayWSX': ${error} `)
-        return rejectWithValue(error.message);
+        if (error?.reason) {
+            console.error(`[Console] Borrow failed with reason: ${error.reason}`);
+            return rejectWithValue(error.message);
+        } else if (error?.data) {
+            console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
+            return rejectWithValue(error.message);
+        } else {
+            console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
+            return rejectWithValue(error.message);
+        }
 
     }
 
@@ -429,8 +452,10 @@ export const borrowWSX = createAsyncThunk('wsx/borrow', async (borrowAmount: num
     } catch (error: any) {
         if (error?.reason) {
             console.error(`[Console] Borrow failed with reason: ${error.reason}`);
+            return rejectWithValue(error.message);
         } else if (error?.data) {
             console.error(`[Console] Borrow failed with data: ${JSON.stringify(error.data)}`);
+            return rejectWithValue(error.message);
         } else {
             console.error(`[Console] Borrow failed with unknown error: ${error.message}`);
             return rejectWithValue(error.message);
