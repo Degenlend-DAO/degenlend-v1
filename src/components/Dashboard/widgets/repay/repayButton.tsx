@@ -27,8 +27,9 @@ function RepayButton(props: RepayButtonProps) {
 
     const dispatch = useDispatch<AppDispatch>();
 
-    const amount = useSelector((state: RootState) => state.account.amount);
-    
+    const normalizedAmount = useSelector((state: RootState) => state.account.amount);
+    const amount = Number(normalizedAmount) / 1e8;
+        
     let buttonText = "No Balance to Repay!" 
 
     let RepayButton = <Button disabled size="large" onClick={enableAssets} variant="contained">{buttonText}</Button>;

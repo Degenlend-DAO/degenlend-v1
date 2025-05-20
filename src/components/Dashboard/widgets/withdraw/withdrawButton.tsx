@@ -17,8 +17,9 @@ function WithdrawButton(props: WithdrawButtonProps) {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const amount = useSelector((state: RootState) => state.account.amount);
-
+  const normalizedAmount = useSelector((state: RootState) => state.account.amount);
+  const amount = Number(normalizedAmount) / 1e8;
+  
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
   let buttonText = "No Balance to Withdraw!";

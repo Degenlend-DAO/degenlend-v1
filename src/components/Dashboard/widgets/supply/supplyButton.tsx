@@ -34,7 +34,9 @@ function SupplyButton(props: SupplyButtonProps) {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const amount = useSelector((state: RootState) => state.account.amount);
+  const normalizedAmount = useSelector((state: RootState) => state.account.amount);
+  const amount = Number(normalizedAmount) / 1e8;
+  
   const loading = useSelector((state: RootState) => state.account.loading);
 
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);

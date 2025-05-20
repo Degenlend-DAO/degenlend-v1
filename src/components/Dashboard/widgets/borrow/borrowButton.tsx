@@ -19,8 +19,9 @@ function BorrowButton(props: BorrowButtonProps) {
   // const [isDisabled, setIsDisabled] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-  const amount = useSelector((state: RootState) => state.account.amount);
-
+  const normalizedAmount = useSelector((state: RootState) => state.account.amount);
+  const amount = Number(normalizedAmount) / 1e8;
+  
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
 
   let buttonText = "No Balance to Borrow!";

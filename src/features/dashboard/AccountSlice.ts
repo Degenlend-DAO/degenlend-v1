@@ -117,7 +117,8 @@ export const updateAccountLiquidity = createAsyncThunk('liquidity/update', async
  * this function takes the params `amountToUpdate` which is a number
  */
 export const updateAmount = createAsyncThunk('account/updateAmount', async (amountToUpdate: number) =>{
-    return amountToUpdate;
+    const normalized = Math.round(amountToUpdate * 1e8);
+    return normalized;
 });
 
 
