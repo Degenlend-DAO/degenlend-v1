@@ -65,9 +65,12 @@ const ConnectWallet = () => {
           dispatch(updateNetBorrowBalance());
           dispatch(updateNetAPY());
 
+        //   Set up an interval to update the prices, and if tokens are listed as collateral, every 15 seconds
           const priceInterval = setInterval(() => {
             dispatch(updateUSDCOraclePrice());
             dispatch(updateWSXOraclePrice());
+            dispatch(isWSXListedAsCollateral());
+            dispatch(isUSDCListedAsCollateral());
           }, 15_000);
         
           return () => {
