@@ -1,7 +1,4 @@
-import {
-  Container,
-} from "@mui/material";
-
+import { Container, Box, useMediaQuery, useTheme } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 
 // Market Items
@@ -10,36 +7,54 @@ import SupplyMarkets from "./supply_markets/supplyMarketsTable";
 import MarketHeader from "./marketHeader";
 
 function Markets() {
-  //  This fragment holds the supply & borrow markets tables in one container
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <Container
+      maxWidth="xl"
       sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        pt: { xs: 14, sm: 20 },
-        pb: { xs: 8, sm: 12 },
+        pt: { xs: 14, sm: 16 },
+        pb: { xs: 6, sm: 10 },
+        px: { xs: 2, sm: 4, md: 6 },
       }}
     >
-
-    <MarketHeader />
-
-      <Grid
-        container
-        spacing={6}
-        columns={16}
-        justifyContent="space-evenly"
-        alignItems="stretch"
-        sx={{ width: '100%' }}
-      >
-        <Grid xs={8}>
-          <SupplyMarkets />
+      <MarketHeader />
+      
+      <Box sx={{ width: '100%', mb: 4 }}>
+        <Grid
+          container
+          spacing={{ xs: 4, md: 6 }}
+          justifyContent="center"
+          alignItems="flex-start"
+        >
+          <Grid 
+            xs={12} 
+            md={6}
+            sx={{
+              position: 'relative',
+              '&:after': !isSmallScreen ? {
+                content: '""',
+                position: 'absolute',
+                right: 0,
+                top: '5%',
+                height: '90%',
+                width: '1px',
+                backgroundColor: theme.palette.divider,
+              } : {}
+            }}
+          >
+            <SupplyMarkets />
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <BorrowMarkets />
+          </Grid>
         </Grid>
-        <Grid xs={8}>
-          <BorrowMarkets />
-        </Grid>
-      </Grid>
+      </Box>
     </Container>
   );
 }
