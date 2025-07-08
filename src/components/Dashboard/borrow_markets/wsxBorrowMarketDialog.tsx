@@ -11,7 +11,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 // Token Information
 import sxTokenLogo from "../../../assets/img/sx_coin_token.png";
-import { Box, Divider, IconButton, Tab, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Tab, Typography, useTheme, useMediaQuery, Skeleton } from "@mui/material";
 import BorrowDetails from "../widgets/borrow/borrowDetails";
 
 // Action Items
@@ -34,115 +34,191 @@ interface BorrowMarketDialogProps {
 }
 
 function WSXBorrowMarketDialog(props: BorrowMarketDialogProps) {
-  const [value, setValue] = React.useState("0");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [activeTab, setActiveTab] = React.useState("borrow");
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
+  // Selectors
+  const isWSXEnabled = useSelector((state: RootState) => state.wsx.isEnabled);
+  const wsxBorrowBalance = useSelector((state: RootState) => state.wsx.borrowBalance);
+  const wsxBorrowAPY = useSelector((state: RootState) => state.wsx.borrowRate);
+  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
+  const borrowUtil = useSelector(selectBorrowUtil) * 100;
+  const riskColour = useSelector(selectRiskColour);
+
+  const isLoading = wsxBorrowBalance === undefined || wsxBorrowAPY === undefined;
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setActiveTab(newValue);
   };
 
-  // Views
-
-  const isWSXEnabled = useSelector((state: RootState) => state.wsx.isEnabled);
-
-  const wsxBorrowBalance = useSelector(
-    (state: RootState) => state.wsx.borrowBalance
-  );
-  const wsxBorrowAPY = useSelector(
-    (state: RootState) => state.wsx.borrowRate
-  );
-  const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
-  const borrowUtil     = useSelector(selectBorrowUtil) * 100;   // 0‑1
-  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
-
-  // Action Items
-
-  useEffect(() => {
-    // On load of market dialog, refresh the values of all the 'views' variables
-
-  });
-
   return (
-    <React.Fragment>
-      <Dialog
-        fullWidth={true}
-        maxWidth={"sm"}
-        open={props.open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={props.onClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle>
-          <div style={{ textAlign: "center" }}>
-            <Box
-              component="img"
-              src={sxTokenLogo}
-              alt={"Wrapped SX Logo"}
-              sx={{ height: 25, width: 30 }}
-            ></Box>
-            <Typography>{props.title}</Typography>
-          </div>
-          <IconButton
-            aria-label="close"
-            onClick={props.onClose}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
+    <Dialog
+      fullWidth
+      maxWidth="sm"
+      open={props.open}
+      TransitionComponent={Transition}
+      keepMounted
+      onClose={props.onClose}
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          background: theme.palette.mode === 'light' 
+            ? 'linear-gradient(to bottom, rgba(255, 255, 255, 0.96), rgba(245, 245, 245, 0.96))'
+            : 'linear-gradient(to bottom, rgba(30, 30, 30, 0.98), rgba(20, 20, 20, 0.98))',
+          backdropFilter: 'blur(12px)',
+          border: `1px solid ${theme.palette.divider}`,
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        position: 'relative',
+        textAlign: 'center',
+        pt: 4,
+        pb: 2,
+      }}>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <Box
+            component="img"
+            src={sxTokenLogo}
+            alt="Wrapped SX Logo"
+            sx={{ 
+              height: 48, 
+              width: 48,
+              borderRadius: '50%',
+              boxShadow: theme.shadows[1],
+              mb: 1
             }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Divider></Divider>
-        </DialogTitle>
-        <DialogContent>
-          <TabContext value={value}>
-            {/* Details above the tab list */}
+          />
+          <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>
+            {props.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {activeTab === 'borrow' ? 'Borrow assets against your collateral' : 'Repay your borrowed assets'}
+          </Typography>
+        </Box>
+        
+        <IconButton
+          aria-label="close"
+          onClick={props.onClose}
+          sx={{
+            position: 'absolute',
+            right: 16,
+            top: 16,
+            color: theme.palette.text.secondary,
+            '&:hover': {
+              color: theme.palette.text.primary,
+              backgroundColor: theme.palette.action.hover,
+            }
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-            <TabPanel value="0">
-              <BorrowMarketsHeader type={"sx"} input={true} />
-            </TabPanel>
+      <Divider sx={{ mx: 3 }} />
 
-            <TabPanel value="1">
-              <BorrowMarketsHeader type={"sx"} input={false} />
-            </TabPanel>
+      <DialogContent sx={{ 
+        px: isMobile ? 2 : 4,
+        pt: 3,
+        pb: isMobile ? 2 : 4,
+      }}>
+        <TabContext value={activeTab}>
+          <Box sx={{ 
+            width: '100%',
+            mb: 3,
+            borderBottom: `1px solid ${theme.palette.divider}`,
+          }}>
+            <TabList 
+              onChange={handleTabChange} 
+              variant="fullWidth"
+              centered
+              sx={{
+                '& .MuiTabs-indicator': {
+                  height: 3,
+                  backgroundColor: theme.palette.mode === 'light' 
+                    ? theme.palette.primary.main 
+                    : theme.palette.secondary.main,
+                }
+              }}
+            >
+              <Tab 
+                label="Borrow" 
+                value="borrow" 
+                sx={{
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  minHeight: 48,
+                  color: activeTab === 'borrow' 
+                    ? theme.palette.text.primary 
+                    : theme.palette.text.secondary,
+                }}
+              />
+              <Tab 
+                label="Repay" 
+                value="repay" 
+                sx={{
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  minHeight: 48,
+                  color: activeTab === 'repay' 
+                    ? theme.palette.text.primary 
+                    : theme.palette.text.secondary,
+                }}
+              />
+            </TabList>
+          </Box>
 
-            <Box sx={{ width: "100%", typography: "body1" }}>
-              <Box sx={{ borderBottom: 1, bBorroworderColor: "divider" }}>
-                <TabList
-                  centered
-                  variant="fullWidth"
-                  onChange={handleChange}
-                  aria-label="lab API tabs example"
-                >
-                  <Tab label="Borrow" value="0" />
-                  <Tab label="Repay" value="1" />
-                </TabList>
-              </Box>
-              <TabPanel value="0">
+          <Box sx={{ mb: 3 }}>
+            {isLoading ? (
+              <Skeleton variant="rounded" height={120} />
+            ) : (
+              <BorrowMarketsHeader 
+                type="sx" 
+                input={activeTab === 'borrow'} 
+              />
+            )}
+          </Box>
+
+          {activeTab === 'borrow' ? (
+            <TabPanel value="borrow" sx={{ p: 0 }}>
+              {isLoading ? (
+                <Skeleton variant="rounded" height={200} />
+              ) : (
                 <BorrowDetails
-                  type={"sx"}
+                  type="sx"
                   borrowAPY={wsxBorrowAPY}
                   borrowBalance={wsxBorrowBalance}
                   borrowLimit={borrowLimitUsd}
                   borrowLimitUsed={borrowUtil}
                 />
-              </TabPanel>
-              <TabPanel value="1">
+              )}
+            </TabPanel>
+          ) : (
+            <TabPanel value="repay" sx={{ p: 0 }}>
+              {isLoading ? (
+                <Skeleton variant="rounded" height={200} />
+              ) : (
                 <RepayDetails
-                  type={"sx"}
+                  type="sx"
                   borrowAPY={wsxBorrowAPY}
                   borrowBalance={wsxBorrowBalance}
                   isRepayingEnabled={isWSXEnabled}
                 />
-              </TabPanel>
-            </Box>
-          </TabContext>
-        </DialogContent>
-      </Dialog>
-    </React.Fragment>
+              )}
+            </TabPanel>
+          )}
+        </TabContext>
+      </DialogContent>
+    </Dialog>
   );
 }
 
