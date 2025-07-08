@@ -1,37 +1,36 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
   Divider,
   IconButton,
-  Switch,
-  Tab,
-  Tabs,
   Typography,
+  useTheme,
+  useMediaQuery,
+  Alert,
+  LinearProgress,
+  Link,
+  Dialog,
+  DialogContent,
+  DialogTitle
 } from "@mui/material";
-
-// Dialogs
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import CloseIcon from "@mui/icons-material/Close";
 
-import DialogTitle from "@mui/material/DialogTitle";
-
-// Action Items
+// Redux
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/Store";
-
 import {
   enterUSDCMarket,
   enterWSXMarket,
   exitWSXMarket,
   exitUSDCMarket,
 } from "../../../features/dashboard/AccountSlice";
-import { useState, useEffect } from "react";
+import { resetTx } from "../../../features/dashboard/transactionSlice";
+
+// Components
 import ConfirmTransactionDialog from "../widgets/confirmTransactionDialog";
 import { Transition } from "../../../utils/Transition";
-import { resetTx } from "../../../features/dashboard/transactionSlice";
 
 interface EnableMarketsProps {
   open: boolean;
@@ -43,164 +42,219 @@ interface EnableMarketsProps {
 }
 
 function EnableMarketDialog(props: EnableMarketsProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const dispatch = useDispatch<AppDispatch>();
-  const { onClose, type, open } = props;
+  const { onClose, type, open, title } = props;
 
-  const [isCollateralTextHeader, setIsCollateralTextHeader] = React.useState(`Enable ${props.title} as Collateral`);
-  const [isCollateralTextButtonTitle, setIsCollateralTextButtonTitle] = React.useState(`Add ${props.title} as Collateral`);
+  // Selectors
+  const isUSDCCollateral = useSelector((state: RootState) => state.usdc.isCollateral);
+  const isWSXCollateral = useSelector((state: RootState) => state.wsx.isCollateral);
+  const transactionState = useSelector((state: RootState) => state.transactions);
 
-  const isUSDCCollateral = useSelector(
-    (state: RootState) => state.usdc.isCollateral
-  );
-
-  const isWSXCollateral = useSelector(
-    (state: RootState) => state.wsx.isCollateral
-  );
-
+  // State
   const [confirmTransactionOpen, setConfirmTransactionOpen] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(type === "usdc" ? isUSDCCollateral : isWSXCollateral);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleClick = () => {
-    setConfirmTransactionOpen(true);
-    
-    if (type === "sx") {
-      // If wsx is already listed as collateral, exit the market
-      if (isWSXCollateral) {
-        dispatch(resetTx());
-        dispatch(exitWSXMarket());
-      } else {
-        dispatch(resetTx());
-        dispatch(enterWSXMarket());
-      }
-    }
-
-    if (type === "usdc") {
-      // If USDC is already listed as collateral, exit the market
-      if (isUSDCCollateral) {
-        dispatch(resetTx());
-        dispatch(exitUSDCMarket());
-      } else {
-        dispatch(resetTx());
-        dispatch(enterUSDCMarket());
-      }
-    }
-
-    onClose();
-  };
+  // Derived values
+  const actionText = isEnabled ? "Remove" : "Add";
+  const newBorrowLimit = isEnabled 
+    ? props.borrowLimit * 0.9 // Example calculation
+    : props.borrowLimit * 1.1;
+  const newBorrowLimitUsed = isEnabled 
+    ? props.borrowLimitUsed * 1.1 
+    : props.borrowLimitUsed * 0.9;
 
   useEffect(() => {
-    if (type === "usdc") {
-      // If USDC is already listed as collateral, exit the market
-      if (isUSDCCollateral) {
-        setIsCollateralTextHeader(`Remove ${props.title} as Collateral`);
-        setIsCollateralTextButtonTitle(`Remove ${props.title} as Collateral`);
-      }
-    }
+    setIsEnabled(type === "usdc" ? isUSDCCollateral : isWSXCollateral);
+  }, [type, isUSDCCollateral, isWSXCollateral]);
 
-    if (type === "sx") {
-      // If wsx is already listed as collateral, exit the market
-      if (isWSXCollateral) {
-        setIsCollateralTextHeader(`Remove ${props.title} as Collateral`);
-        setIsCollateralTextButtonTitle(`Remove ${props.title} as Collateral`);
+  const handleConfirm = async () => {
+    setIsProcessing(true);
+    setConfirmTransactionOpen(false);
+    
+    try {
+      if (type === "sx") {
+        isEnabled ? dispatch(exitWSXMarket()) : dispatch(enterWSXMarket());
+      } else {
+        isEnabled ? dispatch(exitUSDCMarket()) : dispatch(enterUSDCMarket());
       }
+      
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      onClose();
+    } finally {
+      setIsProcessing(false);
+      dispatch(resetTx());
     }
-  });
+  };
+
+  const getRiskColor = (percentage: number) => {
+    if (percentage > 80) return theme.palette.error.main;
+    if (percentage > 50) return theme.palette.warning.main;
+    return theme.palette.success.main;
+  };
 
   return (
-    <React.Fragment>
+    <>
       <Dialog
-        fullWidth={true}
-        maxWidth={"sm"}
-        open={props.open}
+        fullWidth
+        maxWidth="sm"
+        open={open}
         TransitionComponent={Transition}
-        keepMounted
-        onClose={props.onClose}
-        aria-describedby="alert-dialog-slide-description"
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            background: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+          }
+        }}
       >
-        <DialogTitle>
-          <div style={{ textAlign: "center" }}>
-            <Box component="span" sx={{ fontSize: 20, fontWeight: "bold" }}>
-              {" "}
-              {isCollateralTextHeader}{" "}
-            </Box>
-          </div>
+        <DialogTitle sx={{ 
+          position: 'relative',
+          textAlign: 'center',
+          pt: 4,
+          pb: 2,
+        }}>
+          <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>
+            {actionText} {title} as Collateral
+          </Typography>
+          
           <IconButton
             aria-label="close"
-            onClick={props.onClose}
+            onClick={onClose}
             sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
+              position: 'absolute',
+              right: 16,
+              top: 16,
+              color: theme.palette.text.secondary,
+              '&:hover': {
+                color: theme.palette.text.primary,
+                backgroundColor: theme.palette.action.hover,
+              }
             }}
           >
             <CloseIcon />
           </IconButton>
-          <Divider></Divider>
         </DialogTitle>
-        <DialogContent>
-          {/* Warning Label */}
-          <Box sx={{ textAlign: "center", marginBottom: 2 }}>
-            <DialogContentText sx={{ color: "text.secondary" }}>
-              Each asset used as collateral increases your borrowing limit. Be
-              careful, this can subject the asset to being seized in
-              liquidation.{" "}
-              <a
-                href="#learn-more"
-                style={{ color: "inherit", textDecoration: "underline" }}
-              >
-                Learn more
-              </a>
-              .
-            </DialogContentText>
-          </Box>
 
-          {/* Borrow Limit Content */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: 2,
-              marginBottom: 2,
-            }}
-          >
-            <Typography variant="body2">Borrow Limit</Typography>
-            <Typography variant="body2">$0.00 → $0</Typography>
+        <Divider sx={{ mx: 3 }} />
+
+        <DialogContent sx={{ 
+          px: isMobile ? 2 : 4,
+          pt: 3,
+          pb: isMobile ? 2 : 4,
+        }}>
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            Using assets as collateral increases your borrowing limit but subjects them to potential liquidation.
+            <Link href="#learn-more" underline="hover" sx={{ ml: 1 }}>
+              Learn more
+            </Link>
+          </Alert>
+
+          {/* Impact Preview */}
+          <Box sx={{ 
+            backgroundColor: theme.palette.mode === 'light' 
+              ? 'rgba(66, 165, 245, 0.05)' 
+              : 'rgba(255, 255, 255, 0.03)',
+            borderRadius: 2,
+            p: 3,
+            mb: 3
+          }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+              Impact on Your Position
+            </Typography>
+            
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Borrow Limit</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  ${formatNumber(props.borrowLimit)} → ${formatNumber(newBorrowLimit)}
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(100, props.borrowLimitUsed)}
+                sx={{ 
+                  height: 6,
+                  borderRadius: 3,
+                  mb: 0.5,
+                  backgroundColor: theme.palette.mode === 'light' 
+                    ? 'rgba(66, 165, 245, 0.1)' 
+                    : 'rgba(255, 255, 255, 0.1)',
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 3,
+                    backgroundColor: getRiskColor(props.borrowLimitUsed),
+                  }
+                }}
+              />
+            </Box>
+            
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Borrow Limit Used</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {formatNumber(props.borrowLimitUsed)}% → {formatNumber(newBorrowLimitUsed)}%
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(100, newBorrowLimitUsed)}
+                sx={{ 
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: theme.palette.mode === 'light' 
+                    ? 'rgba(66, 165, 245, 0.1)' 
+                    : 'rgba(255, 255, 255, 0.1)',
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 3,
+                    backgroundColor: getRiskColor(newBorrowLimitUsed),
+                  }
+                }}
+              />
+            </Box>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: 2,
-            }}
-          >
-            <Typography variant="body2">Borrow Limit Used</Typography>
-            <Typography variant="body2">0% → 0%</Typography>
-          </Box>
-          {/* Enable Button */}
 
           <Button
             variant="contained"
-            color="primary"
+            size="large"
             fullWidth
-            sx={{ marginTop: 2, fontWeight: "bold", paddingY: 1.5 }}
-            onClick={handleClick} // Clicking the button
-            aria-label="button to toggle collateral"
+            onClick={() => setConfirmTransactionOpen(true)}
+            disabled={isProcessing}
+            sx={{
+              fontWeight: 600,
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontSize: '1rem',
+              backgroundColor: isEnabled ? theme.palette.error.main : theme.palette.primary.main,
+              '&:hover': {
+                backgroundColor: isEnabled ? theme.palette.error.dark : theme.palette.primary.dark,
+              }
+            }}
           >
-            {isCollateralTextButtonTitle}
+            {isProcessing ? 'Processing...' : `${actionText} ${title} as Collateral`}
           </Button>
         </DialogContent>
       </Dialog>
 
       <ConfirmTransactionDialog
         open={confirmTransactionOpen}
-        onClose={() => {
-          setConfirmTransactionOpen(false);
-        }}
+        onClose={() => setConfirmTransactionOpen(false)}
+        onConfirm={handleConfirm}
+        title={`Confirm ${actionText} Collateral`}
+        description={`You are about to ${actionText.toLowerCase()} ${title} as collateral. This will affect your borrowing capacity.`}
       />
-    </React.Fragment>
+    </>
   );
 }
 
 export default EnableMarketDialog;
 
-// TODO:
+// Helper function for number formatting
+function formatNumber(value: number, decimals: number = 2): string {
+  return value.toFixed(decimals);
+}
