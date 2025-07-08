@@ -19,23 +19,40 @@ const TopNavigationBar = () => {
     };
 
     return (
-        <>
-            <AppBar
-                position='fixed'
+        <AppBar
+            position='fixed'
+            sx={{
+                bgcolor: theme.palette.mode === 'light' 
+                    ? 'rgba(66, 165, 245, 0.9)' 
+                    : 'rgba(0, 0, 0, 0.9)',
+                backdropFilter: 'blur(8px)',
+                boxShadow: theme.shadows[4],
+                transition: 'all 0.3s ease',
+                borderBottom: theme.palette.mode === 'light' 
+                    ? '1px solid rgba(255, 255, 255, 0.2)' 
+                    : '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+        >
+            <Toolbar
                 sx={{
-                    bgcolor:
-                        theme.palette.mode === 'light'
-                            ? 'rgba(66, 165, 245, 1)'
-                            : 'rgba(0, 0, 0, 1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    height: 64,
+                    px: { xs: 2, sm: 3, md: 4 },
                 }}
             >
-                <Toolbar
+                <Box
+                    component={Link}
+                    to="/"
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
-                        flexShrink: 0,
-                        maxHeight: 40,
+                        textDecoration: 'none',
+                        '&:hover': {
+                            transform: 'scale(1.05)',
+                        },
+                        transition: 'transform 0.2s',
                     }}
                 >
                     <Box
@@ -43,68 +60,169 @@ const TopNavigationBar = () => {
                         sx={{
                             height: 40,
                             width: 40,
+                            mr: 1,
                         }}
                         alt="Degenlend Logo"
                         src={degenlendLogo}
                     />
-                    {isSmallScreen ? (
-                        <>
+                    {!isSmallScreen && (
+                        <Typography 
+                            variant="h6" 
+                            sx={{ 
+                                fontWeight: 700,
+                                color: theme.palette.mode === 'light' ? 'common.white' : 'primary.main',
+                            }}
+                        >
+                            DegenLend
+                        </Typography>
+                    )}
+                </Box>
+
+                {isSmallScreen ? (
+                    <>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <SwitchNetworkButton />
                             <IconButton
                                 color="inherit"
                                 aria-label="open drawer"
-                                edge="start"
+                                edge="end"
                                 onClick={handleDrawerToggle}
+                                sx={{
+                                    '&:hover': {
+                                        backgroundColor: theme.palette.mode === 'light' 
+                                            ? 'rgba(255, 255, 255, 0.1)' 
+                                            : 'rgba(255, 255, 255, 0.05)',
+                                    },
+                                }}
                             >
                                 <MenuIcon />
                             </IconButton>
-                            <Drawer
-                                anchor="left"
-                                open={drawerOpen}
-                                onClose={handleDrawerToggle}
+                        </Box>
+                        <Drawer
+                            anchor="right"
+                            open={drawerOpen}
+                            onClose={handleDrawerToggle}
+                            PaperProps={{
+                                sx: {
+                                    bgcolor: theme.palette.background.default,
+                                    width: 240,
+                                }
+                            }}
+                        >
+                            <Box
+                                sx={{ 
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    py: 2,
+                                }}
+                                role="presentation"
                             >
-                                <Box
-                                    sx={{ width: 250 }}
-                                    role="presentation"
-                                    onClick={handleDrawerToggle}
-                                    onKeyDown={handleDrawerToggle}
-                                >
-                                    <List>
-                                        <ListItem component={Link} to="/markets">
-                                            <ListItemText primary="Markets" />
-                                        </ListItem>
-                                        <ListItem component={Link} to="/faq">
-                                            <ListItemText primary="FAQ" />
-                                        </ListItem>
-                                        <ListItem>
-                                            <ConnectWallet />
-                                        </ListItem>
-                                    </List>
+                                <List>
+                                    <ListItem 
+                                        button 
+                                        component={Link} 
+                                        to="/markets"
+                                        onClick={handleDrawerToggle}
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: theme.palette.action.hover,
+                                            },
+                                        }}
+                                    >
+                                        <ListItemText 
+                                            primary="Markets" 
+                                            primaryTypographyProps={{
+                                                color: theme.palette.text.primary,
+                                                fontWeight: 500,
+                                            }}
+                                        />
+                                    </ListItem>
+                                    <ListItem 
+                                        button 
+                                        component={Link} 
+                                        to="/faq"
+                                        onClick={handleDrawerToggle}
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: theme.palette.action.hover,
+                                            },
+                                        }}
+                                    >
+                                        <ListItemText 
+                                            primary="FAQ" 
+                                            primaryTypographyProps={{
+                                                color: theme.palette.text.primary,
+                                                fontWeight: 500,
+                                            }}
+                                        />
+                                    </ListItem>
+                                </List>
+                                <Box sx={{ mt: 'auto', p: 2 }}>
+                                    <Box sx={{ mb: 2 }}>
+                                        <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
+                                    </Box>
+                                    <ConnectWallet />
                                 </Box>
-                            </Drawer>
-                        </>
-                    ) : (
-                        <Box sx={{ display: 'flex', flexGrow: 1 }}>
-                            <MenuItem>
-                                <Typography variant="body2" color="text.primary">
-                                    <Link to="/markets" style={{ textDecoration: "none" }}>Markets</Link>
+                            </Box>
+                        </Drawer>
+                    </>
+                ) : (
+                    <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1,
+                    }}>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            mx: 2,
+                            '& .MuiMenuItem-root': {
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: theme.palette.mode === 'light' 
+                                        ? 'rgba(255, 255, 255, 0.2)' 
+                                        : 'rgba(255, 255, 255, 0.05)',
+                                },
+                            },
+                        }}>
+                            <MenuItem component={Link} to="/markets">
+                                <Typography 
+                                    variant="subtitle1" 
+                                    sx={{ 
+                                        fontWeight: 600,
+                                        color: theme.palette.mode === 'light' ? 'common.white' : 'text.primary',
+                                    }}
+                                >
+                                    Markets
                                 </Typography>
                             </MenuItem>
-                            <MenuItem>
-                                <Typography variant="body2" color="text.primary">
-                                    <Link to="/faq" style={{ textDecoration: "none" }}>FAQ</Link>
+                            <MenuItem component={Link} to="/faq">
+                                <Typography 
+                                    variant="subtitle1" 
+                                    sx={{ 
+                                        fontWeight: 600,
+                                        color: theme.palette.mode === 'light' ? 'common.white' : 'text.primary',
+                                    }}
+                                >
+                                    FAQ
                                 </Typography>
                             </MenuItem>
                         </Box>
-                    )}
-
-                        <SwitchNetworkButton />
-                    <Box sx={{ display: isSmallScreen ? 'none' : 'flex', flexDirection: 'row', alignItems: 'end' }}>
-                        <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
-                        <ConnectWallet />
+                        
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center',
+                            gap: 2,
+                            ml: 2,
+                        }}>
+                            <SwitchNetworkButton />
+                            <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
+                            <ConnectWallet />
+                        </Box>
                     </Box>
-                </Toolbar>
-            </AppBar>
-        </>
+                )}
+            </Toolbar>
+        </AppBar>
     );
 }
 
