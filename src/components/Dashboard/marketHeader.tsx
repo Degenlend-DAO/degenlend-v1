@@ -1,5 +1,14 @@
 import React, { useEffect } from 'react';
-import { Box, Typography, Grid, Paper, LinearProgress, Skeleton } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Grid, 
+  Paper, 
+  LinearProgress, 
+  Skeleton,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/Store';
 import { Position, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
@@ -7,16 +16,21 @@ import { formatNumber } from '../../utils/constant';
 import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from '../../features/dashboard/BorrowLimitSlice';
 
 function MarketHeader() {
-  const supplyPositions:Position[] = useSelector((state: RootState) => state.account.netSupplyBalance);
-  const borrowPositions:Position[] = useSelector((state: RootState) => state.account.netBorrowBalance);
-  const supplyBalance = supplyPositions.reduce((s, p) => s + Number(p.balance), 0);
-  const borrowBalance = borrowPositions.reduce((s, p) => s + Number(p.balance), 0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const dispatch = useDispatch<AppDispatch>();
+
+  const supplyPositions: Position[] = useSelector((state: RootState) => state.account.netSupplyBalance);
+  const borrowPositions: Position[] = useSelector((state: RootState) => state.account.netBorrowBalance);
   const netAPY = useSelector((state: RootState) => state.account.netAPY);
   const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
-  const borrowUtil     = useSelector(selectBorrowUtil) * 100;   // 0‑1
-  const riskColour     = useSelector(selectRiskColour);   // 'safe' | 'warning' | 'danger'
+  const borrowUtil = useSelector(selectBorrowUtil) * 100;
+  const riskColour = useSelector(selectRiskColour);
+  
+  const isLoading = !supplyPositions || !borrowPositions || netAPY === undefined;
 
-  const dispatch = useDispatch<AppDispatch>();
+  const supplyBalance = supplyPositions?.reduce((s, p) => s + Number(p.balance), 0) || 0;
+  const borrowBalance = borrowPositions?.reduce((s, p) => s + Number(p.balance), 0) || 0;
 
   useEffect(() => {
     dispatch(updateNetSupplyBalance());
@@ -24,57 +38,141 @@ function MarketHeader() {
     dispatch(updateNetAPY());
   }, [dispatch]);
 
+  const getRiskColor = () => {
+    switch(riskColour) {
+      case 'danger': return theme.palette.error.main;
+      case 'warning': return theme.palette.warning.main;
+      default: return theme.palette.success.main;
+    }
+  };
 
   return (
-    <Box sx={{ width: '90%', mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Grid container spacing={4} alignItems="center" justifyContent="center">
+    <Box sx={{ 
+      width: '100%', 
+      mb: 4,
+      px: isMobile ? 2 : 0
+    }}>
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          p: 3, 
+          borderRadius: 4,
+          background: theme.palette.mode === 'light' 
+            ? 'linear-gradient(to bottom, rgba(66, 165, 245, 0.05), rgba(66, 165, 245, 0.02))'
+            : 'linear-gradient(to bottom, rgba(30, 30, 30, 0.8), rgba(10, 10, 10, 0.8))',
+          border: `1px solid ${theme.palette.divider}`,
+        }}
+      >
+        <Grid container spacing={isMobile ? 2 : 4} alignItems="center" justifyContent="center">
           {/* Supply Balance */}
           <Grid item xs={12} sm={4} textAlign="center">
-            <Typography variant="h6" color="textSecondary">
-              Supply Balance (in USD)
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              Supply Balance
             </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {`$${formatNumber(supplyBalance)}`}
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="text" width={120} height={40} sx={{ mx: 'auto' }} />
+            ) : (
+              <Typography variant="h5" sx={{ 
+                fontWeight: 700,
+                color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
+              }}>
+                ${formatNumber(supplyBalance, 2)}
+              </Typography>
+            )}
           </Grid>
 
           {/* Net APY */}
           <Grid item xs={12} sm={4} textAlign="center">
-            <Typography variant="h6" color="textSecondary">
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
               Net APY
             </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {`${formatNumber(netAPY)}%`}
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="text" width={80} height={40} sx={{ mx: 'auto' }} />
+            ) : (
+              <Typography variant="h5" sx={{ 
+                fontWeight: 700,
+                color: netAPY >= 0 ? 'success.main' : 'error.main',
+              }}>
+                {netAPY >= 0 ? '+' : ''}{formatNumber(netAPY, 2)}%
+              </Typography>
+            )}
           </Grid>
 
           {/* Borrow Balance */}
           <Grid item xs={12} sm={4} textAlign="center">
-            <Typography variant="h6" color="textSecondary">
-              Borrow Balance (in USD)
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              Borrow Balance
             </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              {`$${formatNumber(borrowBalance)}`}
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="text" width={120} height={40} sx={{ mx: 'auto' }} />
+            ) : (
+              <Typography variant="h5" sx={{ 
+                fontWeight: 700,
+                color: theme.palette.mode === 'light' ? 'secondary.dark' : 'secondary.light',
+              }}>
+                ${formatNumber(borrowBalance, 2)}
+              </Typography>
+            )}
           </Grid>
         </Grid>
 
         {/* Borrow Limit */}
-        <Box sx={{ width: '100%', mt: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="textSecondary" gutterBottom>
-            Borrow Limit
-          </Typography>
-          <Box sx={{ width: '100%' }}>
-            <LinearProgress
-              variant="determinate"
-              value={borrowUtil}
-              sx={{ height: 8, borderRadius: 5 }}
-            />
-            <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold', color: 'primary.main' }}>
-              {`${formatNumber(borrowUtil)}%`}
+        <Box sx={{ 
+          width: '100%', 
+          mt: 4,
+          px: isMobile ? 0 : 4
+        }}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            mb: 1
+          }}>
+            <Typography variant="subtitle1" color="text.secondary">
+              Borrow Limit
+            </Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {isLoading ? (
+                <Skeleton variant="text" width={60} />
+              ) : (
+                `${formatNumber(borrowUtil, 2)}%`
+              )}
             </Typography>
           </Box>
+          
+          {isLoading ? (
+            <Skeleton variant="rounded" height={8} />
+          ) : (
+            <LinearProgress
+              variant="determinate"
+              value={borrowUtil > 100 ? 100 : borrowUtil}
+              sx={{ 
+                height: 8, 
+                borderRadius: 4,
+                backgroundColor: theme.palette.mode === 'light' 
+                  ? 'rgba(66, 165, 245, 0.1)' 
+                  : 'rgba(255, 255, 255, 0.1)',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 4,
+                  backgroundColor: getRiskColor(),
+                }
+              }}
+            />
+          )}
+          
+          {!isLoading && (
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              mt: 1
+            }}>
+              <Typography variant="caption" color="text.secondary">
+                ${formatNumber(0, 2)}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                ${formatNumber(borrowLimitUsd, 2)}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Paper>
     </Box>
