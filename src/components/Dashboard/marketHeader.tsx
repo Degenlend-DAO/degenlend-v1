@@ -14,23 +14,61 @@ import { AppDispatch, RootState } from '../../app/Store';
 import { Position, updateNetAPY, updateNetBorrowBalance, updateNetSupplyBalance } from '../../features/dashboard/AccountSlice';
 import { formatNumber } from '../../utils/constant';
 import { selectBorrowLimitUsd, selectBorrowUtil, selectRiskColour } from '../../features/dashboard/BorrowLimitSlice';
+import { createSelector } from '@reduxjs/toolkit';
 
 function MarketHeader() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const dispatch = useDispatch<AppDispatch>();
 
-  const supplyPositions: Position[] = useSelector((state: RootState) => state.account.netSupplyBalance);
-  const borrowPositions: Position[] = useSelector((state: RootState) => state.account.netBorrowBalance);
-  const netAPY = useSelector((state: RootState) => state.account.netAPY);
+  const selectWSXSupplyBalance = (state: RootState) => state.wsx.supplyBalance;
+  const selectWSXBorrowBalance = (state: RootState) => state.wsx.borrowBalance;
+  const selectWSXSupplyAPY = (state: RootState) => state.wsx.supplyRate;
+  const selectWSXBorrowAPY = (state: RootState) => state.wsx.borrowRate;
+  
+  const selectUSDCSupplyBalance = (state: RootState) => state.usdc.supplyBalance;
+  const selectUSDCBorrowBalance = (state: RootState) => state.usdc.borrowBalance;
+  const selectUSDCSupplyAPY = (state: RootState) => state.usdc.supplyRate;
+  const selectUSDCBorrowAPY = (state: RootState) => state.usdc.borrowRate;
+
+  const selectWSXOraclePrice = (state: RootState) => state.wsx.oraclePrice;
+  const selectUSDCOraclePrice = (state: RootState) => state.usdc.oraclePrice;
+
+  
+
+  const supplyPositions = createSelector([selectWSXSupplyBalance, selectUSDCSupplyBalance, selectWSXOraclePrice, selectUSDCOraclePrice], (wsxSupplyBalance, usdcSupplyBalance, wsxOraclePrice, usdcOraclePrice) => {
+    
+    const wsxSupplyValue = wsxSupplyBalance * wsxOraclePrice;
+    const usdcSupplyValue = usdcSupplyBalance * usdcOraclePrice;
+    const netSupplyBalance = wsxSupplyValue + usdcSupplyValue;
+    
+    return netSupplyBalance;
+  });
+  const borrowPositions = createSelector([selectWSXBorrowBalance, selectUSDCBorrowBalance, selectWSXOraclePrice, selectUSDCOraclePrice], (wsxBorrowBalance, usdcBorrowBalance, wsxOraclePrice, usdcOraclePrice) => {
+    const wsxBorrowValue = wsxBorrowBalance * wsxOraclePrice;
+    const usdcBorrowValue = usdcBorrowBalance * usdcOraclePrice;
+    const netBorrowBalance = wsxBorrowValue + usdcBorrowValue;
+    return netBorrowBalance;
+  });
+
+  const netAPYPositions = createSelector([selectWSXBorrowAPY, selectWSXSupplyAPY, selectUSDCBorrowAPY, selectUSDCSupplyAPY], (wsxBorrowAPY, wsxSupplyAPY, usdcBorrowAPY, usdcSupplyAPY) => {
+    const wsxNetAPY = wsxSupplyAPY - wsxBorrowAPY;
+    const usdcNetAPY = usdcSupplyAPY - usdcBorrowAPY;
+    return (wsxNetAPY + usdcNetAPY) / 2;
+  });
+
+  
   const borrowLimitUsd = useSelector(selectBorrowLimitUsd);
   const borrowUtil = useSelector(selectBorrowUtil) * 100;
   const riskColour = useSelector(selectRiskColour);
   
-  const isLoading = !supplyPositions || !borrowPositions || netAPY === undefined;
+  const isLoading = !supplyPositions || !borrowPositions || netAPYPositions === undefined;
 
-  const supplyBalance = supplyPositions?.reduce((s, p) => s + Number(p.balance), 0) || 0;
-  const borrowBalance = borrowPositions?.reduce((s, p) => s + Number(p.balance), 0) || 0;
+
+  const supplyBalance = supplyPositions(useSelector((state: RootState) => state)) || 0;
+  const borrowBalance = borrowPositions(useSelector((state: RootState) => state)) || 0;
+  const netAPY = netAPYPositions(useSelector((state: RootState) => state)) || 0;
+
 
   useEffect(() => {
     dispatch(updateNetSupplyBalance());
