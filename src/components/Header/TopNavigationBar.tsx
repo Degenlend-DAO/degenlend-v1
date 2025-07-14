@@ -7,6 +7,8 @@ import ConnectWallet from '../../utils/ConnectWallet';
 import degenlendLogo from '../../assets/img/degenlend-variation2.png';
 import { ColorModeContext } from '../../utils/useMode';
 import SwitchNetworkButton from '../../features/network/SwitchNetworkButton';
+import DepositButton from '../../features/deposits-withdraw/DepositButton';
+import WithdrawButton from '../../features/deposits-withdraw/WithdrawButton';
 
 const TopNavigationBar = () => {
     const theme = useTheme();
@@ -81,6 +83,8 @@ const TopNavigationBar = () => {
                 {isSmallScreen ? (
                     <>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <DepositButton />
+                            <WithdrawButton />
                             <SwitchNetworkButton />
                             <IconButton
                                 color="inherit"
@@ -215,6 +219,8 @@ const TopNavigationBar = () => {
                             gap: 2,
                             ml: 2,
                         }}>
+                            <DepositButton />
+                            <WithdrawButton />
                             <SwitchNetworkButton />
                             <ToggleColorMode mode={theme.palette.mode} colorMode={colorMode} />
                             <ConnectWallet />
