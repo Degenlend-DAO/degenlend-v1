@@ -10,12 +10,13 @@ const networks = {
     nativeCurrency: { name: 'SX', symbol: 'SX', decimals: 18 },
     blockExplorerUrls: ['https://explorer.toronto.sx.technology/'],
   },
-  sxMainnet: {
-    chainId: '0x1A0',
-    chainName: 'SX Network',
-    rpcUrls: ['https://rpc.sx.technology/'],
+
+  sxNetworkRollup: {
+    chainId: '0x1042',
+    chainName: 'SX Network Rollup',
+    rpcUrls: ['https://rpc.sx-rollup.gelato.digital/', 'https://rpc-rollup.sx.technology'],
     nativeCurrency: { name: 'SX', symbol: 'SX', decimals: 18 },
-    blockExplorerUrls: ['https://explorer.sx.technology/'],
+    blockExplorerUrls: ['https://explorerl2.sx.technology/'],
   },
 };
 
@@ -24,30 +25,25 @@ const NetworkButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
   borderRadius: '12px',
   padding: '8px 16px',
-  marginRight: theme.spacing(2),
   boxShadow: 'none',
   transition: 'all 0.2s ease',
   '&:hover': {
     boxShadow: 'none',
-    backgroundColor: theme.palette.mode === 'light' 
-      ? theme.palette.primary.dark 
-      : theme.palette.secondary.dark,
+    backgroundColor: theme.palette.primary.dark,
   },
 }));
 
 const NetworkMenuItem = styled(MenuItem)(({ theme }) => ({
   padding: '12px 16px',
   minWidth: '200px',
-  '&:hover': {
-    backgroundColor: theme.palette.mode === 'light' 
-      ? 'rgba(25, 118, 210, 0.08)' 
-      : 'rgba(255, 255, 255, 0.04)',
-  },
+  borderRadius: '8px',
+  margin: '4px',
   '&.active': {
-    backgroundColor: theme.palette.mode === 'light' 
-      ? 'rgba(25, 118, 210, 0.12)' 
-      : 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: theme.palette.action.selected,
     fontWeight: 600,
+  },
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
   },
 }));
 
@@ -68,7 +64,7 @@ const SwitchNetworkButton = () => {
         try {
           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
           setCurrentNetwork(
-            chainId === networks.sxMainnet.chainId ? 'SX Mainnet' :
+            chainId === networks.sxNetworkRollup.chainId ? 'SX Rollup' :
             chainId === networks.sxTestnet.chainId ? 'SX Testnet' : null
           );
         } catch (error) {
@@ -79,7 +75,6 @@ const SwitchNetworkButton = () => {
 
     checkCurrentNetwork();
 
-    // Listen for network changes
     if (window.ethereum) {
       window.ethereum.on('chainChanged', checkCurrentNetwork);
       return () => window.ethereum.removeListener('chainChanged', checkCurrentNetwork);
@@ -118,11 +113,7 @@ const SwitchNetworkButton = () => {
         aria-haspopup="true"
         onClick={handleClick}
         variant="contained"
-        sx={{
-          backgroundColor: theme.palette.mode === 'light' 
-            ? theme.palette.primary.main 
-            : theme.palette.secondary.main,
-        }}
+        color="primary"
       >
         {currentNetwork || 'Select Network'}
         {currentNetwork && <ActiveIndicator />}
@@ -137,10 +128,9 @@ const SwitchNetworkButton = () => {
           elevation: 3,
           sx: {
             borderRadius: '12px',
+            padding: '8px',
+            mt: 1,
             border: `1px solid ${theme.palette.divider}`,
-            backgroundColor: theme.palette.mode === 'light' 
-              ? theme.palette.background.paper 
-              : theme.palette.background.default,
           }
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -154,11 +144,11 @@ const SwitchNetworkButton = () => {
           {isActiveNetwork('sxTestnet') && <ActiveIndicator sx={{ marginLeft: 'auto' }} />}
         </NetworkMenuItem>
         <NetworkMenuItem 
-          onClick={() => switchNetwork('sxMainnet')}
-          className={isActiveNetwork('sxMainnet') ? 'active' : ''}
+          onClick={() => switchNetwork('sxNetworkRollup')}
+          className={isActiveNetwork('sxNetworkRollup') ? 'active' : ''}
         >
-          SX Network Mainnet
-          {isActiveNetwork('sxMainnet') && <ActiveIndicator sx={{ marginLeft: 'auto' }} />}
+          SX Network Rollup
+          {isActiveNetwork('sxNetworkRollup') && <ActiveIndicator sx={{ marginLeft: 'auto' }} />}
         </NetworkMenuItem>
       </Menu>
     </Box>
