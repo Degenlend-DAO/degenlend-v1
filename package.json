@@ -12,6 +12,7 @@
     "@mui/icons-material": "^5.15.20",
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.5",
+    "@paywithglide/glide-react": "^0.0.31",
     "@reduxjs/toolkit": "^2.2.5",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^5.14.1",
