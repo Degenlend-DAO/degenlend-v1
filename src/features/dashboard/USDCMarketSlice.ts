@@ -208,9 +208,9 @@ export const updateUSDCLiquidityInUSD = createAsyncThunk('usdcLiquidity/update',
     try {
         const getLiquidity = await fetch(`${API_URL}/api/markets/usdc/marketLiquidity`).then((res) => {return res.json()})
             
-        console.log(`[Console] successfully called on thunk 'updateLiquidityInUSD' ${getLiquidity.usdLiquidityInUSD}`);
+        console.log(`[Console] successfully called on thunk 'updateUSDCLiquidityInUSD' ${getLiquidity.usdcLiquidityInUSD}`);
 
-        return getLiquidity.usdLiquidityInUSD;
+        return getLiquidity.usdcLiquidityInUSD;
     }
     catch (error) { 
         console.log(`[Console] an error occurred on thunk 'updateUSDCLiquidityInUSD': ${error}`);

@@ -12,6 +12,7 @@ import USDCBorrowMarketDialog from "./usdcBorrowMarketDialog";
 import { 
   updateUSDCBalance, 
   updateUSDCBorrowRate, 
+  updateUSDCLiquidityInUSD, 
   updateUSDCOraclePrice  
 } from "../../../features/dashboard/USDCMarketSlice";
 import { 
@@ -52,15 +53,22 @@ export default function BorrowMarkets() {
   }
 
   useEffect(() => {
-    // update borrow apys, wallet balances, and oracle prices
-    dispatch(updateUSDCBorrowRate());
-    dispatch(updateWSXBorrowRate());
-    dispatch(updateWSXBalance());
-    dispatch(updateUSDCBalance());
-    dispatch(updateUSDCOraclePrice());
-    dispatch(updateWSXOraclePrice());
-    dispatch(updateWSXLiquidityInUSD());
-  });
+    const updateMarketData = () => {
+      dispatch(updateUSDCBorrowRate());
+      dispatch(updateWSXBorrowRate());
+      dispatch(updateWSXBalance());
+      dispatch(updateUSDCBalance());
+      dispatch(updateUSDCOraclePrice());
+      dispatch(updateWSXOraclePrice());
+      dispatch(updateWSXLiquidityInUSD());
+      dispatch(updateUSDCLiquidityInUSD())
+    };
+
+    updateMarketData();
+
+    const interval = setInterval(updateMarketData, 5000); // Update every 5 seconds
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [dispatch]);
 
   return (
     <>
