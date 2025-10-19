@@ -8,6 +8,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 
+import degenlendLogo from '../../assets/img/degenlend-variation2.png';
+
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/X';
@@ -79,7 +81,7 @@ export default function Footer() {
             >
               <Box
                 component="img"
-                src="/path-to-your-logo.png" // Replace with your logo path
+                src={degenlendLogo}
                 alt="Degenlend Logo"
                 sx={{
                   ...logoStyle,
